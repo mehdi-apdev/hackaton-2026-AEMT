@@ -47,7 +47,7 @@ docker compose down
 1. Ouvrez le dossier racine dans **IntelliJ IDEA**.  
 2. Laissez Maven télécharger les dépendances (regardez la barre de progression en bas).  
 3. Vérifiez que le fichier src/main/resources/application.properties est bien configuré (il devrait l'être par défaut).  
-4. Lancez la classe principale TemplateApplication.java.  
+4. Lancez la classe principale BackendApplication.java.  
 5. Le serveur démarre sur : http://localhost:8080
 
 ### **2\. Frontend (React \+ Vite)**
