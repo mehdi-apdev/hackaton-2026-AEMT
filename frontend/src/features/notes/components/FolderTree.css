@@ -1,74 +1,66 @@
-/* --- FolderTree.css --- */
+/* --- FolderTree.css - Version Halloween --- */
 
 .folder-tree {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.95rem;
-  color: #e0e0e0; /* Blanc cassé pour ne pas éblouir */
-  line-height: 1.5;
-  
-  /* --- FIX LISIBILITÉ : Ombre noire derrière le texte --- */
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
-  user-select: none; /* Évite de sélectionner le texte quand on clique */
+  color: #cccccc;
+  user-select: none;
 }
 
-/* --- Ligne Dossier (Header) --- */
+/* --- Ligne Dossier --- */
 .folder-header {
   display: flex;
   align-items: center;
-  padding: 6px 15px; /* Un peu plus d'espace sur les côtés */
+  padding: 8px 15px;
   cursor: pointer;
-  border-left: 3px solid transparent; /* Prépare la bordure de survol */
-  transition: background 0.2s, border-color 0.2s;
+  transition: background 0.2s, color 0.2s;
+  border-left: 3px solid transparent;
 }
 
 .folder-header:hover {
-  background-color: rgba(255, 255, 255, 0.08); /* Éclaircit la ligne au survol */
-  border-left-color: #888; /* Petit indicateur visuel gris */
+  background-color: rgba(255, 102, 0, 0.1);
+  color: #fff;
+  border-left-color: #ff6600; /* Barre orange à gauche au survol */
 }
 
 .folder-icon {
   margin-right: 10px;
   font-size: 1.1rem;
-  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); /* Ombre sur l'emoji dossier */
+  opacity: 0.8;
 }
 
 .folder-name {
-  font-weight: 600;
+  font-weight: 500;
   flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* --- Contenu (Enfants) --- */
 .folder-content {
-  margin-left: 22px; /* Indentation */
-  /* Ligne verticale subtile pour guider l'œil dans la hiérarchie */
-  border-left: 1px solid rgba(255, 255, 255, 0.1); 
-  padding-left: 2px;
+  margin-left: 20px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1); /* Ligne guide fine */
 }
 
 /* --- Ligne Note --- */
 .note-item {
   display: flex;
   align-items: center;
-  padding: 5px 10px 5px 15px;
+  padding: 6px 10px 6px 15px;
   cursor: pointer;
-  color: #b0b0b0;
+  color: #999;
   transition: all 0.2s ease;
   margin: 1px 0;
-  border-radius: 0 4px 4px 0; /* Arrondi à droite seulement */
+  position: relative;
 }
 
 .note-item:hover {
-  background-color: rgba(255, 102, 0, 0.15); /* Orange translucide */
-  color: #fff;
-  padding-left: 18px; /* Petite animation de décalage */
+  background: linear-gradient(90deg, rgba(155, 38, 182, 0.2), transparent); /* Violet fantôme */
+  color: #e0e0e0;
+  padding-left: 18px; /* Petit décalage animé */
 }
 
-/* Note Active (Celle ouverte dans l'éditeur) */
+/* Note Active */
 .note-item.active {
-  background: linear-gradient(90deg, rgba(255, 102, 0, 0.2), transparent);
+  background: linear-gradient(90deg, rgba(255, 102, 0, 0.25), transparent);
   color: #ff6600;
   border-left: 3px solid #ff6600;
   font-weight: bold;
@@ -77,56 +69,42 @@
 .note-icon {
   margin-right: 8px;
   font-size: 0.9rem;
-  opacity: 0.8;
 }
 
-/* --- Boutons d'action (CRUD) --- */
+/* --- Boutons d'action (cachés par défaut) --- */
 .folder-actions {
+  opacity: 0;
   display: flex;
-  gap: 2px;
-  opacity: 0; /* Caché par défaut pour ne pas polluer */
+  gap: 5px;
   transition: opacity 0.2s;
 }
 
-/* On affiche les boutons quand on survole la ligne parente */
 .folder-header:hover .folder-actions,
 .note-item:hover .note-delete {
   opacity: 1;
 }
 
 .btn-icon {
-  background: transparent;
+  background: none;
   border: none;
   cursor: pointer;
-  font-size: 0.8rem;
-  padding: 4px;
-  border-radius: 4px;
-  color: #666; /* Gris discret par défaut */
-  transition: all 0.2s;
+  font-size: 0.85rem;
+  opacity: 0.6;
+  transition: transform 0.2s, opacity 0.2s;
 }
 
-/* Effets de survol sur les boutons */
 .btn-icon:hover {
-  transform: scale(1.2);
-  color: #fff;
-  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.3);
+  opacity: 1;
 }
 
 .btn-delete:hover {
-  color: #ff4444; /* Rouge pour la poubelle */
-  background-color: rgba(255, 68, 68, 0.15);
+  filter: hue-rotate(180deg); /* Change la couleur au survol */
 }
 
-/* Positionnement de la poubelle note */
-.note-delete {
-  margin-left: auto;
-  opacity: 0;
-}
-
-/* --- Message vide --- */
 .empty-folder {
-  padding: 8px 0 8px 20px;
-  font-size: 0.85rem;
+  padding: 5px 0 5px 20px;
+  font-size: 0.8rem;
   color: #555;
   font-style: italic;
 }

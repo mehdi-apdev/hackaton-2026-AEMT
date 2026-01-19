@@ -8,7 +8,7 @@ const MainLayout = () => {
 
   return (
     <div className="layout-container">
-      {/* La Sidebar (qui peut se cacher) */}
+      {/* La Sidebar */}
       <LeftSidebar
         isLeftSidebarCollapsed={isLeftSidebarCollapsed}
         changeIsLeftSidebarCollapsed={setIsLeftSidebarCollapsed}
@@ -17,19 +17,27 @@ const MainLayout = () => {
       {/* Le contenu principal */}
       <div className={`main-content ${isLeftSidebarCollapsed ? 'expanded' : ''}`}>
         
-        {/* --- LE SAUVEUR : Bouton de réouverture --- */}
+        {/* Bouton de réouverture */}
         {isLeftSidebarCollapsed && (
           <button 
             className="btn-reopen-sidebar"
             onClick={() => setIsLeftSidebarCollapsed(false)}
             title="Ouvrir le menu"
           >
-            ☰ {/* Ou <i className="fal fa-bars"></i> si tu as FontAwesome */}
+            ☰
           </button>
         )}
 
         <Outlet />
       </div>
+
+      {/* 🕷️ L'Araignée (Inchangée) */}
+      <div className="hanging-spider"></div>
+      
+      {/* 💀 L'Armée de Squelettes (Sprite Animation) */}
+      <div className="skeleton-walker delay-1"></div>
+      <div className="skeleton-walker delay-2"></div>
+      <div className="skeleton-walker delay-3"></div>
     </div>
   );
 };
