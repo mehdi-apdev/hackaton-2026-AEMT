@@ -1,24 +1,18 @@
-import { Routes, Route } from "react-router-dom";
-import MainLayout from "./layout/MainLayout";
-import NotFoundComponent from "./core/components/NotFoundComponent";
-import systemRoutes from "./features/system/system-routes";
+import { MOCK_FOLDERS } from './features/notes/mockData';
+import { FolderTree } from './features/notes/components/FolderTree';
 
 function App() {
   return (
-    <Routes>
-      {/* Route principale avec le layout global */}
-      <Route path="/" element={<MainLayout />}>
-        
-        {/* Les routes de la feature "system" sont injectées ici */}
-        {systemRoutes}
-
-        {/* Ajoutez d'autres features ici */}
-        {/* {featureXYZRoutes} */}
-
-        {/* La page 404 est la dernière route pour tout intercepter */}
-        <Route path="*" element={<NotFoundComponent />} />
-      </Route>
-    </Routes>
+    <div style={{ backgroundColor: '#111', height: '100vh', padding: '20px', color: 'white' }}>
+      <h2>🎃 Test Navigation - Mehdi</h2>
+      
+      <div style={{ width: '300px', border: '1px solid #333', padding: '10px' }}>
+        {MOCK_FOLDERS.map((folder) => (
+          <FolderTree key={folder.id} folder={folder} />
+        ))}
+      </div>
+    
+    </div>
   );
 }
 
