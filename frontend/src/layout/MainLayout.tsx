@@ -1,39 +1,35 @@
-import { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
-import LeftSidebar from "../core/components/sidebar/LeftSidebar.tsx";
-import "./MainLayout.css";
-import classNames from "classnames";
+import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import LeftSidebar from '../core/components/sidebar/LeftSidebar';
+import './MainLayout.css';
 
 const MainLayout = () => {
-  const [isLeftSidebarCollapsed, setIsLeftSidebarCollapsed] = useState<boolean>(false);
-  const [screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
-
-  useEffect(() => {
-    const updateSize = () => {
-      setScreenWidth(window.innerWidth);
-      if (window.innerWidth < 768) {
-        setIsLeftSidebarCollapsed(true);
-      }
-    };
-    window.addEventListener("resize", updateSize);
-    updateSize();
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
-
-  const contentClasses = classNames({
-    "layout-content": true,
-    "layout-content-trimmed": !isLeftSidebarCollapsed && screenWidth > 768,
-  });
+  const [isLeftSidebarCollapsed, setIsLeftSidebarCollapsed] = useState(false);
 
   return (
-    <div>
+    <div className="layout-container">
+      {/* La Sidebar (qui peut se cacher) */}
       <LeftSidebar
         isLeftSidebarCollapsed={isLeftSidebarCollapsed}
         changeIsLeftSidebarCollapsed={setIsLeftSidebarCollapsed}
       />
-      <main className={contentClasses}>
+
+      {/* Le contenu principal */}
+      <div className={`main-content ${isLeftSidebarCollapsed ? 'expanded' : ''}`}>
+        
+        {/* --- LE SAUVEUR : Bouton de réouverture --- */}
+        {isLeftSidebarCollapsed && (
+          <button 
+            className="btn-reopen-sidebar"
+            onClick={() => setIsLeftSidebarCollapsed(false)}
+            title="Ouvrir le menu"
+          >
+            ☰ {/* Ou <i className="fal fa-bars"></i> si tu as FontAwesome */}
+          </button>
+        )}
+
         <Outlet />
-      </main>
+      </div>
     </div>
   );
 };

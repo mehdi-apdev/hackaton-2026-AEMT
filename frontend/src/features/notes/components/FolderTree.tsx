@@ -1,68 +1,143 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import './FolderTree.css';
 import type { Folder } from '../models/Folder';
 import type { Note } from '../models/Note';
-import type { MouseEvent } from 'react';
-import './FolderTree.css';
+import FolderService from '../services/FolderService';
+import NoteService from '../services/NoteService';
 
 interface FolderTreeProps {
-    folder: Folder;
+  folder: Folder;
+  onRefresh: () => void; // Fonction obligatoire pour rafraîchir l'arbre parent
 }
 
-export const FolderTree = ({ folder }: FolderTreeProps) => {
-    // État local : est-ce que ce dossier est ouvert ou fermé ?
-    const [isOpen, setIsOpen] = useState(true); // Par défaut ouvert pour voir le résultat vite
+export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const { id: activeNoteId } = useParams(); // Pour surligner la note active (optionnel)
 
-    // Vérification : A-t-on des enfants ou des notes ?
-    const hasChildren = folder.children && folder.children.length > 0;
-    const hasNotes = folder.notes && folder.notes.length > 0;
-    const isEmpty = !hasChildren && !hasNotes;
+  // Ouvrir/Fermer le dossier
+  const toggleOpen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsOpen(!isOpen);
+  };
 
-    const toggleOpen = (e: MouseEvent<HTMLDivElement>) => {
-        e.stopPropagation();
-        setIsOpen(!isOpen);
-    };
+  // --- ACTIONS DOSSIER ---
 
-    const handleNoteClick = (note: Note) => {
-        console.log("Note cliquée :", note.title);
-        // Plus tard, on appellera une fonction ici pour ouvrir l'éditeur
-    };
+  const handleCreateSubFolder = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const name = prompt("📂 Nom du sous-dossier :");
+    if (name) {
+      try {
+        await FolderService.createFolder(name, folder.id);
+        setIsOpen(true); // On ouvre le dossier pour voir le nouveau bébé
+        onRefresh();
+      } catch (err) {
+        alert("Erreur création dossier");
+      }
+    }
+  };
 
-    return (
-        <div className="tree-node">
-            {/* 1. Affichage du Dossier lui-même */}
-            <div 
-                className={`folder-label ${isEmpty ? 'empty' : ''}`} 
-                onClick={toggleOpen}
-            >
-                <span style={{ marginRight: '8px' }}>
-                    {/* Icône changeante : Dossier ouvert ou fermé */}
-                    {isOpen ? '📂' : '📁'} 
-                </span>
-                <span>{folder.name}</span>
-            </div>
+  const handleCreateNote = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const title = prompt("📝 Titre de la note :");
+    if (title) {
+      try {
+        const newNote = await NoteService.createNote(title, folder.id);
+        setIsOpen(true);
+        onRefresh();
+        navigate(`/note/${newNote.id}`); // On redirige direct vers la nouvelle note
+      } catch (err) {
+        alert("Erreur création note");
+      }
+    }
+  };
 
-            {/* 2. Affichage du Contenu (Récursif) */}
-            {isOpen && !isEmpty && (
-                <div className="folder-children">
-                    
-                    {/* A. Appel Récursif pour les sous-dossiers */}
-                    {folder.children?.map((childFolder) => (
-                        <FolderTree key={childFolder.id} folder={childFolder} />
-                    ))}
+  const handleDeleteFolder = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm(`🗑️ Supprimer le dossier "${folder.name}" et tout son contenu ?`)) {
+      try {
+        await FolderService.deleteFolder(folder.id);
+        onRefresh();
+      } catch (err) {
+        alert("Impossible de supprimer le dossier");
+      }
+    }
+  };
 
-                    {/* B. Affichage des notes de ce dossier */}
-                    {folder.notes?.map((note) => (
-                        <div 
-                            key={note.id} 
-                            className="note-item"
-                            onClick={() => handleNoteClick(note)}
-                        >
-                            <span style={{ marginRight: '8px' }}>📄</span>
-                            {note.title}
-                        </div>
-                    ))}
-                </div>
-            )}
+  // --- ACTIONS NOTE ---
+
+  const handleNoteClick = (noteId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/note/${noteId}`);
+  };
+
+  const handleDeleteNote = async (noteId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm("🗑️ Supprimer cette note ?")) {
+      try {
+        await NoteService.deleteNote(noteId);
+        onRefresh();
+      } catch (err) {
+        alert("Impossible de supprimer la note");
+      }
+    }
+  };
+
+  return (
+    <div className="folder-tree">
+      {/* En-tête du dossier */}
+      <div className="folder-header" onClick={toggleOpen}>
+        <span className="folder-icon">
+          {isOpen ? '📂' : '📁'}
+        </span>
+        <span className="folder-name">{folder.name}</span>
+        
+        {/* Boutons d'action (visibles au survol grâce au CSS) */}
+        <div className="folder-actions">
+          <button onClick={handleCreateSubFolder} title="Nouveau dossier" className="btn-icon">➕📂</button>
+          <button onClick={handleCreateNote} title="Nouvelle note" className="btn-icon">➕📝</button>
+          <button onClick={handleDeleteFolder} title="Supprimer le dossier" className="btn-icon btn-delete">🗑️</button>
         </div>
-    );
+      </div>
+
+      {/* Contenu du dossier (Enfants + Notes) */}
+      {isOpen && (
+        <div className="folder-content">
+          {/* 1. Affichage récursif des sous-dossiers */}
+          {folder.children?.map((childFolder) => (
+            <FolderTree 
+              key={childFolder.id} 
+              folder={childFolder} 
+              onRefresh={onRefresh} // Propagation vitale !
+            />
+          ))}
+
+          {/* 2. Affichage des notes */}
+          {folder.notes?.map((note: Note) => (
+            <div 
+              key={note.id} 
+              className={`note-item ${String(activeNoteId) === String(note.id) ? 'active' : ''}`}
+              onClick={(e) => handleNoteClick(note.id, e)}
+            >
+              <span className="note-icon">📄</span>
+              <span className="note-title">{note.title}</span>
+              <button 
+                className="btn-icon btn-delete note-delete"
+                onClick={(e) => handleDeleteNote(note.id, e)}
+                title="Supprimer la note"
+              >
+                🗑️
+              </button>
+            </div>
+          ))}
+          
+          {/* Message si vide */}
+          {(!folder.children?.length && !folder.notes?.length) && (
+            <div className="empty-folder">Vide... pour l'instant 👻</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 };

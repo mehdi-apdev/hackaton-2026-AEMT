@@ -1,104 +1,105 @@
+/* --- Sidebar Global Container --- */
 .sidenav {
-  background: #22133e;
-  transition: all 0.5s ease;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  width: 16.5625rem;
   height: 100vh;
-  box-shadow: 0.063rem 0 1.25rem 0 #22133e33;
-  font-family: 'Underdog', cursive;
-  background-image: url('/src/assets/images/spiderweb.png');
-  background-size: cover;
-
-}
-.sidenav-collapsed {
-  width: 5rem;
-}
-.sidenav .logo-container {
-  display: flex;
-  align-items: center;
-  padding: 0.938rem 0.938rem 0 0.938rem;
-  width: 100%;
-}
-.sidenav .logo-container .logo {
-  background: #fff;
-  text-align: center;
-  width: 3rem;
-  min-width: 3rem;
-  border-radius: 0.313rem;
-  padding: 0.313rem;
-  font-size: 24px;
-  font-weight: 900;
-  cursor: pointer;
-  border: none;
-}
-.sidenav .logo-container .logo-text {
-  margin-left: 1.5rem;
-  font-size: 24px;
-  font-weight: 700;
-  color: #fff;
-}
-.sidenav .logo-container .btn-close {
-  margin-left: auto;
-  cursor: pointer;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background-color: transparent;
-  border: none;
-}
-.sidenav .logo-container .btn-close .fa-times {
-  color: #fff;
-  font-size: 24px;
-}
-
-.sidenav-nav {
-  list-style: none;
-  padding: 0.938rem;
-  margin: 0;
+  width: 280px; /* Un peu plus large pour le confort */
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  
+  /* --- FIX LISIBILITÉ : Fond sombre semi-transparent + Flou --- */
+  background-color: rgba(0, 0, 0, 0.85); 
+  backdrop-filter: blur(8px); /* Floute l'image de fond derrière la sidebar */
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.6); /* Ombre portée vers la droite */
+  border-right: 1px solid rgba(255, 255, 255, 0.05); /* Ligne de séparation subtile */
+  
+  transition: transform 0.3s ease, width 0.3s ease;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  height: calc(100% - 3.65rem);
-  cursor: pointer;
+  overflow-x: hidden;
 }
-.sidenav-nav .sidenav-nav-item {
-  width: 100%;
-  margin-bottom: 0.625rem;
+
+.sidenav-collapsed {
+  width: 0; /* Ou une largeur réduite si tu veux une mini-sidebar */
+  transform: translateX(-100%); /* Cache complètement la sidebar */
 }
-.sidenav-nav .sidenav-nav-item .sidenav-nav-link {
+
+/* --- Navigation Container --- */
+.sidenav-nav {
+  flex: 1; /* Prend tout l'espace restant */
+  padding: 10px 0;
+  overflow-y: auto; /* Scroll si trop de dossiers */
+}
+
+/* Scrollbar personnalisée (fine et sombre) */
+.sidenav-nav::-webkit-scrollbar {
+  width: 6px;
+}
+.sidenav-nav::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+.sidenav-nav::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 3px;
+}
+.sidenav-nav::-webkit-scrollbar-thumb:hover {
+  background: #ff6600;
+}
+
+/* --- Header / Logo --- */
+.logo-container {
   display: flex;
   align-items: center;
-  height: 3rem;
-  color: #f3f3f3;
-  text-decoration: none;
-  border-radius: 0.625rem;
-  transition: all 0.3s ease;
-}
-.sidenav-nav .sidenav-nav-item .sidenav-nav-link .sidenav-link-icon {
-  font-size: 22px;
-  width: 2rem;
-  min-width: 2rem;
-  text-align: center;
-  padding: 12px;
-}
-.sidenav-nav .sidenav-nav-item .sidenav-nav-link .sidenav-link-text {
-  margin-left: 1.5rem;
-}
-.sidenav-nav .sidenav-nav-item:hover .sidenav-nav-link {
-  background-color: #ff912b;
-  color: #000;
+  justify-content: space-between;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 10px;
 }
 
-.active {
-  background-color: #ff912b;
-}
-.active .sidenav-link-icon,
-.active .sidenav-link-text {
-  color: #000;
+.logo {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
-.spiderweb-img{
-  opacity: 0.3;
+.logo:hover {
+  color: #ff6600;
+}
+
+.logo-text {
+  font-family: 'Creepster', cursive, system-ui; /* Police Halloween si dispo */
+  font-size: 1.4rem;
+  color: #ff6600;
+  text-shadow: 2px 2px 0 #000; /* Ombre dure pour effet cartoon/horreur */
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+.btn-close:hover {
+  color: #ff4444;
+}
+
+/* Bouton "Nouveau Grimoire" (Racine) */
+.btn-add-root {
+  transition: all 0.2s ease;
+  font-family: inherit;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-add-root:hover {
+  background: rgba(255, 102, 0, 0.1) !important;
+  box-shadow: 0 0 10px rgba(255, 102, 0, 0.2);
 }
