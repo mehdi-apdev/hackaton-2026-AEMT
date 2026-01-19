@@ -1,0 +1,40 @@
+.markdownPage {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.markdownHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.markdownTitle {
+  margin: 0;
+}
+
+.toggleBtn {
+  margin-left: auto;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.editorLabel {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.editorTextarea {
+  width: 100%;
+  min-height: 350px;
+  padding: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  resize: vertical;
+}
+
+.previewBox {
+  padding: 12px;
+  border: 1px solid #ccc;
+}
