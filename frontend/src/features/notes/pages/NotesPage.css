@@ -1,0 +1,16 @@
+.notesPage {
+  background: #111;
+  min-height: 100vh;
+  padding: 20px;
+  color: white;
+}
+
+.notesTitle {
+  margin-top: 0;
+}
+
+.notesPanel {
+  width: 300px;
+  border: 1px solid #333;
+  padding: 10px;
+}
