@@ -4,12 +4,10 @@ import com.helha.backend.application.utils.MetadataUtils;
 import com.helha.backend.infrastructure.database.entities.DbFolder;
 import com.helha.backend.infrastructure.database.entities.DbNote;
 import com.helha.backend.infrastructure.database.repository.IFolderRepository;
-import com.helha.backend.infrastructure.database.repository.NoteRepository;
+import com.helha.backend.infrastructure.database.repository.INoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
@@ -18,7 +16,7 @@ public class DataSeeder implements CommandLineRunner {
     private IFolderRepository folderRepository;
 
     @Autowired
-    private NoteRepository noteRepository;
+    private INoteRepository noteRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -41,13 +39,12 @@ public class DataSeeder implements CommandLineRunner {
             dbNote.setTitle("L'invasion du 31 octobre");
             String content1 = "# Alerte Zombie\nIls sont partout dans l'école !";
             dbNote.setContent(content1);
-            dbNote.setFolder(horror); // Changé setDbFolder -> setFolder pour correspondre à l'entité
+            dbNote.setFolder(horror);
 
-            // Métadonnées (Calculées par ton utilitaire)
-            // Note: Si Mamadou n'a pas encore ajouté ces champs dans DbNote.java,
-            // commente ces lignes pour que ça compile.
-            // dbNote.setWordCount(MetadataUtils.countWords(content1));
-            // dbNote.setSizeInBytes(MetadataUtils.calculateSizeInBytes(content1));
+            // Métadonnées
+            dbNote.setWordCount(MetadataUtils.countWords(content1));
+            dbNote.setSizeInBytes(MetadataUtils.calculateSizeInBytes(content1));
+            dbNote.setLineCount(MetadataUtils.countLines(content1));
 
             noteRepository.save(dbNote);
 
@@ -59,8 +56,8 @@ public class DataSeeder implements CommandLineRunner {
             zombie.setFolder(horror); // INDISPENSABLE : nullable = false
 
             // Métadonnées Palier Zombie
-            // zombie.setWordCount(MetadataUtils.countWords(contentZombie));
-            // zombie.setLineCount(MetadataUtils.countLines(contentZombie));
+            zombie.setWordCount(MetadataUtils.countWords(contentZombie));
+            zombie.setLineCount(MetadataUtils.countLines(contentZombie));
 
             noteRepository.save(zombie);
 

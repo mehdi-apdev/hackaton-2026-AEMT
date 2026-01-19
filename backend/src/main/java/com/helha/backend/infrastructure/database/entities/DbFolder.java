@@ -1,6 +1,6 @@
 package com.helha.backend.infrastructure.database.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,18 +21,16 @@ public class DbFolder {
     @Column(nullable = false)
     private String name;
 
-    // --- Récursivité : Parent ---
+    // --- ANTI-BOUCLE INFINIE ---
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    @JsonIgnoreProperties({"children", "dbNotes"}) // Évite de remonter tout l'arbre inutilement
+    @JsonIgnore // Empêche l'enfant de renvoyer le parent en JSON
     private DbFolder parent;
 
-    // --- Récursivité : Enfants ---
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DbFolder> children = new ArrayList<>();
 
-    // --- Lien vers les Notes ---
-    // mappedBy doit valoir "folder" car c'est le nom de la variable dans DbNote
+    // mappedBy = "folder" car c'est le nom de la variable dans DbNote
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DbNote> dbNotes = new ArrayList<>();
 

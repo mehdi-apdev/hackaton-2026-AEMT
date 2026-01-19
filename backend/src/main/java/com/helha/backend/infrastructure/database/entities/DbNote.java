@@ -28,6 +28,13 @@ public class DbNote {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    // --- Métadonnées demandées (Palier Zombie) ---
+    //
+    private int wordCount;      // Nombre de mots
+    private int lineCount;      // Nombre de lignes
+    private int characterCount; // Nombre de caractères
+    private long sizeInBytes;   // Taille en octets
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -37,8 +44,8 @@ public class DbNote {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "folder_id", nullable = false)
-    @JsonIgnoreProperties("dbNotes") // Empêche de repartir vers la liste des notes du dossier
-    private DbFolder folder; // Nommé "folder" pour correspondre au mappedBy
+    @JsonIgnoreProperties("dbNotes")
+    private DbFolder folder;
 
     public DbNote(String title, String content, DbFolder folder) {
         this.title = title;
