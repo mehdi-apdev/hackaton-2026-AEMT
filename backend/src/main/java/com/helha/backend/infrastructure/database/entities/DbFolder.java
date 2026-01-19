@@ -1,10 +1,9 @@
 package com.helha.backend.infrastructure.database.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.List;
 @Table(name = "FOLDERS")
 @Data
 @NoArgsConstructor
-public class Folder {
+public class DbFolder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,17 +24,19 @@ public class Folder {
     // --- Récursivité : Parent ---
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    private Folder parent;
+    @JsonIgnoreProperties({"children", "dbNotes"}) // Évite de remonter tout l'arbre inutilement
+    private DbFolder parent;
 
     // --- Récursivité : Enfants ---
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Folder> children = new ArrayList<>();
+    private List<DbFolder> children = new ArrayList<>();
 
     // --- Lien vers les Notes ---
+    // mappedBy doit valoir "folder" car c'est le nom de la variable dans DbNote
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Note> notes = new ArrayList<>();
+    private List<DbNote> dbNotes = new ArrayList<>();
 
-    public Folder(String name, Folder parent) {
+    public DbFolder(String name, DbFolder parent) {
         this.name = name;
         this.parent = parent;
     }

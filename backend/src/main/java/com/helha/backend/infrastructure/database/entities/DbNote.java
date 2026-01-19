@@ -1,10 +1,9 @@
 package com.helha.backend.infrastructure.database.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -15,8 +14,8 @@ import java.time.LocalDateTime;
 @Table(name = "NOTES")
 @Data
 @NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class) // Important pour les dates
-public class Note {
+@EntityListeners(AuditingEntityListener.class)
+public class DbNote {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +24,7 @@ public class Note {
     @Column(nullable = false)
     private String title;
 
-    @Lob // Pour le contenu Markdown long
+    @Lob
     @Column(columnDefinition = "TEXT")
     private String content;
 
@@ -38,9 +37,10 @@ public class Note {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "folder_id", nullable = false)
-    private Folder folder;
+    @JsonIgnoreProperties("dbNotes") // Empêche de repartir vers la liste des notes du dossier
+    private DbFolder folder; // Nommé "folder" pour correspondre au mappedBy
 
-    public Note(String title, String content, Folder folder) {
+    public DbNote(String title, String content, DbFolder folder) {
         this.title = title;
         this.content = content;
         this.folder = folder;
