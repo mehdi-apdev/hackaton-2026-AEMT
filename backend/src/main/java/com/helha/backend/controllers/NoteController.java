@@ -37,7 +37,7 @@ public class NoteController {
 
         DbNote note = new DbNote();
         note.setTitle(creationDto.getTitle());
-        note.setContent(""); // Initialement vide
+        note.setContent(creationDto.getContent()); // Initialement vide
         note.setFolder(folder);
 
         // On initialise les stats à 0
