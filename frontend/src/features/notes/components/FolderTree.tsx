@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Folder } from '../models/Folder';
 import type { Note } from '../models/Note';
+import type { MouseEvent } from 'react';
 import './FolderTree.css';
 
 interface FolderTreeProps {
@@ -16,7 +17,7 @@ export const FolderTree = ({ folder }: FolderTreeProps) => {
     const hasNotes = folder.notes && folder.notes.length > 0;
     const isEmpty = !hasChildren && !hasNotes;
 
-    const toggleOpen = (e: React.MouseEvent) => {
+    const toggleOpen = (e: MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
         setIsOpen(!isOpen);
     };

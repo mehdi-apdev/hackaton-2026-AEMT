@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import LeftSidebar from "../features/system/components/left-sidebar/LeftSidebar";
+import LeftSidebar from "../core/components/sidebar/LeftSidebar.tsx";
 import "./MainLayout.css";
 import classNames from "classnames";
 
