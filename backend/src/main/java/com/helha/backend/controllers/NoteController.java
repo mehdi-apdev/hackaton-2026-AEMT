@@ -58,24 +58,33 @@ public class NoteController {
         return modelMapper.map(note, NoteDto.class);
     }
 
-    // 3. Sauvegarder / Mettre à jour (PUT)
     @PutMapping("/{id}")
     public NoteDto updateNote(@PathVariable Long id, @RequestBody NoteUpdateDto updateDto) {
         DbNote note = noteRepository.findById(id)
                 .orElseThrow(() -> new GenericNotFoundException(id, "Note"));
 
-        note.setTitle(updateDto.getTitle());
+        // 1. Mise à jour du titre uniquement s'il n'est pas vide (Sécurité)
+        if (updateDto.getTitle() != null && !updateDto.getTitle().isBlank()) {
+            note.setTitle(updateDto.getTitle());
+        }
+
+        // 2. Mise à jour du contenu (on accepte que ce soit vide)
         note.setContent(updateDto.getContent());
 
-        // --- PALIER ZOMBIE : Calcul des métadonnées en temps réel ---
-        String content = updateDto.getContent();
+        // 3. --- PALIER ZOMBIE : Calcul des métadonnées en temps réel ---
+        // On s'assure de ne pas envoyer "null" aux utilitaires pour éviter les crashs
+        String content = (updateDto.getContent() != null) ? updateDto.getContent() : "";
+
         note.setWordCount(MetadataUtils.countWords(content));
         note.setLineCount(MetadataUtils.countLines(content));
         note.setCharacterCount(MetadataUtils.countCharacters(content));
         note.setSizeInBytes(MetadataUtils.calculateSizeInBytes(content));
 
-        return modelMapper.map(noteRepository.save(note), NoteDto.class);
+        // 4. Sauvegarde et conversion
+        DbNote savedNote = noteRepository.save(note);
+        return modelMapper.map(savedNote, NoteDto.class);
     }
+
 
     // 4. Supprimer une note (DELETE)
     @DeleteMapping("/{id}")
