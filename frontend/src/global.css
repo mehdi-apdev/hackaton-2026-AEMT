@@ -1,3 +1,22 @@
+/* --- Import de la police effrayante --- */
+@font-face {
+  font-family: 'Underdog';
+  src: url('./assets/fonts/Underdog-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  /* Palette Halloween */
+  --spooky-orange: #ff6600;
+  --spooky-orange-glow: #ff9100;
+  --spooky-purple: #9b26b6;
+  --spooky-black: #0a0a0a;
+  --spooky-dark-gray: #1a1a1a;
+  --spooky-text: #e0e0e0;
+  --spooky-glass: rgba(20, 20, 20, 0.85);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -5,7 +24,33 @@
 }
 
 body {
-  position: relative;
-  font-family: "Roboto", sans-serif;
-  background: #f4f7fa;
+  font-family: "Roboto", sans-serif; /* Texte lisible pour le corps */
+  background-color: var(--spooky-dark-gray);
+  color: var(--spooky-text);
+  
+  /* --- Le fond Chauve-souris --- */
+
+  background-repeat: repeat-x; /* Répète horizontalement */
+  background-position: top center;
+  background-size: 500px; /* Ajuste la taille des chauves-souris */
+  background-attachment: fixed; /* Le fond reste fixe quand on scrolle */
+}
+
+/* Appliquer la police Halloween aux titres */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Underdog', cursive;
+  color: var(--spooky-orange);
+  text-shadow: 2px 2px 4px #000;
+}
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--spooky-black);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--spooky-orange);
+  border-radius: 4px;
 }

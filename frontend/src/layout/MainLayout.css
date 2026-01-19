@@ -9,28 +9,42 @@
 
 .main-content {
   flex: 1;
-  position: relative; /* Important pour positionner le bouton */
+  position: relative;
   transition: margin-left 0.3s ease;
-  /* Si ta sidebar prend de la place physiquement, ajuste la margin ici */
+  z-index: 1;
 }
 
-/* Style du bouton de réouverture */
+/* --- 1. La Toile d'Araignée (Fixe) --- */
+.main-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 300px;
+  background-image: url('../assets/images/spiderweb.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: top right;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Bouton réouverture */
 .btn-reopen-sidebar {
   position: absolute;
   top: 15px;
   left: 15px;
-  z-index: 999; /* Au-dessus du contenu */
-  
-  background-color: rgba(0, 0, 0, 0.6); /* Fond sombre semi-transparent */
-  color: #ff6600; /* Orange Halloween */
+  z-index: 999;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #ff6600;
   border: 1px solid #ff6600;
   border-radius: 4px;
-  
   width: 40px;
   height: 40px;
   font-size: 1.2rem;
   cursor: pointer;
-  
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,4 +56,96 @@
   color: #000;
   transform: scale(1.1);
   box-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
+}
+
+/* --- 2. L'Araignée (🕷️) --- */
+.hanging-spider {
+  position: fixed;
+  top: -500px; 
+  right: 100px;
+  width: 100px;
+  height: 500px; 
+  
+  background-image: url('../assets/images/spider.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  
+  z-index: 10;
+  pointer-events: none;
+  
+  filter: invert(1); 
+  
+  animation: spider-drop 8s ease-in-out infinite;
+}
+
+/* Le fil blanc opaque */
+.hanging-spider::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+  background-color: #ffffff; 
+  transform: translateX(-50%);
+  z-index: -1;
+}
+
+@keyframes spider-drop {
+  0% { transform: translateY(0); }
+  40% { transform: translateY(300px); }
+  50% { transform: translateY(280px); }
+  60% { transform: translateY(300px); }
+  100% { transform: translateY(0); }
+}
+/* --- 3. Les Squelettes Danseurs (💀 Nouvelle Image) --- */
+.skeleton-walker {
+  position: fixed;
+  bottom: 0px;       /* Collé en bas */
+  left: -200px;      /* Départ hors écran */
+  
+  /* --- AJUSTEMENT TAILLE --- */
+  /* On définit la taille d'UN SEUL squelette */
+  width: 150px;  
+  height: 220px; /* Plus haut car ils lèvent les bras */
+
+  /* --- NOUVELLE IMAGE --- */
+  background-image: url('../assets/images/squelettes3.png');
+  
+  /* --- REGLAGE SPRITE --- */
+  /* Largeur totale = Largeur d'un squelette (150px) x 5 colonnes = 750px */
+  /* On laisse la hauteur en 'auto' pour garder les proportions */
+  background-size: 750px auto; 
+  background-repeat: no-repeat;
+  
+  z-index: 20;
+  pointer-events: none;
+
+  /* Inversion des couleurs (Noir -> Blanc) */
+  filter: invert(1); 
+  
+  /* --- ANIMATION --- */
+  /* walk-anim : steps(5) car il y a 5 squelettes sur la ligne du haut */
+  animation: 
+    walk-anim 1s steps(5) infinite, 
+    move-across 25s linear infinite;
+}
+
+/* Délais pour la file indienne */
+.delay-1 { animation-delay: 0s; }
+.delay-2 { animation-delay: 8s; }
+.delay-3 { animation-delay: 16s; }
+
+/* Animation de la danse (Sprite Sheet) */
+@keyframes walk-anim {
+  from { background-position: 0 0; }
+  /* On déplace l'image de sa largeur totale (750px) vers la gauche */
+  to { background-position: -750px 0; } 
+}
+
+/* Animation du déplacement latéral (Traversée de l'écran) */
+@keyframes move-across {
+  0% { left: -200px; }
+  100% { left: 100vw; } /* Sortie à droite */
 }
