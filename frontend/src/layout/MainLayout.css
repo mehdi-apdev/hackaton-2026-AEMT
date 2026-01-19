@@ -5,7 +5,7 @@
   position: relative;
   top: 0;
   transition: all 0.5s ease;
-  background: #f4f7fa;
+  background: #3c4147;
   padding: 2rem;
   min-height: 100vh;
 }
@@ -13,7 +13,7 @@
 .layout-content-trimmed {
   width: calc(100% - 16.5625rem);
   margin-left: 16.5625rem;
-}
+} 
 
 @media (max-width: 768px) {
   .layout-content {

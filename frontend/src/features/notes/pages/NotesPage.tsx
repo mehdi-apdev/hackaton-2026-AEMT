@@ -1,17 +1,15 @@
-import { MOCK_FOLDERS } from "../mockData";
-import { FolderTree } from "../components/FolderTree";
-import "./NotesPage.css";
+import { useParams } from "react-router-dom";
 
 export default function NotesPage() {
-  return (
-    <div className="notesPage">
-      <h2 className="notesTitle">🎃 Test Navigation - Mehdi</h2>
+  const { id } = useParams();
 
-      <div className="notesPanel">
-        {MOCK_FOLDERS.map((folder) => (
-          <FolderTree key={folder.id} folder={folder} />
-        ))}
-      </div>
+  return (
+    <div>
+      <h2>Note {id}</h2>
+      <p>Contenu de la note (à charger depuis le backend)...</p>
+
+      {/* Zone d'édition simple pour l'instant */}
+      <textarea defaultValue={`Contenu Markdown de la note ${id}`} />
     </div>
   );
 }

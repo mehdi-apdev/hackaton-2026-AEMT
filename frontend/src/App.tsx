@@ -17,9 +17,9 @@ export default function App() {
         {systemRoutes}
 
         {/* feature "notes" */}
-        <Route path="notes" element={<NotesPage />} />
+        <Route path="note/:id" element={<NotesPage />} />
 
-        {/* 404 */}
+        {/* 404 (toujours en dernier) */}
         <Route path="*" element={<NotFoundComponent />} />
       </Route>
     </Routes>

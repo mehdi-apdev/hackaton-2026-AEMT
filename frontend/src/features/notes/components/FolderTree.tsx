@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Folder } from '../models/Folder';
 import type { Note } from '../models/Note';
 import type { MouseEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './FolderTree.css';
 
 interface FolderTreeProps {
@@ -9,6 +10,7 @@ interface FolderTreeProps {
 }
 
 export const FolderTree = ({ folder }: FolderTreeProps) => {
+    const navigate = useNavigate();
     // État local : est-ce que ce dossier est ouvert ou fermé ?
     const [isOpen, setIsOpen] = useState(true); // Par défaut ouvert pour voir le résultat vite
 
@@ -23,8 +25,7 @@ export const FolderTree = ({ folder }: FolderTreeProps) => {
     };
 
     const handleNoteClick = (note: Note) => {
-        console.log("Note cliquée :", note.title);
-        // Plus tard, on appellera une fonction ici pour ouvrir l'éditeur
+        navigate(`/note/${note.id}`);
     };
 
     return (
