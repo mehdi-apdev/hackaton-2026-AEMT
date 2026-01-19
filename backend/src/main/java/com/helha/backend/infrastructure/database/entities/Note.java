@@ -1,6 +1,7 @@
 package com.helha.backend.infrastructure.database.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,8 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "NOTES")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class) // Important pour les dates
 public class Note {
