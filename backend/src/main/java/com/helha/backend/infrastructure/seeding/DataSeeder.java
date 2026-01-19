@@ -1,15 +1,12 @@
 package com.helha.backend.infrastructure.seeding;
 
-import com.helha.backend.application.utils.MetadataUtils;
 import com.helha.backend.infrastructure.database.entities.DbFolder;
 import com.helha.backend.infrastructure.database.entities.DbNote;
 import com.helha.backend.infrastructure.database.repository.IFolderRepository;
-import com.helha.backend.infrastructure.database.repository.NoteRepository;
+import com.helha.backend.infrastructure.database.repository.INoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
@@ -18,7 +15,7 @@ public class DataSeeder implements CommandLineRunner {
     private IFolderRepository folderRepository;
 
     @Autowired
-    private NoteRepository noteRepository;
+    private INoteRepository noteRepository;
 
     @Override
     public void run(String... args) throws Exception {
