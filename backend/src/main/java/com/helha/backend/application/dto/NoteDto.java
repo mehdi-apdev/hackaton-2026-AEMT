@@ -1,4 +1,4 @@
-package com.helha.backend.domain.dto;
+package com.helha.backend.application.dto;
 
 import lombok.Data;
 
