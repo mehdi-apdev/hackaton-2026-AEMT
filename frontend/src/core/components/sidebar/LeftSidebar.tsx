@@ -4,6 +4,7 @@ import "./sidebar.css";
 import { FolderTree } from "../../../features/notes/components/FolderTree";
 import FolderService from "../../../features/notes/services/FolderService";
 import type { Folder } from "../../../features/notes/models/Folder";
+import { useAuth } from "../../../features/auth/context/AuthContext";
 
 type LeftSidebarProps = {
   isLeftSidebarCollapsed: boolean;
@@ -14,6 +15,7 @@ const LeftSidebar = ({
   isLeftSidebarCollapsed,
   changeIsLeftSidebarCollapsed,
 }: LeftSidebarProps) => {
+  const { isAuthenticated } = useAuth();
   const [folders, setFolders] = useState<Folder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -42,6 +44,13 @@ const LeftSidebar = ({
   useEffect(() => {
     void refreshTree();
   }, [refreshTree]);
+
+  useEffect(() => {
+    if (isAuthenticated) return;
+    setFolders([]);
+    setErrorMessage(null);
+    setIsLoading(false);
+  }, [isAuthenticated]);
 
   const handleAddRootFolder = async () => {
     const name = prompt("Nom du nouveau grimoire :");
