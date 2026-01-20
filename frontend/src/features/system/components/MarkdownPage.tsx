@@ -155,7 +155,7 @@ const MarkdownPage = () => {
       setHasUnsavedChanges(false);
     } catch (error: unknown) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Impossible de sauvegarder la note."
+        error instanceof Error ? error.message : "Impossible de sauvegarder la note!"
       );
     } finally {
       setIsSaving(false);
@@ -178,7 +178,7 @@ const MarkdownPage = () => {
   const statusLabel = isSaving
     ? "Sauvegarde..."
     : hasUnsavedChanges
-      ? "Modifications non enregistrees"
+      ? "Modifications non enregistrées"
       : "Sauvegarde";
   const statusClass = isSaving
     ? "status-saving"
