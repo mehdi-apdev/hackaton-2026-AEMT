@@ -3,25 +3,28 @@ package com.helha.backend.controllers;
 import com.helha.backend.application.dto.AuthRequestDto;
 import com.helha.backend.application.services.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
-@RequiredArgsConstructor
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor // Génère le constructeur pour l'injection automatique
 public class AuthController {
 
     private final AuthService authService;
 
+    // POST /api/auth/register
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody AuthRequestDto request) {
-        authService.register(request);
-        return ResponseEntity.ok("Utilisateur enregistré avec succès !");
+    @ResponseStatus(HttpStatus.CREATED) // Renvoie 201 quand c'est fini
+    public void register(@RequestBody AuthRequestDto dto) {
+        // On délègue toute la logique (vérification doublon + hachage) au service
+        authService.register(dto);
     }
 
+    // POST /api/auth/login
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthRequestDto request) {
-        String token = authService.login(request);
-        return ResponseEntity.ok(token);
+    public String login(@RequestBody AuthRequestDto dto) {
+        // On délègue l'authentification et la génération du JWT au service
+        return authService.login(dto);
     }
 }
