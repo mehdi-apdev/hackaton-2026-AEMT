@@ -1,27 +1,17 @@
-import { Routes, Route } from "react-router-dom";
-import MainLayout from "./layout/MainLayout";
-import NotFoundComponent from "./core/components/NotFoundComponent";
-
+import { Route, Routes } from "react-router-dom";
 import systemRoutes from "./features/system/system-routes";
-import NotesPage from "./features/notes/pages/NotesPage";
-import HomeComponent from "./HomeComponent";
+import { HomeComponent } from "./HomeComponent";
+import MainLayout from "./layout/MainLayout";
 
-export default function App() {
+function App() {
   return (
-    <Routes>
+    <Routes>      
       <Route path="/" element={<MainLayout />}>
-        {/* Route d'accueil par défaut */}
         <Route index element={<HomeComponent />} />
-
-        {/* feature "system" */}
         {systemRoutes}
-
-        {/* feature "notes" */}
-        <Route path="note/:id" element={<NotesPage />} />
-
-        {/* 404 (toujours en dernier) */}
-        <Route path="*" element={<NotFoundComponent />} />
       </Route>
     </Routes>
   );
 }
+
+export default App;
