@@ -204,8 +204,6 @@ const MarkdownPage = () => {
     <div className="markdownPage">
       <header className="markdownHeader">
         <div className="headerLeft">
-          <h2 className="markdownTitle">Note</h2>
-          <span className="hintText">Edition inline type Obsidian.</span>
         </div>
 
         <span className={`saveStatus ${statusClass}`} aria-live="polite">

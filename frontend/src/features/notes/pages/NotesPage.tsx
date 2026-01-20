@@ -9,7 +9,6 @@ export default function NotesPage() {
     <div className="notesPage">
       <header className="notesHeader">
         <h2 className="notesTitle">Notes</h2>
-        <p className="notesSubtitle">Choisis une note dans la colonne de gauche.</p>
       </header>
 
       <div className="notesBody">
