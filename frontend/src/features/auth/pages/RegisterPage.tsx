@@ -1,7 +1,6 @@
 import { type ChangeEvent, type FormEvent, useEffect, useState } from "react";
 import "./RegisterPage.css";
 import { Link, useNavigate } from "react-router-dom";
-import ghostImg from "../../../../assets/images/pngegg.png";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -50,7 +49,7 @@ export default function RegisterPage() {
     <div className="register-container">
       {showScaryFeedback && (
         <div className="scary-feedback">
-          <img src={ghostImg} alt="Scary" className="scary-img" />
+          {/* <img src={ghostImg} alt="Scary" className="scary-img" /> */}
           <h1 className="success-text">BIENVENUE...</h1>
         </div>
       )}
