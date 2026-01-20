@@ -1,5 +1,6 @@
 import { type ChangeEvent, type FormEvent, useEffect, useState } from "react";
 import "./LoginPage.css";
+import { Link } from "react-router-dom";
 
 export default function LoginPage() {
   const [inputs, setInputs] = useState({ username: "", password: "" });
@@ -69,6 +70,10 @@ export default function LoginPage() {
           <button type="submit" className="btn-login" disabled={!formValid}>
             Entrer... si vous l'osez
           </button>
+          <p style={{marginTop: '1rem', fontSize: '0.9rem'}}>
+          Nouveau ? <Link to="/register" style={{color: '#ff6600'}}>Rejoindre l'au-delà</Link>
+          </p>
+
         </form>
       </div>
     </div>
