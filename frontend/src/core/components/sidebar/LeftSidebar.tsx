@@ -5,6 +5,12 @@ import { FolderTree } from "../../../features/notes/components/FolderTree";
 import FolderService from "../../../features/notes/services/FolderService";
 import type { Folder } from "../../../features/notes/models/Folder";
 import { useAuth } from "../../../features/auth/context/AuthContext";
+<<<<<<< Updated upstream
+=======
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+>>>>>>> Stashed changes
 
 type LeftSidebarProps = {
   isLeftSidebarCollapsed: boolean;

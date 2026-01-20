@@ -1,12 +1,9 @@
-import { createContext, useContext, useState, type ReactNode, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
-// 1. Définition de l'objet User (Basé sur ce que le Back utilise : DbUser / UserDetails)
-// Pour l'instant, on a surtout besoin du username pour l'affichage.
 export interface User {
   username: string;
 }
 
-// 2. Définition de ce que le Contexte va fournir au reste de l'app
 interface AuthContextType {
   user: User | null;
   token: string | null;
@@ -15,19 +12,16 @@ interface AuthContextType {
   logout: () => void;
 }
 
-// Création du contexte
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// 3. Le Provider : C'est lui qui gère la logique et l'état
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Au chargement de l'app, on vérifie si on a déjà des infos stockées
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedUsername = localStorage.getItem('username');
+    const storedToken = localStorage.getItem("token");
+    const storedUsername = localStorage.getItem("username");
 
     if (storedToken && storedUsername) {
       setToken(storedToken);
@@ -56,24 +50,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
+<<<<<<< Updated upstream
   // Fonction appelée quand le Login ou le Register réussit
+=======
+>>>>>>> Stashed changes
   const login = (newToken: string, newUsername: string) => {
-    // Mise à jour de l'état React
     setToken(newToken);
     setUser({ username: newUsername });
-
-    // Sauvegarde dans le navigateur (pour résister au F5)
-    localStorage.setItem('token', newToken);
-    localStorage.setItem('username', newUsername);
+    localStorage.setItem("token", newToken);
+    localStorage.setItem("username", newUsername);
   };
 
-  // Fonction de déconnexion
   const logout = () => {
     setToken(null);
     setUser(null);
+<<<<<<< Updated upstream
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     window.dispatchEvent(new Event('auth:logout'));
+=======
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    window.dispatchEvent(new Event("auth:logout"));
+>>>>>>> Stashed changes
   };
 
   const value: AuthContextType = {
@@ -84,18 +83,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     logout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!isLoading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{!isLoading && children}</AuthContext.Provider>;
 };
 
-// 4. Hook personnalisé pour utiliser le contexte plus facilement
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth doit être utilisé à l'intérieur d'un AuthProvider");
+    throw new Error("useAuth doit etre utilise a l'interieur d'un AuthProvider");
   }
   return context;
 };
