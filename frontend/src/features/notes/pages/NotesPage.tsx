@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import MarkdownPage from "../../system/components/MarkdownPage";
+import MarkdownPage from "../components/MarkdownPage";
 import "./NotesPage.css";
 
 export default function NotesPage() {
