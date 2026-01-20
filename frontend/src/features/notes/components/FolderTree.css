@@ -15,6 +15,7 @@
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
   border-left: 3px solid transparent;
+  gap: 6px;
 }
 
 .folder-header:hover {
@@ -73,29 +74,38 @@
 
 /* --- Boutons d'action (cachés par défaut) --- */
 .folder-actions {
-  opacity: 0;
+  opacity: 1;
   display: flex;
   gap: 5px;
-  transition: opacity 0.2s;
+  margin-left: auto;
+  padding: 4px;
+  border-radius: 8px;
+  background: rgba(255, 102, 0, 0.08);
+  border: 1px solid rgba(255, 102, 0, 0.25);
+  transition: opacity 0.2s, background 0.2s, border-color 0.2s;
 }
 
-.folder-header:hover .folder-actions,
-.note-item:hover .note-delete {
-  opacity: 1;
+.folder-header:hover .folder-actions {
+  background: rgba(255, 102, 0, 0.15);
+  border-color: rgba(255, 102, 0, 0.45);
 }
 
 .btn-icon {
-  background: none;
-  border: none;
+  background: rgba(10, 10, 10, 0.7);
+  border: 1px solid rgba(255, 102, 0, 0.35);
   cursor: pointer;
   font-size: 0.85rem;
-  opacity: 0.6;
-  transition: transform 0.2s, opacity 0.2s;
+  color: #ffb066;
+  opacity: 0.9;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
 }
 
 .btn-icon:hover {
   transform: scale(1.3);
   opacity: 1;
+  box-shadow: 0 0 8px rgba(255, 102, 0, 0.4);
 }
 
 .btn-delete:hover {
@@ -107,4 +117,11 @@
   font-size: 0.8rem;
   color: #555;
   font-style: italic;
+}
+.note-delete {
+  opacity: 0.85;
+}
+
+.note-item:hover .note-delete {
+  opacity: 1;
 }

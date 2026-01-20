@@ -31,6 +31,10 @@
   overflow: hidden; /* Important pour le scroll interne */
 }
 
+.sidebar-actions {
+  padding: 10px 20px;
+}
+
 .folders-list {
   flex: 1;
   overflow-y: auto;
@@ -121,4 +125,11 @@
   padding: 20px;
   color: #888;
   font-style: italic;
+}
+
+.error-text {
+  text-align: center;
+  padding: 16px 20px;
+  color: #ff6b6b;
+  font-size: 0.85rem;
 }

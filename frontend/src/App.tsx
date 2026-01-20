@@ -16,6 +16,7 @@ export default function App() {
 
         // feature "notes"
         { path: "notes", element: <NotesPage /> },
+        { path: "note/:id", element: <NotesPage /> },
 
         // 404 (toujours en dernier)
         { path: "*", element: <NotFoundComponent /> },
