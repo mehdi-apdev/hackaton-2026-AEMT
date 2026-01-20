@@ -5,6 +5,8 @@ import type { Folder } from "../models/Folder";
 import type { Note } from "../models/Note";
 import FolderService from "../services/FolderService";
 import NoteService from "../services/NoteService";
+import { faFileCirclePlus, faFolderPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface FolderTreeProps {
   folder: Folder;
@@ -84,17 +86,13 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
 
         <div className="folder-actions">
           <button onClick={handleCreateSubFolder} title="Nouveau dossier" className="btn-icon">
-            [+]
+            <FontAwesomeIcon icon={faFolderPlus} />
           </button>
           <button onClick={handleCreateNote} title="Nouvelle note" className="btn-icon">
-            [*]
+            <FontAwesomeIcon icon={faFileCirclePlus} />
           </button>
-          <button
-            onClick={handleDeleteFolder}
-            title="Supprimer le dossier"
-            className="btn-icon btn-delete"
-          >
-            [x]
+          <button onClick={handleDeleteFolder} title="Supprimer le dossier" className="btn-icon btn-delete">
+            <FontAwesomeIcon icon={faTrash} />
           </button>
         </div>
       </div>
@@ -106,19 +104,15 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
           ))}
 
           {folder.notes?.map((note: Note) => (
-            <div
-              key={note.id}
-              className={`note-item ${String(activeNoteId) === String(note.id) ? "active" : ""}`}
-              onClick={(event) => handleNoteClick(note.id, event)}
-            >
-              <span className="note-icon">*</span>
+            <div key={note.id} className={`note-item ${String(activeNoteId) === String(note.id) ? "active" : ""}`} onClick={(event) => handleNoteClick(note.id, event)}>
+              <span className="note-icon"><FontAwesomeIcon icon={faFileCirclePlus} /></span>
               <span className="note-title">{note.title}</span>
               <button
                 className="btn-icon btn-delete note-delete"
                 onClick={(event) => handleDeleteNote(note.id, event)}
                 title="Supprimer la note"
               >
-                [x]
+                <FontAwesomeIcon icon={faTrash} />
               </button>
             </div>
           ))}

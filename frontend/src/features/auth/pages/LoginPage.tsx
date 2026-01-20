@@ -2,16 +2,13 @@ import { type ChangeEvent, type FormEvent, useEffect, useState } from "react";
 import "./LoginPage.css";
 
 export default function LoginPage() {
-  // 1. STATE : On stocke les valeurs des champs
   const [inputs, setInputs] = useState({ username: "", password: "" });
   const [formValid, setFormValid] = useState(false);
 
-  // 2. EFFECT : On vérifie la validité du formulaire à chaque changement
   useEffect(() => {
     checkFormValidity();
   }, [inputs]);
 
-  // Gestion générique des changements dans les inputs
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const name = e.target.name; // "username" ou "password"
     const value = e.target.value;
@@ -50,9 +47,9 @@ export default function LoginPage() {
             <input 
                 type="text" 
                 id="username"
-                name="username" // Important pour le handleChange
+                name="username"
                 className="form-input" 
-                placeholder="Ex: John Doe"
+                placeholder="Ex: Warrior 3000"
                 onChange={handleChange}
             />
           </div>
@@ -62,9 +59,9 @@ export default function LoginPage() {
             <input 
                 type="password" 
                 id="password"
-                name="password" // Important pour le handleChange
+                name="password"
                 className="form-input" 
-                placeholder="******"
+                placeholder="***********"
                 onChange={handleChange}
             />
           </div>

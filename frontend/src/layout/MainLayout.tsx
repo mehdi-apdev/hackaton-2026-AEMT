@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import LeftSidebar from '../core/components/sidebar/LeftSidebar';
 import './MainLayout.css';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const MainLayout = () => {
   const [isLeftSidebarCollapsed, setIsLeftSidebarCollapsed] = useState(false);
@@ -24,20 +26,15 @@ const MainLayout = () => {
             onClick={() => setIsLeftSidebarCollapsed(false)}
             title="Ouvrir le menu"
           >
-            ☰
+            <FontAwesomeIcon icon={faBars} />
           </button>
         )}
 
         <Outlet />
       </div>
 
-      {/* 🕷️ L'Araignée (Inchangée) */}
+      {/* 🕷️ araignée animée */}
       <div className="hanging-spider"></div>
-      
-      {/* 💀 L'Armée de Squelettes (Sprite Animation) */}
-      <div className="skeleton-walker delay-1"></div>
-      <div className="skeleton-walker delay-2"></div>
-      <div className="skeleton-walker delay-3"></div>
     </div>
   );
 };

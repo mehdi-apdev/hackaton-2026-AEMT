@@ -5,6 +5,9 @@ import { FolderTree } from "../../../features/notes/components/FolderTree";
 import FolderService from "../../../features/notes/services/FolderService";
 import type { Folder } from "../../../features/notes/models/Folder";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
+
 type LeftSidebarProps = {
   isLeftSidebarCollapsed: boolean;
   changeIsLeftSidebarCollapsed: (isLeftSidebarCollapsed: boolean) => void;
@@ -57,15 +60,11 @@ const LeftSidebar = ({
   return (
     <div className={sidebarClasses}>
       <div className="logo-container">
-        <button className="icon-btn logo-btn" onClick={toggleCollapse} title="Menu">
-          [=]
-        </button>
-
         {!isLeftSidebarCollapsed && (
           <Fragment>
             <div className="logo-text">Spooky Notes</div>
             <button className="icon-btn close-btn" onClick={closeSidenav} title="Fermer">
-              [x]
+              <FontAwesomeIcon icon={faTimes} />  
             </button>
           </Fragment>
         )}
@@ -75,7 +74,7 @@ const LeftSidebar = ({
         {!isLeftSidebarCollapsed && (
           <div className="sidebar-actions">
             <button onClick={handleAddRootFolder} className="btn-add-root">
-              + Nouveau grimoire
+              <FontAwesomeIcon icon={faPlus}  />  Nouveau grimoire
             </button>
           </div>
         )}
