@@ -10,8 +10,13 @@
 .main-content {
   flex: 1;
   position: relative;
+  margin-left: 290px;
   transition: margin-left 0.3s ease;
   z-index: 1;
+}
+
+.main-content.expanded {
+  margin-left: 0;
 }
 
 /* --- 1. La Toile d'Araignée (Fixe) --- */

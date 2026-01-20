@@ -1,15 +1,25 @@
 import { useParams } from "react-router-dom";
+import MarkdownPage from "../../system/components/MarkdownPage";
+import "./NotesPage.css";
 
 export default function NotesPage() {
   const { id } = useParams();
 
   return (
-    <div>
-      <h2>Note {id}</h2>
-      <p>Contenu de la note (à charger depuis le backend)...</p>
+    <div className="notesPage">
+      <header className="notesHeader">
+        <h2 className="notesTitle">Notes</h2>
+      </header>
 
-      {/* Zone d'édition simple pour l'instant */}
-      <textarea defaultValue={`Contenu Markdown de la note ${id}`} />
+      <div className="notesBody">
+        {id ? (
+          <MarkdownPage />
+        ) : (
+          <div className="notesPlaceholder">
+            Selectionne une note pour commencer a ecrire.
+          </div>
+        )}
+      </div>
     </div>
   );
 }
