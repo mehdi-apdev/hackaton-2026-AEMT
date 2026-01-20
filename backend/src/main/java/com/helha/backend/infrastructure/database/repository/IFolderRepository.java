@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface IFolderRepository extends JpaRepository<DbFolder, Long> {
-    // Récupère uniquement les racines (ceux sans parent) pour l'affichage initial
-    List<DbFolder> findByParentIsNull();
+    List<DbFolder> findByUserId(Long userId);
+    List<DbFolder> findByUserIdAndParentIsNull(Long userId); // Pour la racine de l'arbre
 }

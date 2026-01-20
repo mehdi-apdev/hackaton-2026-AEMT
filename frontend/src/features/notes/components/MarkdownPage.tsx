@@ -10,7 +10,7 @@ import {
 import { useParams } from "react-router-dom";
 import { Milkdown, MilkdownProvider, useEditor } from "@milkdown/react";
 import { Crepe } from "@milkdown/crepe";
-import NoteService from "../../notes/services/NoteService";
+import NoteService from "../services/NoteService";
 import "@milkdown/crepe/theme/common/style.css";
 import "@milkdown/crepe/theme/frame-dark.css";
 import "./MarkdownPage.css";
@@ -203,8 +203,7 @@ const MarkdownPage = () => {
   return (
     <div className="markdownPage">
       <header className="markdownHeader">
-        <div className="headerLeft">
-        </div>
+        <div className="headerLeft"></div>
 
         <span className={`saveStatus ${statusClass}`} aria-live="polite">
           {statusLabel}
