@@ -14,6 +14,11 @@ import java.util.List;
 @NoArgsConstructor
 public class DbFolder {
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private DbUser user;
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

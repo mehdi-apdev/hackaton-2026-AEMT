@@ -9,6 +9,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+// ... autres imports
 
 @Entity
 @Table(name = "NOTES")
@@ -16,6 +17,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class DbNote {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id") // Pour le hackathon, on peut laisser nullable=true temporairement si tu as déjà des données, sinon nullable=false
+    private DbUser user;
+
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
