@@ -86,6 +86,8 @@ const MarkdownPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [createdAt, setCreatedAt] = useState<string | null>(null);
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const [savedSnapshot, setSavedSnapshot] = useState({
     title: DEFAULT_TITLE,
     content: DEFAULT_CONTENT,
@@ -123,8 +125,21 @@ const MarkdownPage = () => {
         if (!isActive) return;
         const nextTitle = note.title ?? DEFAULT_TITLE;
         const nextContent = note.content ?? "";
+        const noteRecord = note as Record<string, unknown>;
+        const pickDate = (keys: string[]): string | null => {
+          for (const key of keys) {
+            const value = noteRecord[key];
+            if (typeof value === "string" && value) return value;
+          }
+          return null;
+        };
+        const nextCreatedAt = pickDate(["createdAt", "created_at", "createdDate", "created_date"]);
+        const nextUpdatedAt = pickDate(["updatedAt", "updated_at", "updatedDate", "updated_date"]);
+        const fallbackCreatedAt = nextCreatedAt ?? nextUpdatedAt ?? new Date().toISOString();
         setTitle(nextTitle);
         setContent(nextContent);
+        setCreatedAt(fallbackCreatedAt);
+        setUpdatedAt(nextUpdatedAt ?? fallbackCreatedAt);
         setSavedSnapshot({ title: nextTitle, content: nextContent });
         setHasUnsavedChanges(false);
         setEditorKey((value) => value + 1);
@@ -196,9 +211,53 @@ const MarkdownPage = () => {
     (nextContent: string) => {
       setContent(nextContent);
       updateDirtyState(titleRef.current, nextContent);
+      setUpdatedAt(new Date().toISOString());
     },
     [updateDirtyState]
   );
+
+  const metadata = useMemo(() => {
+    const stripMarkdown = (value: string) => {
+      let result = value;
+      result = result.replace(/```[\s\S]*?```/g, " ");
+      result = result.replace(/`[^`]*`/g, " ");
+      result = result.replace(/!\[[^\]]*]\([^)]*\)/g, " ");
+      result = result.replace(/\[([^\]]+)\]\([^)]*\)/g, "$1");
+      result = result.replace(/^#{1,6}\s+/gm, "");
+      result = result.replace(/^>\s?/gm, "");
+      result = result.replace(/^(\s*[-*+]\s+|\s*\d+\.\s+)/gm, "");
+      result = result.replace(/[*_~]/g, "");
+      result = result.replace(/<[^>]+>/g, " ");
+      return result;
+    };
+
+    const cleaned = stripMarkdown(content);
+    const normalized = cleaned.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    const trimmed = normalized.trim();
+    const words = trimmed ? trimmed.split(/\s+/).length : 0;
+    const characters = trimmed.length;
+    const lines = normalized
+      ? normalized.split("\n").filter((line) => line.trim().length > 0).length
+      : 0;
+    const bytes = new Blob([content]).size;
+
+    return {
+      words,
+      characters,
+      lines,
+      bytes,
+    };
+  }, [content]);
+
+  const formatDate = (value: string | null) => {
+    if (!value) return "—";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "—";
+    return new Intl.DateTimeFormat("fr-BE", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(date);
+  };
 
   return (
     <div className="markdownPage">
@@ -257,6 +316,33 @@ const MarkdownPage = () => {
           </MilkdownProvider>
         )}
       </div>
+
+      <footer className="metadataPanel">
+        <div className="metadataGroup">
+          <span className="metadataLabel">Mots</span>
+          <span className="metadataValue">{metadata.words}</span>
+        </div>
+        <div className="metadataGroup">
+          <span className="metadataLabel">Caracteres</span>
+          <span className="metadataValue">{metadata.characters}</span>
+        </div>
+        <div className="metadataGroup">
+          <span className="metadataLabel">Lignes</span>
+          <span className="metadataValue">{metadata.lines}</span>
+        </div>
+        <div className="metadataGroup">
+          <span className="metadataLabel">Octets</span>
+          <span className="metadataValue">{metadata.bytes}</span>
+        </div>
+        <div className="metadataGroup">
+          <span className="metadataLabel">Cree le</span>
+          <span className="metadataValue">{formatDate(createdAt)}</span>
+        </div>
+        <div className="metadataGroup">
+          <span className="metadataLabel">Modifie le</span>
+          <span className="metadataValue">{formatDate(updatedAt)}</span>
+        </div>
+      </footer>
     </div>
   );
 };

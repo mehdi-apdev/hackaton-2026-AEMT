@@ -145,6 +145,37 @@
   font-style: italic;
 }
 
+/* Metadata footer */
+.metadataPanel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 102, 0, 0.25);
+  background: rgba(10, 10, 10, 0.65);
+  color: #e6e0da;
+}
+
+.metadataGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metadataLabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #c2a98f;
+}
+
+.metadataValue {
+  font-size: 0.95rem;
+  color: #f4e9dc;
+}
+
 /* Zone de prゼvisualisation */
 .previewBox {
   padding: 20px;
