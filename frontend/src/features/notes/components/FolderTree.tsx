@@ -1,52 +1,68 @@
-import { useState, type MouseEvent } from "react";
+import { useState, type MouseEvent, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./FolderTree.css";
 import type { Folder } from "../models/Folder";
 import type { Note } from "../models/Note";
 import FolderService from "../services/FolderService";
 import NoteService from "../services/NoteService";
-import { faFileCirclePlus, faFolderPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faFileCirclePlus, faFolderPlus, faTrash, faFileAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Modal } from "../../../shared/components/Modal";
 
 interface FolderTreeProps {
   folder: Folder;
   onRefresh: () => void;
 }
 
+type ModalType = "SUBFOLDER" | "NOTE" | null;
+
 export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { id: activeNoteId } = useParams();
+
+  // --- Gestion de la Modale ---
+  const [modalType, setModalType] = useState<ModalType>(null);
+  const [itemName, setItemName] = useState("");
+
+  const closeModal = () => {
+    setModalType(null);
+    setItemName("");
+  };
 
   const toggleOpen = (event: MouseEvent) => {
     event.stopPropagation();
     setIsOpen(!isOpen);
   };
 
-  const handleCreateSubFolder = async (event: MouseEvent) => {
+  // --- Actions ---
+  const handleCreateSubFolderClick = (event: MouseEvent) => {
     event.stopPropagation();
-    const name = prompt("Nom du sous-dossier :");
-    if (!name) return;
-    try {
-      await FolderService.createFolder(name, folder.id);
-      setIsOpen(true);
-      onRefresh();
-    } catch (error) {
-      alert("Erreur creation dossier");
-    }
+    setModalType("SUBFOLDER");
+    setIsOpen(true); // On ouvre le dossier parent pour voir le résultat
   };
 
-  const handleCreateNote = async (event: MouseEvent) => {
+  const handleCreateNoteClick = (event: MouseEvent) => {
     event.stopPropagation();
-    const title = prompt("Titre de la note :");
-    if (!title) return;
+    setModalType("NOTE");
+    setIsOpen(true);
+  };
+
+  const handleModalSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!itemName.trim()) return;
+
     try {
-      const newNote = await NoteService.createNote(title, folder.id);
-      setIsOpen(true);
+      if (modalType === "SUBFOLDER") {
+        await FolderService.createFolder(itemName, folder.id);
+      } else if (modalType === "NOTE") {
+        const newNote = await NoteService.createNote(itemName, folder.id);
+        navigate(`/note/${newNote.id}`);
+      }
       onRefresh();
-      navigate(`/note/${newNote.id}`);
+      closeModal();
     } catch (error) {
-      alert("Erreur creation note");
+      alert("Erreur lors de la création.");
     }
   };
 
@@ -85,10 +101,10 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
         <span className="folder-name">{folder.name}</span>
 
         <div className="folder-actions">
-          <button onClick={handleCreateSubFolder} title="Nouveau dossier" className="btn-icon">
+          <button onClick={handleCreateSubFolderClick} title="Nouveau dossier" className="btn-icon">
             <FontAwesomeIcon icon={faFolderPlus} />
           </button>
-          <button onClick={handleCreateNote} title="Nouvelle note" className="btn-icon">
+          <button onClick={handleCreateNoteClick} title="Nouvelle note" className="btn-icon">
             <FontAwesomeIcon icon={faFileCirclePlus} />
           </button>
           <button onClick={handleDeleteFolder} title="Supprimer le dossier" className="btn-icon btn-delete">
@@ -105,7 +121,7 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
 
           {folder.notes?.map((note: Note) => (
             <div key={note.id} className={`note-item ${String(activeNoteId) === String(note.id) ? "active" : ""}`} onClick={(event) => handleNoteClick(note.id, event)}>
-              <span className="note-icon"><FontAwesomeIcon icon={faFileCirclePlus} /></span>
+              <span className="note-icon"><FontAwesomeIcon icon={faFileAlt} /></span>
               <span className="note-title">{note.title}</span>
               <button
                 className="btn-icon btn-delete note-delete"
@@ -122,6 +138,50 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
           )}
         </div>
       )}
+
+      {/* --- MODALE --- */}
+      <Modal 
+        isOpen={!!modalType} 
+        onClose={closeModal} 
+        title={modalType === "SUBFOLDER" ? "Nouveau Sous-Dossier" : "Nouvelle Note"}
+      >
+        <form onSubmit={handleModalSubmit}>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <label 
+              htmlFor="itemName" 
+              style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}
+            >
+              {modalType === "SUBFOLDER" ? "Nom du dossier" : "Titre de la note"}
+            </label>
+            <input
+              id="itemName"
+              type="text"
+              autoFocus
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
+              placeholder="..."
+              style={{
+                width: '100%',
+                padding: '10px',
+                background: 'rgba(0,0,0,0.5)',
+                border: '1px solid #ff6600',
+                borderRadius: '8px',
+                color: 'white',
+                outline: 'none'
+              }}
+            />
+          </div>
+
+          <div className="modal-footer">
+            <button type="button" onClick={closeModal} className="btn-modal-cancel">
+              Annuler
+            </button>
+            <button type="submit" className="btn-modal-confirm">
+              Créer
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

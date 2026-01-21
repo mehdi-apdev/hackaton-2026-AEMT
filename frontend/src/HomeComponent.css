@@ -1,0 +1,111 @@
+.home-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  background: radial-gradient(circle at center, rgba(80, 20, 100, 0.2) 0%, transparent 70%);
+}
+
+.home-card {
+  background: rgba(10, 5, 15, 0.6);
+  backdrop-filter: blur(10px);
+  padding: 3rem 4rem;
+  border-radius: 20px;
+  border: 1px solid rgba(155, 38, 182, 0.3);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(155, 38, 182, 0.1);
+  max-width: 600px;
+  width: 100%;
+  animation: floatCard 4s ease-in-out infinite;
+}
+
+@keyframes floatCard {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.welcome-title {
+  font-size: 3.5rem;
+  color: var(--orange);
+  margin-bottom: 0.5rem;
+  letter-spacing: 2px;
+  text-shadow: 
+    3px 3px 0px #000, 
+    0 0 20px rgba(255, 102, 0, 0.6);
+}
+
+.user-name {
+  color: var(--green);
+  font-style: italic;
+}
+
+.welcome-subtitle {
+  font-size: 1.2rem;
+  color: var(--text);
+  opacity: 0.8;
+  margin-bottom: 2.5rem;
+  font-family: var(--font-body);
+}
+
+.giant-icon {
+  font-size: 5rem;
+  color: var(--purple);
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 0 15px rgba(155, 38, 182, 0.6));
+  animation: pulseIcon 3s infinite;
+}
+
+@keyframes pulseIcon {
+  0% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(155, 38, 182, 0.6)); }
+  50% { transform: scale(1.1); filter: drop-shadow(0 0 30px rgba(155, 38, 182, 0.8)); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(155, 38, 182, 0.6)); }
+}
+
+/* Actions */
+.home-actions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.btn-ghost {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-family: 'Underdog', cursive;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Bouton Déconnexion */
+.btn-logout {
+  background: transparent;
+  border: 2px solid #ff4444;
+  color: #ff4444;
+}
+
+.btn-logout:hover {
+  background: #ff4444;
+  color: #000;
+  box-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
+}
+
+/* Bouton Action Principale (ex: Aller aux notes) */
+.btn-primary-ghost {
+  background: var(--purple);
+  border: 2px solid var(--purple);
+  color: #fff;
+}
+
+.btn-primary-ghost:hover {
+  background: transparent;
+  color: var(--purple);
+  box-shadow: 0 0 20px rgba(155, 38, 182, 0.4);
+  text-shadow: 0 0 5px var(--purple);
+}

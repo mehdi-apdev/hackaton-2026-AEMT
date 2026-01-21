@@ -1,18 +1,21 @@
-/* --- Import des couleurs et styles globaux --- */
-@import './assets/colors.css';
-@import './assets/fonts/fonts.css';
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* Curseur par défaut : Petit crâne */
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size:24px'><text y='20'>💀</text></svg>"), auto;
+}
+
+/* Curseur au survol des éléments cliquables : Petit fantôme */
+a, button, [role="button"], .folder-item, .note-item {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size:24px'><text y='20'>👻</text></svg>"), pointer !important;
 }
 
 body {
   font-family: var(--font-body);
   background-color: var(--dark-purple);
   color: var(--text);
-  background-image: url('./assets/images/bats.png');
+  /* background-image: url('./assets/images/bats.png'); */
 
   background-repeat: repeat-x;
   background-position: top center;
