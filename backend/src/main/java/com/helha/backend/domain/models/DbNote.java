@@ -47,8 +47,14 @@ public class DbNote {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
+    private boolean deleted = false;
+
+    @Column
+    private LocalDateTime deletedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    // CHANGEZ nullable = false PAR nullable = true
+
     @JoinColumn(name = "folder_id", nullable = true)
     @JsonIgnoreProperties("dbNotes")
     private DbFolder folder;

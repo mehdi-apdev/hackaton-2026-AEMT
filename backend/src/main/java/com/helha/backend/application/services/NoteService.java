@@ -3,7 +3,6 @@ package com.helha.backend.application.services;
 import com.helha.backend.application.dto.NoteCreationDto;
 import com.helha.backend.application.dto.NoteDto;
 import com.helha.backend.application.dto.NoteUpdateDto;
-import com.helha.backend.domain.service.MetadataUtils;
 import com.helha.backend.controllers.exceptions.GenericNotFoundException;
 import com.helha.backend.domain.models.DbFolder;
 import com.helha.backend.domain.models.DbNote;
@@ -11,11 +10,13 @@ import com.helha.backend.domain.models.DbUser;
 import com.helha.backend.domain.repositories.IFolderRepository;
 import com.helha.backend.domain.repositories.INoteRepository;
 import com.helha.backend.domain.repositories.IUserRepository;
+import com.helha.backend.domain.service.MetadataUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -124,28 +125,28 @@ public class NoteService {
         return convertToDto(updatedNote);
     }
 
-    // Delete a note with ownership verification
-    @Transactional
-    public void deleteNote(Long id) {
-        DbUser user = getCurrentUser();
-        DbNote note = noteRepository.findById(id)
-                .orElseThrow(() -> new GenericNotFoundException(id, "Note"));
-
-        if (!note.getUser().getId().equals(user.getId())) {
-            throw new GenericNotFoundException(id, "Note");
-        }
-
-        noteRepository.delete(note);
-    }
-
-    // Method to get notes that are at the root (not in any folder)
-    @Transactional(readOnly = true)
-    public List<NoteDto> getRootNotes() {
-        DbUser user = getCurrentUser();
-        return noteRepository.findByUserIdAndFolderIsNull(user.getId()).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
+//    // Delete a note with ownership verification
+//    @Transactional
+//    public void deleteNote(Long id) {
+//        DbUser user = getCurrentUser();
+//        DbNote note = noteRepository.findById(id)
+//                .orElseThrow(() -> new GenericNotFoundException(id, "Note"));
+//
+//        if (!note.getUser().getId().equals(user.getId())) {
+//            throw new GenericNotFoundException(id, "Note");
+//        }
+//
+//        noteRepository.delete(note);
+//    }
+//
+//    // Method to get notes that are at the root (not in any folder)
+//    @Transactional(readOnly = true)
+//    public List<NoteDto> getRootNotes() {
+//        DbUser user = getCurrentUser();
+//        return noteRepository.findByUserIdAndFolderIsNull(user.getId()).stream()
+//                .map(this::convertToDto)
+//                .collect(Collectors.toList());
+//    }
 
     // --- Mapping Helpers ---
     private NoteDto convertToDto(DbNote entity) {
@@ -168,5 +169,64 @@ public class NoteService {
             dto.setFolderId(entity.getFolder().getId());
         }
         return dto;
+    }
+    // 1. Soft delete: Mark as deleted and set the timestamp
+    @Transactional
+    public void deleteNote(Long id) {
+        DbUser user = getCurrentUser();
+        DbNote note = noteRepository.findById(id)
+                .orElseThrow(() -> new GenericNotFoundException(id, "Note"));
+
+        if (!note.getUser().getId().equals(user.getId())) {
+            throw new GenericNotFoundException(id, "Note");
+        }
+
+        note.setDeleted(true);
+        note.setDeletedAt(LocalDateTime.now()); // <--- Set timestamp
+        noteRepository.save(note);
+    }
+
+    // 2. Restore: Unmark as deleted and clear the timestamp
+    @Transactional
+    public void restoreNote(Long id) {
+        DbUser user = getCurrentUser();
+        DbNote note = noteRepository.findById(id)
+                .orElseThrow(() -> new GenericNotFoundException(id, "Note"));
+
+        if (!note.getUser().getId().equals(user.getId())) throw new GenericNotFoundException(id, "Note");
+
+        note.setDeleted(false);
+        note.setDeletedAt(null); // <--- Clear timestamp
+        noteRepository.save(note);
+    }
+
+    // 3. NEW: Permanent Delete
+    @Transactional
+    public void hardDeleteNote(Long id) {
+        DbUser user = getCurrentUser();
+        DbNote note = noteRepository.findById(id)
+                .orElseThrow(() -> new GenericNotFoundException(id, "Note"));
+
+        if (!note.getUser().getId().equals(user.getId())) throw new GenericNotFoundException(id, "Note");
+
+        noteRepository.delete(note); // Actual DB deletion
+    }
+
+    // 4. Update getRootNotes
+    @Transactional(readOnly = true)
+    public List<NoteDto> getRootNotes() {
+        DbUser user = getCurrentUser();
+        // Use the new repository method
+        return noteRepository.findByUserIdAndFolderIsNullAndDeletedFalse(user.getId()).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    // 5. NEW: Get all notes in the bin
+    @Transactional(readOnly = true)
+    public List<NoteDto> getDeletedNotes() {
+        return noteRepository.findByUserIdAndDeletedTrue(getCurrentUser().getId()).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 }

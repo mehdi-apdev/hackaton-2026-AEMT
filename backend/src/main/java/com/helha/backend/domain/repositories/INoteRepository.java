@@ -4,13 +4,18 @@ import com.helha.backend.domain.models.DbNote;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface INoteRepository extends JpaRepository<DbNote, Long> {
-    //find all the notes in a specific folder
-    List<DbNote> findByFolderId(Long folderId);
-    List<DbNote> findByUserId(Long userId);
-    List<DbNote> findByUserIdAndFolderIsNull(Long userId);
+
+
+    List<DbNote> findByFolderIdAndDeletedFalse(Long folderId);
+    List<DbNote> findByUserIdAndDeletedFalse(Long userId);
+    List<DbNote> findByUserIdAndFolderIsNullAndDeletedFalse(Long userId);
+    // Find deleted notes only (to display in the bin)
+    List<DbNote> findByUserIdAndDeletedTrue(Long userId);
+    //   Find deleted notes where the deletion date is before a specific date
+    List<DbNote> findByDeletedTrueAndDeletedAtBefore(LocalDateTime thresholdDate);
 }

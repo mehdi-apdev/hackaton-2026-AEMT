@@ -9,10 +9,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+// --- LES IMPORTS IMPORTANTS SONT ICI ---
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete; // N'oubliez pas delete !
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+// ---------------------------------------
 
 @DisplayName("Notes - Controller IT")
 public class NoteControllerIT extends AbstractSpookyIT {
@@ -64,6 +68,7 @@ public class NoteControllerIT extends AbstractSpookyIT {
         DbUser user = persistUser("archivist", "pass");
         Cookie jwt = jwtCookieFor(user);
 
+        // L'erreur venait d'ici car 'get' était le mauvais import
         mockMvc.perform(get("/api/notes/export/zip").cookie(jwt))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Type", "application/zip"));
@@ -92,5 +97,46 @@ public class NoteControllerIT extends AbstractSpookyIT {
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title", is("Nouvelle Histoire")));
+    }
+
+    @Test
+    @DisplayName("Bin - Lifecycle: Delete -> Bin -> Restore")
+    void binLifecycle_shouldWork() throws Exception {
+        // 1. Create a note
+        DbUser user = persistUser("recycleUser", "pass");
+        Cookie jwt = jwtCookieFor(user);
+
+        var folder = new com.helha.backend.domain.models.DbFolder();
+        folder.setName("RecycleBin Test");
+        folder.setUser(user);
+        folder = folderRepository.save(folder);
+
+        com.helha.backend.domain.models.DbNote note = new com.helha.backend.domain.models.DbNote();
+        note.setTitle("Trash me");
+        note.setContent("Trash content");
+        note.setUser(user);
+        note.setFolder(folder);
+        // Stats
+        note.setWordCount(1); note.setLineCount(1); note.setCharacterCount(5); note.setSizeInBytes(5);
+        note = noteRepository.save(note);
+
+        // 2. Soft Delete (Move to bin) via DELETE /api/notes/{id}
+        // Assurez-vous d'avoir importé static ...MockMvcRequestBuilders.delete;
+        mockMvc.perform(delete("/api/notes/" + note.getId()).cookie(jwt))
+                .andExpect(status().isNoContent());
+
+        // 3. Verify it is in the bin
+        mockMvc.perform(get("/api/bin").cookie(jwt))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title", is("Trash me")));
+
+        // 4. Restore
+        mockMvc.perform(post("/api/bin/notes/" + note.getId() + "/restore").cookie(jwt))
+                .andExpect(status().isOk());
+
+        // 5. Verify it is NO LONGER in the bin
+        mockMvc.perform(get("/api/bin").cookie(jwt))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
     }
 }
