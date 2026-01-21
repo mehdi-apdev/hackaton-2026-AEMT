@@ -12,6 +12,7 @@ import {
 import { useParams } from "react-router-dom";
 import { Milkdown, MilkdownProvider, useEditor } from "@milkdown/react";
 import { Crepe } from "@milkdown/crepe";
+import { jsPDF } from "jspdf";
 import NoteService from "../services/NoteService";
 import "@milkdown/crepe/theme/common/style.css";
 import "@milkdown/crepe/theme/frame-dark.css";
@@ -96,10 +97,12 @@ const MarkdownPage = () => {
   });
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [editorKey, setEditorKey] = useState(0);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const [isExportingZip, setIsExportingZip] = useState(false);
 
   const titleRef = useRef(title);
   const savedSnapshotRef = useRef(savedSnapshot);
-
+  
   useEffect(() => {
     titleRef.current = title;
   }, [title]);
@@ -196,6 +199,93 @@ const MarkdownPage = () => {
     }
   }, [noteId, title, content]);
 
+  const handleExportPdf = useCallback(async () => {
+    setIsExportingPdf(true);
+    setErrorMessage(null);
+
+    const stripMarkdown = (value: string) => {
+      let result = value;
+      result = result.replace(/```[\s\S]*?```/g, " ");
+      result = result.replace(/`[^`]*`/g, " ");
+      result = result.replace(/!\[[^\]]*]\([^)]*\)/g, " ");
+      result = result.replace(/\[([^\]]+)\]\([^)]*\)/g, "$1");
+      result = result.replace(/^#{1,6}\s+/gm, "");
+      result = result.replace(/^>\s?/gm, "");
+      result = result.replace(/^(\s*[-*+]\s+|\s*\d+\.\s+)/gm, "");
+      result = result.replace(/[*_~]/g, "");
+      result = result.replace(/<[^>]+>/g, " ");
+      return result;
+    };
+
+    const safeTitle = (title || "note").trim().replace(/[<>:"/\\|?*]+/g, "_");
+    const plainText = stripMarkdown(content || "");
+
+    try {
+      const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+      doc.setFillColor(255, 255, 255);
+      doc.rect(0, 0, 210, 297, "F");
+      doc.setTextColor(0, 0, 0);
+      doc.setFont("times", "normal");
+
+      const marginX = 15;
+      let cursorY = 20;
+
+      const titleText = title || "Note";
+      doc.setFont("times", "bold");
+      doc.setFontSize(16);
+      const titleLines = doc.splitTextToSize(titleText, 180);
+      titleLines.forEach((line: string) => {
+        doc.text(line, marginX, cursorY);
+        cursorY += 7;
+      });
+
+      cursorY += 4;
+      doc.setFont("times", "normal");
+      doc.setFontSize(12);
+      const bodyLines = doc.splitTextToSize(plainText, 180);
+      bodyLines.forEach((line: string) => {
+        if (cursorY > 280) {
+          doc.addPage();
+          doc.setFillColor(255, 255, 255);
+          doc.rect(0, 0, 210, 297, "F");
+          cursorY = 20;
+        }
+        doc.text(line, marginX, cursorY);
+        cursorY += 6;
+      });
+
+      doc.save(`${safeTitle || "note"}.pdf`);
+    } catch (error: unknown) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Impossible d'exporter le PDF."
+      );
+    } finally {
+      setIsExportingPdf(false);
+    }
+  }, [title, content]);
+
+  const handleExportZip = useCallback(async () => {
+    setIsExportingZip(true);
+    setErrorMessage(null);
+    try {
+      const blob = await NoteService.exportArchive();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "notes-export.zip";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error: unknown) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Impossible d'exporter l'archive."
+      );
+    } finally {
+      setIsExportingZip(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!noteId || isLoading || isSaving || !hasUnsavedChanges) return;
     const timeoutId = window.setTimeout(() => {
@@ -277,9 +367,9 @@ const MarkdownPage = () => {
   }, [content]);
 
   const formatDate = (value: string | null) => {
-    if (!value) return "—";
+    if (!value) return "-";
     const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "—";
+    if (Number.isNaN(date.getTime())) return "-";
     return new Intl.DateTimeFormat("fr-BE", {
       dateStyle: "medium",
       timeStyle: "short",
@@ -297,13 +387,31 @@ const MarkdownPage = () => {
           </div>
         </div>
 
-        <button
-          type="button"
-          className="toggleBtn"
-          onClick={() => setIsEditing((value) => !value)}
-        >
-          {isEditing ? "Mode lecture" : "Mode edition"}
-        </button>
+        <div className="headerActions">
+          <button
+            type="button"
+            className="exportBtn"
+            onClick={handleExportPdf}
+            disabled={isLoading || isExportingPdf}
+          >
+            {isExportingPdf ? "Export PDF..." : "Export PDF"}
+          </button>
+          <button
+            type="button"
+            className="exportBtn exportBtnSecondary"
+            onClick={handleExportZip}
+            disabled={isLoading || isExportingZip}
+          >
+            {isExportingZip ? "Export Archive..." : "Export Archive"}
+          </button>
+          <button
+            type="button"
+            className="toggleBtn"
+            onClick={() => setIsEditing((value) => !value)}
+          >
+            {isEditing ? "Mode lecture" : "Mode edition"}
+          </button>
+        </div>
       </header>
 
       {errorMessage ? <p className="errorMessage">{errorMessage}</p> : null}

@@ -20,6 +20,14 @@
   gap: 4px;
 }
 
+.headerActions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .markdownTitle {
   font-size: 2.5rem;
   border-bottom: 2px solid var(--orange);
@@ -50,6 +58,36 @@
   opacity: 0.5;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+.exportBtn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 204, 102, 0.6);
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--green);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.exportBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 10px rgba(0, 204, 102, 0.4);
+}
+
+.exportBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.exportBtnSecondary {
+  border-color: rgba(255, 102, 0, 0.6);
+  color: var(--orange);
+}
+
+.exportBtnSecondary:hover {
+  box-shadow: 0 0 10px rgba(255, 102, 0, 0.4);
 }
 
 .saveIndicator {
