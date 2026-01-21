@@ -1,0 +1,11 @@
+@font-face {
+  font-family: 'Underdog';
+  src: url('./Underdog-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+    --font-heading: 'Underdog', cursive;
+    --font-body: 'Roboto', sans-serif;
+}

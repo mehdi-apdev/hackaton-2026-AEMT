@@ -1,0 +1,175 @@
+
+
+.auth-container {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--dark-purple);
+    background-image: var(--background-color);
+    color: var(--text);
+    font-family: var(--font-heading);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-card {
+    background: var(--black);
+    border: 2px solid var(--border);
+    padding: 3rem;
+    border-radius: 10px;
+    box-shadow: 0 0 20px, 0 0 10px var(--border);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    position: relative;
+}
+
+.auth-title {
+    color: var(--green);
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 0px #000;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.form-label {
+    margin-top: 1rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+}
+
+.form-input {
+    width: 100%;
+    max-width: 220px;
+    height: 45px;
+    padding: 12px;
+    border-radius: 12px;
+    color: var(--text);
+    background: var(--dark-gray);
+    border: 1.5px solid var(--orange);
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+    box-shadow: 0px 0px 20px -18px;
+}
+
+.form-input:hover {
+    border: 2px solid var(--orange-glow);
+    box-shadow: 0px 0px 20px -17px;
+}
+
+.form-input:active{
+    transform: scale(0.95);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--orange);
+    box-shadow: 0 0 5px rgba(255, 102, 0, 0.5);
+}
+
+.btn-global {
+    width: 100%;
+    padding: 1rem;
+    background: var(--green);
+    color: var(--black);
+    border: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Underdog', serif;
+    transition: transform 0.2s, background 0.2s;
+    margin-top: 1rem;
+    border-radius: 10px;
+}
+
+.btn-global:hover {
+    background: var(--green-hover);
+    transform: scale(1.05);
+}
+
+.auth-link {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+/* Scary Feedback Overlay */
+.scary-feedback {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--black);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: flash 0.2s 3;
+}
+
+.scary-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: zoomIn 0.5s ease-in;
+}
+
+@keyframes flash {
+    0% { background: var(--black); }
+    50% { background: var(--dark-purple); }
+    100% { background: var(--black); }
+}
+
+@keyframes zoomIn {
+    0% { transform: scale(0.1) rotate(0deg); opacity: 0; }
+    100% { transform: scale(1.5) rotate(10deg); opacity: 1; }
+}
+
+.success-text {
+    position: absolute;
+    bottom: 20%;
+    font-size: 4rem;
+    color: var(--orange);
+    font-weight: bold;
+    text-shadow: 0 0 20px white;
+    animation: float 2s infinite;
+}
+
+
+/* PLACER L'ICÔNE DANS LE CHAMP DE SAISIE */
+.input-wrapper{
+    position: relative;
+    width: fit-content;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--orange);
+  pointer-events: none;
+  z-index: 1;
+}
+.input-wrapper .form-input {
+  padding-left: 3rem; /* Espace pour l'icône */
+}
+
+.divider {
+    height: 24px;
+    border-bottom: 1px solid var(--dark-gray);
+}
+
+.subtitle {
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    color: var(--text);
+}

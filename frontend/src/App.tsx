@@ -35,13 +35,12 @@ function App() {
           {/* Feature System : On "mappe" le tableau pour créer des <Route> dynamiquement */}
           {systemRoutes.map((route) => (
             <Route 
-              key={route.path} // La clé est obligatoire dans une boucle
+              key={route.path}
               path={route.path} 
               element={route.element} 
             />
           ))}
 
-          {/* 404 - Doit toujours être en dernier à l'intérieur du Layout */}
           <Route path="*" element={<NotFoundComponent />} />
           
         </Route>

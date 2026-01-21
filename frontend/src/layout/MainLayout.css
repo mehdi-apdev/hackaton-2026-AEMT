@@ -21,7 +21,7 @@
   margin-left: 0;
 }
 
-/* --- 1. La Toile d'Araignée (Fixe) --- */
+/* --- 1. La Toile d'Araignée --- */
 .main-content::before {
   content: "";
   position: absolute;
@@ -38,15 +38,15 @@
   z-index: -1;
 }
 
-/* Bouton réouverture */
+/* Bouton ouvrir sidebar */
 .btn-reopen-sidebar {
   position: absolute;
   top: 15px;
   left: 15px;
   z-index: 999;
   background-color: rgba(0, 0, 0, 0.6);
-  color: #ff6600;
-  border: 1px solid #ff6600;
+  color: rgb(255, 102, 0);
+  border: 1px solid rgb(255, 102, 0);
   border-radius: 4px;
   width: 40px;
   height: 40px;
@@ -59,13 +59,13 @@
 }
 
 .btn-reopen-sidebar:hover {
-  background-color: #ff6600;
+  background-color: rgb(255, 102, 0);
   color: #000;
   transform: scale(1.1);
   box-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
 }
 
-/* --- 2. L'Araignée (🕷️) --- */
+/* --- 2. Spider --- */
 .hanging-spider {
   position: fixed;
   top: -500px; 
@@ -105,54 +105,4 @@
   50% { transform: translateY(280px); }
   60% { transform: translateY(300px); }
   100% { transform: translateY(0); }
-}
-/* --- 3. Les Squelettes Danseurs (💀 Nouvelle Image) --- */
-.skeleton-walker {
-  position: fixed;
-  bottom: 0px;       /* Collé en bas */
-  left: -200px;      /* Départ hors écran */
-  
-  /* --- AJUSTEMENT TAILLE --- */
-  /* On définit la taille d'UN SEUL squelette */
-  width: 150px;  
-  height: 220px; /* Plus haut car ils lèvent les bras */
-
-  /* --- NOUVELLE IMAGE --- */
-  background-image: url('../assets/images/squelettes3.png');
-  
-  /* --- REGLAGE SPRITE --- */
-  /* Largeur totale = Largeur d'un squelette (150px) x 5 colonnes = 750px */
-  /* On laisse la hauteur en 'auto' pour garder les proportions */
-  background-size: 750px auto; 
-  background-repeat: no-repeat;
-  
-  z-index: 20;
-  pointer-events: none;
-
-  /* Inversion des couleurs (Noir -> Blanc) */
-  filter: invert(1); 
-  
-  /* --- ANIMATION --- */
-  /* walk-anim : steps(5) car il y a 5 squelettes sur la ligne du haut */
-  animation: 
-    walk-anim 1s steps(5) infinite, 
-    move-across 25s linear infinite;
-}
-
-/* Délais pour la file indienne */
-.delay-1 { animation-delay: 0s; }
-.delay-2 { animation-delay: 8s; }
-.delay-3 { animation-delay: 16s; }
-
-/* Animation de la danse (Sprite Sheet) */
-@keyframes walk-anim {
-  from { background-position: 0 0; }
-  /* On déplace l'image de sa largeur totale (750px) vers la gauche */
-  to { background-position: -750px 0; } 
-}
-
-/* Animation du déplacement latéral (Traversée de l'écran) */
-@keyframes move-across {
-  0% { left: -200px; }
-  100% { left: 100vw; } /* Sortie à droite */
 }
