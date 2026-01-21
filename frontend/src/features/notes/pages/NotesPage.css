@@ -1,0 +1,38 @@
+.notesPage {
+  min-height: 100vh;
+  padding: 24px 28px;
+  color: var(--text);
+}
+
+.notesHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.notesTitle {
+  margin: 0;
+}
+
+.notesSubtitle {
+  margin: 0;
+  color: #b5b5b5;
+  font-size: 0.9rem;
+}
+
+.notesBody {
+  min-height: 70vh;
+  border: 1px solid rgba(255, 102, 0, 0.25);
+  border-radius: 14px;
+  padding: 18px;
+  background: rgba(10, 10, 10, 0.55);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.45);
+}
+
+.notesPlaceholder {
+  padding: 60px 20px;
+  text-align: center;
+  color: #b0b0b0;
+  font-style: italic;
+}

@@ -1,0 +1,39 @@
+/* --- Import des couleurs et styles globaux --- */
+@import './assets/colors.css';
+@import './assets/fonts/fonts.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--dark-purple);
+  color: var(--text);
+  background-image: url('./assets/images/bats.png');
+
+  background-repeat: repeat-x;
+  background-position: top center;
+  background-size: 500px;
+  background-attachment: fixed;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--orange);
+  text-shadow: 2px 2px 4px #000;
+}
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--black);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--orange);
+  border-radius: 4px;
+}

@@ -10,11 +10,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.1.0",
+    "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@fortawesome/react-fontawesome": "^3.1.1",
+    "@milkdown/crepe": "^7.18.0",
+    "@milkdown/react": "^7.18.0",
+    "@uiw/react-md-editor": "^4.0.11",
     "axios": "^1.13.2",
+    "classnames": "^2.5.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-hook-form": "^7.71.1",
+    "react-markdown": "^10.1.0",
     "react-router": "^7.12.0",
     "react-router-dom": "^7.12.0",
+    "remark-gfm": "^4.0.1",
     "save": "^2.9.0"
   },
   "devDependencies": {

@@ -1,18 +1,51 @@
-import { MOCK_FOLDERS } from './features/notes/mockData';
-import { FolderTree } from './features/notes/components/FolderTree';
+import { Routes, Route } from "react-router-dom";
+import MainLayout from "./layout/MainLayout";
+import { HomeComponent } from "./HomeComponent";
+import NotFoundComponent from "./core/components/NotFoundComponent";
+
+// --- Imports Auth ---
+import RequireAuth from "./features/auth/components/RequireAuth";
+import LoginPage from "./features/auth/pages/LoginPage";
+import RegisterPage from "./features/auth/pages/RegisterPage"; 
+
+// --- Imports Features ---
+import NotesPage from "./features/notes/pages/NotesPage";
+import systemRoutes from "./features/system/system-routes";
 
 function App() {
   return (
-    <div style={{ backgroundColor: '#111', height: '100vh', padding: '20px', color: 'white' }}>
-      <h2>🎃 Test Navigation - Mehdi</h2>
-      
-      <div style={{ width: '300px', border: '1px solid #333', padding: '10px' }}>
-        {MOCK_FOLDERS.map((folder) => (
-          <FolderTree key={folder.id} folder={folder} />
-        ))}
-      </div>
-    
-    </div>
+    <Routes>
+      {/* --- 1. Routes Publiques --- */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+
+      {/* --- 2. Routes Protégées (Gardien) --- */}
+      <Route element={<RequireAuth />}>
+        
+        {/* Le Layout Principal (Sidebar + Contenu) */}
+        <Route path="/" element={<MainLayout />}>
+          
+          {/* Page d'accueil par défaut */}
+          <Route index element={<HomeComponent />} />
+
+          {/* Feature Notes */}
+          <Route path="notes" element={<NotesPage />} />
+          <Route path="note/:id" element={<NotesPage />} />
+
+          {/* Feature System : On "mappe" le tableau pour créer des <Route> dynamiquement */}
+          {systemRoutes.map((route) => (
+            <Route 
+              key={route.path}
+              path={route.path} 
+              element={route.element} 
+            />
+          ))}
+
+          <Route path="*" element={<NotFoundComponent />} />
+          
+        </Route>
+      </Route>
+    </Routes>
   );
 }
 
