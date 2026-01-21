@@ -1,29 +1,50 @@
 import { useForm } from "react-hook-form";
-import "./AuthPage.css";
-import { Link } from "react-router-dom";
-import { faLock, faSignature } from "@fortawesome/free-solid-svg-icons";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLock, faSignature } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../context/AuthContext";
+import AuthService from "../services/AuthService";
+import "./AuthPage.css";
+
+type LoginForm = {
+  username: string;
+  password: string;
+};
 
 export default function LoginPage() {
-  // register : connecte l'input à la librairie
-  // handleSubmit : valide avant d'appeler ta fonction onSubmit
-  // errors : contient les messages si la validation échoue
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginForm>();
 
-  const onSubmit = (data: any) => {
-    console.log("Données envoyées :", data);
-    alert(`Bienvenue, ${data.username} !`);
+  const onSubmit = async (data: LoginForm) => {
+    try {
+      const response = await AuthService.login({
+        username: data.username,
+        password: data.password,
+      });
+      login(response.token, data.username);
+      const state = location.state as { from?: { pathname?: string } } | null;
+      const redirectTo = state?.from?.pathname || "/notes";
+      navigate(redirectTo, { replace: true });
+    } catch (error) {
+      console.error("Erreur login:", error);
+      alert("Identifiants invalides.");
+    }
   };
 
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1 className="auth-title">Grille du cimetière</h1>
+        <h1 className="auth-title">Grille du cimetiere</h1>
         <span className="subtitle">Identifiez-vous pour entrer</span>
         <div className="divider" />
-        
+
         <form onSubmit={handleSubmit(onSubmit)}>
-          {/* USERNAME */}
           <div className="form-group">
             <label className="form-label">Nom de la victime</label>
             <div className="input-wrapper">
@@ -32,15 +53,17 @@ export default function LoginPage() {
                 type="text"
                 className={`form-input ${errors.username ? "input-error" : ""}`}
                 placeholder="Ex: Warrior 3000"
-                {...register("username", { 
+                {...register("username", {
                   required: "Le nom est requis",
-                  minLength: { value: 4, message: "4 caractères minimum" }})}
+                  minLength: { value: 4, message: "4 caracteres minimum" },
+                })}
               />
             </div>
-            {errors.username && <span className="error-message">{errors.username.message as string}</span>}
+            {errors.username ? (
+              <span className="error-message">{errors.username.message}</span>
+            ) : null}
           </div>
 
-          {/* PASSWORD */}
           <div className="form-group">
             <label className="form-label">Mot de passe</label>
             <div className="input-wrapper">
@@ -49,14 +72,16 @@ export default function LoginPage() {
                 type="password"
                 className={`form-input ${errors.password ? "input-error" : ""}`}
                 placeholder="***********"
-                {...register("password", { 
+                {...register("password", {
                   required: "Mot de passe requis",
-                  minLength: { value: 6, message: "6 caractères minimum" },
-                  maxLength: { value: 20, message: "20 caractères maximum" }
+                  minLength: { value: 6, message: "6 caracteres minimum" },
+                  maxLength: { value: 20, message: "20 caracteres maximum" },
                 })}
               />
             </div>
-            {errors.password && <span className="error-message">{errors.password.message as string}</span>}
+            {errors.password ? (
+              <span className="error-message">{errors.password.message}</span>
+            ) : null}
           </div>
 
           <div className="divider" />
