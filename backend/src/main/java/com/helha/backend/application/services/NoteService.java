@@ -16,6 +16,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class NoteService {
 
@@ -53,7 +56,7 @@ public class NoteService {
             throw new GenericNotFoundException(id, "Note");
         }
 
-        return modelMapper.map(note, NoteDto.class);
+        return convertToDto(note);
     }
 
 
@@ -61,30 +64,32 @@ public class NoteService {
     @Transactional
     public NoteDto createNote(NoteCreationDto input) {
         DbUser user = getCurrentUser();
-
-        DbFolder folder = folderRepository.findById(input.getFolderId())
-                .orElseThrow(() -> new GenericNotFoundException(input.getFolderId(), "Folder"));
-
-        // Security we cannot create a note in someone else's folder
-        if (!folder.getUser().getId().equals(user.getId())) {
-            throw new GenericNotFoundException(input.getFolderId(), "Folder");
-        }
-
         DbNote note = new DbNote();
         note.setTitle(input.getTitle());
         note.setContent("");
-        note.setFolder(folder);
-        //we attribute to the user
         note.setUser(user);
 
-        // Init Metadata stats
+        if (input.getFolderId() != null) {
+            DbFolder folder = folderRepository.findById(input.getFolderId())
+                    .orElseThrow(() -> new GenericNotFoundException(input.getFolderId(), "Folder"));
+
+            // Vérification de sécurité : le dossier appartient bien à l'utilisateur
+            if (!folder.getUser().getId().equals(user.getId())) {
+                throw new GenericNotFoundException(input.getFolderId(), "Folder");
+            }
+            note.setFolder(folder);
+        }
+
+        //if folderId is null note.setFolder stays null (the note is in the root file)
+
+        // Initialisation des stats techniques
         note.setWordCount(0);
         note.setLineCount(0);
         note.setCharacterCount(0);
-        note.setSizeInBytes(0);
+        note.setSizeInBytes(0L);
 
         DbNote savedNote = noteRepository.save(note);
-        return modelMapper.map(savedNote, NoteDto.class);
+        return convertToDto(savedNote);
     }
 
     // update a note
@@ -116,7 +121,7 @@ public class NoteService {
         }
 
         DbNote updatedNote = noteRepository.save(note);
-        return modelMapper.map(updatedNote, NoteDto.class);
+        return convertToDto(updatedNote);
     }
 
     // Delete a note with ownership verification
@@ -131,5 +136,37 @@ public class NoteService {
         }
 
         noteRepository.delete(note);
+    }
+
+    // Method to get notes that are at the root (not in any folder)
+    @Transactional(readOnly = true)
+    public List<NoteDto> getRootNotes() {
+        DbUser user = getCurrentUser();
+        return noteRepository.findByUserIdAndFolderIsNull(user.getId()).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    // --- Mapping Helpers ---
+    private NoteDto convertToDto(DbNote entity) {
+        NoteDto dto = new NoteDto();
+        dto.setId(entity.getId());
+        dto.setTitle(entity.getTitle());
+        dto.setContent(entity.getContent());
+
+        // Audit dates for the front-end
+        dto.setCreatedAt(entity.getCreatedAt());
+        dto.setUpdatedAt(entity.getUpdatedAt());
+
+        // Zombie Palier Stats
+        dto.setWordCount(entity.getWordCount());
+        dto.setLineCount(entity.getLineCount());
+        dto.setCharacterCount(entity.getCharacterCount());
+        dto.setSizeInBytes(entity.getSizeInBytes());
+
+        if (entity.getFolder() != null) {
+            dto.setFolderId(entity.getFolder().getId());
+        }
+        return dto;
     }
 }
