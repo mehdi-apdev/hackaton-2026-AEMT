@@ -20,8 +20,9 @@ export default function LoginPage() {
       <div className="auth-card">
         <h1 className="auth-title">Grille du cimetière</h1>
         <span className="subtitle">Identifiez-vous pour entrer</span>
-        <div className="divider" />
-        
+      <div className="divider" />
+
+
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* USERNAME */}
           <div className="form-group">
@@ -32,9 +33,10 @@ export default function LoginPage() {
                 type="text"
                 className={`form-input ${errors.username ? "input-error" : ""}`}
                 placeholder="Ex: Warrior 3000"
-                {...register("username", { 
+                {...register("username", {
                   required: "Le nom est requis",
-                  minLength: { value: 4, message: "4 caractères minimum" }})}
+                  minLength: { value: 4, message: "4 caractères minimum" }
+                })}
               />
             </div>
             {errors.username && <span className="error-message">{errors.username.message as string}</span>}
@@ -49,7 +51,7 @@ export default function LoginPage() {
                 type="password"
                 className={`form-input ${errors.password ? "input-error" : ""}`}
                 placeholder="***********"
-                {...register("password", { 
+                {...register("password", {
                   required: "Mot de passe requis",
                   minLength: { value: 6, message: "6 caractères minimum" },
                   maxLength: { value: 20, message: "20 caractères maximum" }
