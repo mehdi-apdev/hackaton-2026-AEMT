@@ -17,7 +17,7 @@ public class DbUser {
     private String username;
 
     @Column(nullable = false)
-    private String password; // Hashé
+    private String password; // Hashed
 
     private String role = "USER";
 }

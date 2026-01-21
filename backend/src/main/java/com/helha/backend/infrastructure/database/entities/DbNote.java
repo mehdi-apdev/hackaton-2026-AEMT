@@ -34,12 +34,11 @@ public class DbNote {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    // --- Métadonnées demandées (Palier Zombie) ---
-    //
-    private int wordCount;      // Nombre de mots
-    private int lineCount;      // Nombre de lignes
-    private int characterCount; // Nombre de caractères
-    private long sizeInBytes;   // Taille en octets
+    //Métadata
+    private int wordCount;      // Number of words
+    private int lineCount;      // Number of lines
+    private int characterCount; // Number of Characters
+    private long sizeInBytes;   // Size in byte
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

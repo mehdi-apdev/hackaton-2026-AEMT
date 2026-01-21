@@ -15,9 +15,9 @@ import java.util.List;
 public class FolderController {
 
     private final FolderService folderService;
-    private final IFolderRepository folderRepository; // 1. Déclaration du repository
+    private final IFolderRepository folderRepository;
 
-    // 2. Mise à jour du constructeur pour injecter les deux
+
     public FolderController(FolderService folderService, IFolderRepository folderRepository) {
         this.folderService = folderService;
         this.folderRepository = folderRepository;
@@ -33,7 +33,7 @@ public class FolderController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public FolderDto create(@RequestBody FolderCreationDto input) {
-        // Optionnel mais recommandé : vérifier si le dossier parent existe s'il est fourni
+        //check if the parent folder exists if it is provided
         if (input.getParentId() != null && !folderRepository.existsById(input.getParentId())) {
             throw new GenericNotFoundException(input.getParentId(), "Parent Folder");
         }

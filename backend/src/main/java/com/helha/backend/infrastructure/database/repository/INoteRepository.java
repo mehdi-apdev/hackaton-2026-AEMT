@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface INoteRepository extends JpaRepository<DbNote, Long> {
-    // Trouve toutes les notes d'un dossier spécifique
+    //find all the notes in a specific folder
     List<DbNote> findByFolderId(Long folderId);
     List<DbNote> findByUserId(Long userId);
 

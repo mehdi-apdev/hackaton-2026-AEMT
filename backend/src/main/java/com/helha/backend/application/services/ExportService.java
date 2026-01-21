@@ -19,6 +19,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+//manage the zip export
 @Service
 public class ExportService {
     private final IFolderRepository folderRepository;
@@ -100,19 +102,18 @@ public class ExportService {
         }
     }
 
-    /**
-     * Nettoie les noms de fichiers pour éviter les caractères interdits dans les chemins ZIP
-     */
+
+     //Clean files name to prevent forbiden characters in the zip path
     private String sanitizeFilename(String input) {
         if (input == null) return "SansTitre";
-        // Remplace tout ce qui n'est pas alphanumérique, espace, tiret ou underscore par un underscore
+        // Replace everything that is not alphanumeric , spaces , dash by a underscore
         return input.replaceAll("[^a-zA-Z0-9 \\-_\\.]", "_");
     }
 
 
 
 
-    //export PDF
+    /*export PDF
     public byte[] exportAllNotesToPdf() {
         DbUser user = getCurrentUser();
 
@@ -161,7 +162,7 @@ public class ExportService {
             throw new RuntimeException("Erreur lors de la génération du PDF", e);
         }
     }
-
+    */
 
 }
 

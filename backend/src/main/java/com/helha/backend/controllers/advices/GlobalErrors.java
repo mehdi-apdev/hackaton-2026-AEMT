@@ -12,15 +12,17 @@ import java.net.URI;
 @RestControllerAdvice
 public class GlobalErrors {
 
-    // 1. Gérer les ressources non trouvées (404)
-    // Utilise la classe que tu as déjà !
+    //generate not found ressources (404)
+
+    // using the already existing class "GenericNotFoundException"
     @ExceptionHandler(GenericNotFoundException.class)
     public ProblemDetail handleNotFound(GenericNotFoundException ex) {
-        // Ta classe GenericNotFoundException contient déjà la logique ProblemDetail
+        // GenericNotFoundException already contains the logic for ProblemDetail
         return ex.getBody();
     }
 
-    // 2. Gérer les erreurs de base de données (ex: oublier le folder_id)
+
+    // manage data base's errors (ex: forget folder_id)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ProblemDetail handleIntegrityViolation(DataIntegrityViolationException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
@@ -32,8 +34,9 @@ public class GlobalErrors {
         return problemDetail;
     }
 
-    // 3. Filet de sécurité pour toutes les autres erreurs (500)
-    // Évite d'envoyer une "Stack Trace" illisible au Frontend
+
+    // safety net for any other errors (500)
+    // prevent sending a "Stack Trace"
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGeneralError(Exception ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(

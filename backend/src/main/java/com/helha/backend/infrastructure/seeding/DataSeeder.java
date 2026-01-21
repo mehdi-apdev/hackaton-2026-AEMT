@@ -23,39 +23,39 @@ public class DataSeeder implements CommandLineRunner {
         if (folderRepository.count() == 0) {
             System.out.println("🎃 Initialisation des données Spooky...");
 
-            // 1. Créer un dossier racine
+            //create a root folder
             DbFolder root = new DbFolder();
             root.setName("Ma Bibliothèque Hantée");
             root = folderRepository.save(root);
 
-            // 2. Créer un sous-dossier (Récursivité)
+            // create a subfolder (Recursion)
             DbFolder horror = new DbFolder();
             horror.setName("Histoires de Zombies");
-            horror.setParent(root); // Utilise "parent"
+            horror.setParent(root); // use "parent"
             horror = folderRepository.save(horror);
 
-            // 3. Créer une note dans ce dossier
+            //Create a note in this folder
             DbNote dbNote = new DbNote();
             dbNote.setTitle("L'invasion du 31 octobre");
             String content1 = "# Alerte Zombie\nIls sont partout dans l'école !";
             dbNote.setContent(content1);
             dbNote.setFolder(horror);
 
-            // Métadonnées
+            // Métadata
             dbNote.setWordCount(MetadataUtils.countWords(content1));
             dbNote.setSizeInBytes(MetadataUtils.calculateSizeInBytes(content1));
             dbNote.setLineCount(MetadataUtils.countLines(content1));
 
             noteRepository.save(dbNote);
 
-            // 4. Création de la deuxième note (Note Zombie)
+            //creation of the second note
             DbNote zombie = new DbNote();
             zombie.setTitle("Note Zombie");
             String contentZombie = "# ALERTE ZOMBIE\nIls arrivent par le parking !";
             zombie.setContent(contentZombie);
-            zombie.setFolder(horror); // INDISPENSABLE : nullable = false
+            zombie.setFolder(horror); // essential : nullable = false
 
-            // Métadonnées Palier Zombie
+            // Métadata
             zombie.setWordCount(MetadataUtils.countWords(contentZombie));
             zombie.setLineCount(MetadataUtils.countLines(contentZombie));
 

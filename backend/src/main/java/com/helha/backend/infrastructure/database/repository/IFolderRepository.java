@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface IFolderRepository extends JpaRepository<DbFolder, Long> {
     List<DbFolder> findByUserId(Long userId);
-    List<DbFolder> findByUserIdAndParentIsNull(Long userId); // Pour la racine de l'arbre
+    List<DbFolder> findByUserIdAndParentIsNull(Long userId); // we need that to get the tree's root
 }

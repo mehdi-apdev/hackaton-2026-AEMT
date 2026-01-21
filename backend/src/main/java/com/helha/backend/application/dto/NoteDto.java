@@ -1,9 +1,9 @@
 package com.helha.backend.application.dto;
 
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
+//dto for representing a note and its content.
 @Data
 public class NoteDto {
     private  Long id;
@@ -11,13 +11,13 @@ public class NoteDto {
     private String content;
     private Long folderId;
 
-    //les compteurs
+    //for all counting methods neeeded
     private int wordCount;
     private int lineCount;
     private int characterCount;
     private long sizeInBytes;
 
-    //les dates
+    //for the dates
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

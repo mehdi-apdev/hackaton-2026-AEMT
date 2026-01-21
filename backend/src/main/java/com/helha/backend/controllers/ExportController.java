@@ -13,10 +13,10 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/export")
-@RequiredArgsConstructor // Génère le constructeur pour les champs 'final'
+@RequiredArgsConstructor //generate the constructor for the "final" fields
 public class ExportController {
 
-    private final ExportService exportService; // Doit être final pour Lombok
+    private final ExportService exportService; //have to be final for lombok
 
     @GetMapping("/zip")
     public ResponseEntity<byte[]> downloadZip() {
@@ -25,7 +25,6 @@ public class ExportController {
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mes_notes_hantees.zip\"")
-                    // "application/zip" est plus précis que "application/octet-stream"
                     .contentType(MediaType.valueOf("application/zip"))
                     .body(zipData);
 
@@ -34,7 +33,7 @@ public class ExportController {
         }
     }
 
-    @GetMapping("/pdf")
+    /*@GetMapping("/pdf")
     public ResponseEntity<byte[]> exportPdf() {
         byte[] pdfContent = exportService.exportAllNotesToPdf();
 
@@ -42,5 +41,5 @@ public class ExportController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"SpookyNotes_Export.pdf\"")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdfContent);
-    }
+    }*/
 }

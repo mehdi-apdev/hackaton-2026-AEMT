@@ -20,6 +20,10 @@ public class ApplicationConfig {
 
     private final IUserRepository userRepository;
 
+
+     //Bridges Spring Security with our Database
+     //Converts a DbUser entity into a Spring Security User object
+
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByUsername(username)
@@ -31,6 +35,9 @@ public class ApplicationConfig {
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur introuvable"));
     }
 
+
+     //Configures the strategy to verify credentials
+     //Links our UserDetailsService and the BCrypt encoder
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -39,11 +46,15 @@ public class ApplicationConfig {
         return authProvider;
     }
 
+
+    //Exposes the AuthenticationManager to be used in AuthService
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+
+    //Defines the hashing algorithm for passwords (BCrypt)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
