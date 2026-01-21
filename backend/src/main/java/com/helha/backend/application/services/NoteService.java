@@ -73,7 +73,7 @@ public class NoteService {
         note.setTitle(input.getTitle());
         note.setContent("");
         note.setFolder(folder);
-        note.setUser(user); // ATTRIBUTION À L'UTILISATEUR
+        note.setUser(user); // on attribut a l'user
 
         // Init stats Zombie
         note.setWordCount(0);
