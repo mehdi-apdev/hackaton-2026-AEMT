@@ -1,5 +1,5 @@
 interface ImportMetaEnv {
-    // Définit l'URL du backend Spring Boot
+      // Defines the URL of the Spring Boot backend
     readonly VITE_API_URL: string;
 }
 

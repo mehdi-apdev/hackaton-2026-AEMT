@@ -1,20 +1,21 @@
+
 import type { Note } from './Note';
 
 /**
- * Interface correspondant à la table 'folders' de la BDD.
- * Supporte la récursivité via 'children'.
+ * Interface corresponding to the 'folders' table in the DB.
+ * Supports recursion via 'children'.
  */
 export interface Folder {
     id: number;              // BIGINT (PK)
     name: string;            // VARCHAR(255)
     
-    parentId?: number | null; // BIGINT (FK) - Null si c'est la racine
+    parentId?: number | null; // BIGINT (FK) - Null if it is the root
     
-    // --- Champs virtuels (envoyés par le JSON du Backend, pas en table SQL) ---
+    // --- Virtual fields (sent by Backend JSON, not in SQL table) ---
     
-    // La liste des sous-dossiers (C'est ça qui permet l'affichage récursif)
+    // List of subfolders (Enables recursive display)
     children?: Folder[];     
     
-    // La liste des notes contenues dans ce dossier
+    // List of notes contained in this folder
     notes?: Note[];
 }

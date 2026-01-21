@@ -1,8 +1,8 @@
 import type { Folder } from './models/Folder';
 
 /**
- * Données de test pour le développement Frontend.
- * Respecte strictement les interfaces Folder.ts et Note.ts.
+ * Test data for frontend development.
+ * Strictly adheres to the Folder.ts and Note.ts interfaces.
  */
 export const MOCK_FOLDERS: Folder[] = [
   {
@@ -27,8 +27,8 @@ export const MOCK_FOLDERS: Folder[] = [
             { 
                 id: 102, 
                 title: "Intro effrayante", 
-                folderId: 2, // Lien explicite vers le parent
-                createdAt: "2023-10-31T23:00:00", // Format ISO requis
+                folderId: 2, // Explicit link to parent
+                createdAt: "2023-10-31T23:00:00", // ISO format required
                 content: "# Introduction\nIl faisait nuit noire..." 
             }
         ]

@@ -21,7 +21,7 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
   const navigate = useNavigate();
   const { id: activeNoteId } = useParams();
 
-  // --- Gestion de la Modale ---
+// --- Modal Management ---
   const [modalType, setModalType] = useState<ModalType>(null);
   const [itemName, setItemName] = useState("");
 
@@ -39,7 +39,7 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
   const handleCreateSubFolderClick = (event: MouseEvent) => {
     event.stopPropagation();
     setModalType("SUBFOLDER");
-    setIsOpen(true); // On ouvre le dossier parent pour voir le résultat
+    setIsOpen(true); // Open the parent folder to see the result.
   };
 
   const handleCreateNoteClick = (event: MouseEvent) => {

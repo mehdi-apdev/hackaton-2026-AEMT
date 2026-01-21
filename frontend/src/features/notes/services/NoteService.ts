@@ -2,11 +2,11 @@ import api from '../../../services/api';
 import type { Note } from '../models/Note';
 
 /**
- * Service gérant le contenu et les actions sur les notes.
+ * Service managing content and actions on notes.
  */
 const NoteService = {
-  /**
-   * Récupère le contenu détaillé d'une note.
+ /**
+   * Retrieves the detailed content of a note.
    * GET /notes/{id}
    */
   getNoteById: async (id: number): Promise<Note> => {
@@ -15,7 +15,7 @@ const NoteService = {
   },
 
   /**
-   * Crée une nouvelle note vide dans un dossier.
+   * Creates a new empty note in a folder.
    * POST /notes
    */
   createNote: async (title: string, folderId: number): Promise<Note> => {
@@ -24,7 +24,7 @@ const NoteService = {
   },
 
   /**
-   * Sauvegarde le titre ou le contenu Markdown.
+   * Saves the title or Markdown content.
    * PUT /notes/{id}
    */
   updateNote: async (id: number, title: string, content: string): Promise<Note> => {
@@ -33,7 +33,7 @@ const NoteService = {
   },
 
   /**
-   * Supprime une note.
+   * Deletes a note.
    * DELETE /notes/{id}
    */
   deleteNote: async (id: number): Promise<void> => {

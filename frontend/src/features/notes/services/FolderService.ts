@@ -2,11 +2,11 @@ import api from '../../../services/api';
 import type { Folder } from '../models/Folder';
 
 /**
- * Service gérant uniquement la structure des dossiers.
+ * Service managing only the folder structure.
  */
 const FolderService = {
   /**
-   * Récupère l'arborescence complète (Dossiers + Enfants + Notes).
+   * Retrieves the full tree (Folders + Children + Notes).
    * GET /folders/tree
    */
   getTree: async (): Promise<Folder[]> => {
@@ -14,8 +14,8 @@ const FolderService = {
     return response.data;
   },
 
-  /**
-   * Crée un nouveau dossier.
+ /**
+   * Creates a new folder.
    * POST /folders
    */
   createFolder: async (name: string, parentId: number | null = null): Promise<Folder> => {
@@ -23,8 +23,8 @@ const FolderService = {
     return response.data;
   },
 
-  /**
-   * Supprime un dossier et tout ce qu'il contient.
+ /**
+   * Deletes a folder and all its contents.
    * DELETE /folders/{id}
    */
   deleteFolder: async (id: number): Promise<void> => {

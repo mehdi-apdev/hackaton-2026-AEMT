@@ -10,7 +10,7 @@ export class ApiError extends Error {
 
     static fromResponseJson(json: ErrorResponse): ApiError {
         console.error(json);
-        // à adapter selon ce que le Backend Spring Boot renvoie (ProblemDetail)
+        // to be adapted according to what the Spring Boot Backend returns (ProblemDetail)
         return new ApiError(`${json.title}: ${json.detail}`);
     }
 }

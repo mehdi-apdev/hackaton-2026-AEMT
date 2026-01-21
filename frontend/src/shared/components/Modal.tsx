@@ -11,7 +11,7 @@ type ModalProps = {
 export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Fermer avec Echap
+  // Close with Esc
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -19,8 +19,8 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
     if (isOpen) window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
-
-  // Fermer en cliquant à l'extérieur (sur le fond sombre)
+  
+// Close by clicking outside (on the dark background)
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       onClose();

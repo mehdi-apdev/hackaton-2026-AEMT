@@ -10,16 +10,16 @@ const MainLayout = () => {
 
   return (
     <div className="layout-container">
-      {/* La Sidebar */}
+     {/* The Sidebar */}
       <LeftSidebar
         isLeftSidebarCollapsed={isLeftSidebarCollapsed}
         changeIsLeftSidebarCollapsed={setIsLeftSidebarCollapsed}
       />
 
-      {/* Le contenu principal */}
+    {/* The main content */}
       <div className={`main-content ${isLeftSidebarCollapsed ? 'expanded' : ''}`}>
         
-        {/* Bouton de réouverture */}
+       {/* Reopen button */}
         {isLeftSidebarCollapsed && (
           <button 
             className="btn-reopen-sidebar"
@@ -33,7 +33,7 @@ const MainLayout = () => {
         <Outlet />
       </div>
 
-      {/* 🕷️ araignée animée */}
+   {/* 🕷️ animated spider */}
       <div className="hanging-spider"></div>
     </div>
   );

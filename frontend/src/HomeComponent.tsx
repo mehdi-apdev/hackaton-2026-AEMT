@@ -24,7 +24,7 @@ export function HomeComponent() {
         </p>
 
         <div className="home-actions">
-          {/* Lien rapide vers les notes (si tu as une route /notes par défaut ou juste pour l'exemple) */}
+          {/* Quick link to notes (if you have a default /notes route or just for example purposes) */}
           <Link to="/notes" className="btn-ghost btn-primary-ghost">
             <FontAwesomeIcon icon={faBookDead} />
             Mes Grimoires
