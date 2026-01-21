@@ -24,9 +24,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configure(http))
                 .authorizeHttpRequests(auth -> auth
-                        // Liste des URLs publiques
-                        .requestMatchers("/auth/**", "/api/ping", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                        // Tout le reste nécessite un token
+                        // Mettre à jour le chemin ici aussi :
+                        .requestMatchers("/api/auth/**", "/api/ping", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -15,8 +15,7 @@ import java.util.Date;
 public class JwtUtils {
     private static final String SECRET = "UnePhraseSecreteTresLonguePourLeHackathonHelha2024BackendKey";
 
-    // CORRECTION IMPORTANTE :
-    // 60 = 60 millisecondes (expiration immédiate).
+
     // 86400000 = 24 heures (24 * 60 * 60 * 1000).
     private static final long EXPIRATION_TIME = 86400000;
 
