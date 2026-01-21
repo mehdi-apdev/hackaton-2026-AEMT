@@ -7,13 +7,13 @@
   top: 0;
   left: 0;
   
-  /* Fond "Dark Magician" : Verre fumé avec une teinte de pourpre */
+  /* "Dark Magician" Background: Smoky glass with a purple tint */
   background: linear-gradient(180deg, rgba(20, 5, 25, 0.95) 0%, rgba(35, 10, 40, 0.95) 100%);
-  backdrop-filter: blur(15px); /* Flou plus intense pour l'effet verre */
+  backdrop-filter: blur(15px); /* More intense blur for glass effect */
   
-  /* Bordure droite lumineuse */
+  /* Bright right border */
   border-right: 1px solid rgba(155, 38, 182, 0.3);
-  box-shadow: 5px 0 25px rgba(155, 38, 182, 0.15); /* Lueur violette diffuse */
+  box-shadow: 5px 0 25px rgba(155, 38, 182, 0.15); /* Soft purple glow */
   
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), width 0.4s ease;
   display: flex;
@@ -21,7 +21,7 @@
 }
 
 .sidenav-collapsed {
-  transform: translateX(-105%); /* Cache complètement l'ombre */
+  transform: translateX(-105%); /* Completely hides the shadow */
 }
 
 /* --- Navigation Container --- */
@@ -44,7 +44,7 @@
   position: relative;
 }
 
-/* Petit effet de lumière sous le logo */
+/* Small light effect under the logo */
 .logo-container::after {
   content: '';
   position: absolute;
@@ -63,7 +63,7 @@
   text-decoration: none;
   letter-spacing: 1px;
   
-  /* Effet Néon */
+  /* Neon Effect */
   text-shadow: 
     2px 2px 0px #000, 
     0 0 10px rgba(255, 102, 0, 0.4);
@@ -79,7 +79,7 @@
   transform: scale(1.02);
 }
 
-/* Boutons icônes (Menu / Croix) */
+/* Icon Buttons (Menu / Close) */
 .icon-btn {
   background: none;
   border: none;
@@ -104,7 +104,7 @@
   box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
 }
 
-/* --- Bouton "Nouveau Grimoire" --- */
+/* --- Button Add Root Folder --- */
 .sidebar-actions {
   padding: 20px;
 }
@@ -129,7 +129,7 @@
   box-shadow: 0 0 5px rgba(0, 204, 102, 0.1);
 }
 
-/* L'effet "Spectral" au survol */
+/* Special glow effect while hovering */
 .btn-add-root:hover {
   background: var(--green);
   color: #000;
@@ -144,14 +144,13 @@
   transform: translateY(0);
 }
 
-/* --- Liste des Dossiers --- */
+/* --- Folder List --- */
 .folders-list {
   flex: 1;
   overflow-y: auto;
-  padding: 10px 15px; /* Un peu plus d'espace sur les côtés */
+  padding: 10px 15px;
 }
 
-/* Custom Scrollbar plus élégante */
 .folders-list::-webkit-scrollbar {
   width: 5px;
 }
@@ -159,7 +158,7 @@
   background: transparent;
 }
 .folders-list::-webkit-scrollbar-thumb {
-  background: rgba(155, 38, 182, 0.3); /* Violet sombre */
+  background: rgba(155, 38, 182, 0.3);
   border-radius: 10px;
 }
 .folders-list::-webkit-scrollbar-thumb:hover {
