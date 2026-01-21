@@ -1,4 +1,4 @@
-package com.helha.backend.infrastructure.database.entities;
+package com.helha.backend.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

@@ -1,6 +1,6 @@
 package com.helha.backend.infrastructure.security;
 
-import com.helha.backend.infrastructure.database.repository.IUserRepository;
+import com.helha.backend.domain.repositories.IUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

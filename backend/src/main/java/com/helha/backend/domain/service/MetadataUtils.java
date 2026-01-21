@@ -1,4 +1,4 @@
-package com.helha.backend.application.utils;
+package com.helha.backend.domain.service;
 
 import java.nio.charset.StandardCharsets;
 

@@ -4,7 +4,7 @@ import com.helha.backend.application.dto.FolderCreationDto;
 import com.helha.backend.application.dto.FolderDto;
 import com.helha.backend.application.services.FolderService;
 import com.helha.backend.controllers.exceptions.GenericNotFoundException;
-import com.helha.backend.infrastructure.database.repository.IFolderRepository; // Import manquant
+import com.helha.backend.domain.repositories.IFolderRepository; // Import manquant
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,4 +1,4 @@
-package com.helha.backend.infrastructure.database.entities;
+package com.helha.backend.domain.models;
 
 import jakarta.persistence.*;
 import lombok.Data;

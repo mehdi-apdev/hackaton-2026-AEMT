@@ -1,10 +1,10 @@
 package com.helha.backend.infrastructure.seeding;
 
-import com.helha.backend.application.utils.MetadataUtils;
-import com.helha.backend.infrastructure.database.entities.DbFolder;
-import com.helha.backend.infrastructure.database.entities.DbNote;
-import com.helha.backend.infrastructure.database.repository.IFolderRepository;
-import com.helha.backend.infrastructure.database.repository.INoteRepository;
+import com.helha.backend.domain.service.MetadataUtils;
+import com.helha.backend.domain.models.DbFolder;
+import com.helha.backend.domain.models.DbNote;
+import com.helha.backend.domain.repositories.IFolderRepository;
+import com.helha.backend.domain.repositories.INoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

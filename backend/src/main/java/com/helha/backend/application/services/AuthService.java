@@ -1,8 +1,8 @@
 package com.helha.backend.application.services;
 
 import com.helha.backend.application.dto.AuthRequestDto;
-import com.helha.backend.infrastructure.database.entities.DbUser;
-import com.helha.backend.infrastructure.database.repository.IUserRepository;
+import com.helha.backend.domain.models.DbUser;
+import com.helha.backend.domain.repositories.IUserRepository;
 import com.helha.backend.infrastructure.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;

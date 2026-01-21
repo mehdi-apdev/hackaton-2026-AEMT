@@ -1,14 +1,12 @@
 package com.helha.backend.application.services;
 
 import com.helha.backend.controllers.exceptions.GenericNotFoundException;
-import com.helha.backend.infrastructure.database.entities.DbFolder;
-import com.helha.backend.infrastructure.database.entities.DbNote;
-import com.helha.backend.infrastructure.database.entities.DbUser;
-import com.helha.backend.infrastructure.database.repository.IFolderRepository;
-import com.helha.backend.infrastructure.database.repository.INoteRepository;
-import com.helha.backend.infrastructure.database.repository.IUserRepository;
-import com.lowagie.text.*;
-import com.lowagie.text.pdf.PdfWriter;
+import com.helha.backend.domain.models.DbFolder;
+import com.helha.backend.domain.models.DbNote;
+import com.helha.backend.domain.models.DbUser;
+import com.helha.backend.domain.repositories.IFolderRepository;
+import com.helha.backend.domain.repositories.INoteRepository;
+import com.helha.backend.domain.repositories.IUserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
