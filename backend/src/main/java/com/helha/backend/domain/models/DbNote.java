@@ -48,9 +48,11 @@ public class DbNote {
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "folder_id", nullable = false)
+    @JoinColumn(name = "folder_id", nullable = true)
     @JsonIgnoreProperties("dbNotes")
     private DbFolder folder;
+
+
 
     public DbNote(String title, String content, DbFolder folder) {
         this.title = title;

@@ -69,27 +69,27 @@ public class NoteService {
         note.setContent("");
         note.setUser(user);
 
+
         if (input.getFolderId() != null) {
             DbFolder folder = folderRepository.findById(input.getFolderId())
                     .orElseThrow(() -> new GenericNotFoundException(input.getFolderId(), "Folder"));
 
-            // Vérification de sécurité : le dossier appartient bien à l'utilisateur
             if (!folder.getUser().getId().equals(user.getId())) {
                 throw new GenericNotFoundException(input.getFolderId(), "Folder");
             }
             note.setFolder(folder);
         }
 
-        //if folderId is null note.setFolder stays null (the note is in the root file)
+        //if it's null we don't go in the if and note.folder stays null
 
-        // Initialisation des stats techniques
+        // Init Metadata stats
         note.setWordCount(0);
         note.setLineCount(0);
         note.setCharacterCount(0);
-        note.setSizeInBytes(0L);
+        note.setSizeInBytes(0);
 
         DbNote savedNote = noteRepository.save(note);
-        return convertToDto(savedNote);
+        return modelMapper.map(savedNote, NoteDto.class);
     }
 
     // update a note
