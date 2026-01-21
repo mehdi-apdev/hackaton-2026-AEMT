@@ -40,9 +40,9 @@ public class FolderService {
         DbUser user = getCurrentUser();
 
         //filtering by "perentIsNull" and by user id
-        List<DbFolder> roots = folderRepository.findByUserIdAndParentIsNull(user.getId());
-
-        return roots.stream()
+        // Correction : On transforme l'Optional en Stream pour retourner une liste (1 ou 0 élément)
+        return folderRepository.findByUserIdAndParentIsNull(user.getId())
+                .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }

@@ -47,16 +47,15 @@ public class ExportService {
     public byte[] exportUserNotesToZip() throws IOException {
         DbUser user = getCurrentUser();
 
-        // On récupère uniquement les racines (les dossiers sans parents)
-        List<DbFolder> rootFolders = folderRepository.findByUserIdAndParentIsNull(user.getId());
+        // CORRECTION ICI : On récupère le dossier racine unique (Optional)
+        DbFolder rootFolder = folderRepository.findByUserIdAndParentIsNull(user.getId())
+                .orElseThrow(() -> new GenericNotFoundException(0L, "Root Folder not found"));
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-            for (DbFolder folder : rootFolders) {
-                // On lance la récursivité
-                zipFolder(folder, "", zos);
-            }
+            // Comme on n'a qu'une seule racine, on lance la récursivité directement dessus
+            zipFolder(rootFolder, "", zos);
         }
 
         return baos.toByteArray();
@@ -101,15 +100,12 @@ public class ExportService {
     }
 
 
-     //Clean files name to prevent forbiden characters in the zip path
+    //Clean files name to prevent forbiden characters in the zip path
     private String sanitizeFilename(String input) {
         if (input == null) return "SansTitre";
         // Replace everything that is not alphanumeric , spaces , dash by a underscore
         return input.replaceAll("[^a-zA-Z0-9 \\-_\\.]", "_");
     }
-
-
-
 
     /*export PDF
     public byte[] exportAllNotesToPdf() {

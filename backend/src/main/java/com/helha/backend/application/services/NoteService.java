@@ -11,7 +11,6 @@ import com.helha.backend.domain.models.DbUser;
 import com.helha.backend.domain.repositories.IFolderRepository;
 import com.helha.backend.domain.repositories.INoteRepository;
 import com.helha.backend.domain.repositories.IUserRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,33 +24,28 @@ public class NoteService {
     private final INoteRepository noteRepository;
     private final IFolderRepository folderRepository;
     private final IUserRepository userRepository;
-    private final ModelMapper modelMapper;
 
     public NoteService(INoteRepository noteRepository, IFolderRepository folderRepository,
-                       IUserRepository userRepository, ModelMapper modelMapper) {
+                       IUserRepository userRepository) {
         this.noteRepository = noteRepository;
         this.folderRepository = folderRepository;
         this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
     }
 
-
-    //Private helper to retrieve the user making the request
+    // Private helper to retrieve the user making the request
     private DbUser getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new GenericNotFoundException(0L, "User " + username));
     }
 
-
-    // retrieve a a note by it's ID with ownership verification
+    // Retrieve a note by its ID with ownership verification
     @Transactional(readOnly = true)
     public NoteDto getNoteById(Long id) {
         DbUser user = getCurrentUser();
         DbNote note = noteRepository.findById(id)
                 .orElseThrow(() -> new GenericNotFoundException(id, "Note"));
 
-        // Security if it's not my note I'm not able to see it
         if (!note.getUser().getId().equals(user.getId())) {
             throw new GenericNotFoundException(id, "Note");
         }
@@ -59,18 +53,17 @@ public class NoteService {
         return convertToDto(note);
     }
 
-
-    //Create a note bind to the user and it's folder
+    // Create a note bound to the user and its folder (defaults to Root Folder if null)
     @Transactional
     public NoteDto createNote(NoteCreationDto input) {
         DbUser user = getCurrentUser();
         DbNote note = new DbNote();
         note.setTitle(input.getTitle());
-        note.setContent("");
+        note.setContent(input.getContent());
         note.setUser(user);
 
-
         if (input.getFolderId() != null) {
+            // Case 1: Specific folder ID provided
             DbFolder folder = folderRepository.findById(input.getFolderId())
                     .orElseThrow(() -> new GenericNotFoundException(input.getFolderId(), "Folder"));
 
@@ -78,28 +71,31 @@ public class NoteService {
                 throw new GenericNotFoundException(input.getFolderId(), "Folder");
             }
             note.setFolder(folder);
+        } else {
+            // Case 2: Folder ID is null, assign to the user's "Root Folder" (parent IS NULL)
+            DbFolder rootFolder = folderRepository.findByUserIdAndParentIsNull(user.getId())
+                    .orElseThrow(() -> new GenericNotFoundException(0L, "Root Folder not found"));
+
+            note.setFolder(rootFolder);
         }
 
-        //if it's null we don't go in the if and note.folder stays null
-
-        // Init Metadata stats
+        // Initial stats
         note.setWordCount(0);
         note.setLineCount(0);
         note.setCharacterCount(0);
-        note.setSizeInBytes(0);
+        note.setSizeInBytes(0L);
 
         DbNote savedNote = noteRepository.save(note);
-        return modelMapper.map(savedNote, NoteDto.class);
+        return convertToDto(savedNote);
     }
 
-    // update a note
+    // Update a note and recalculate metadata
     @Transactional
     public NoteDto updateNote(Long id, NoteUpdateDto input) {
         DbUser user = getCurrentUser();
         DbNote note = noteRepository.findById(id)
                 .orElseThrow(() -> new GenericNotFoundException(id, "Note"));
 
-        // Security to check ownership
         if (!note.getUser().getId().equals(user.getId())) {
             throw new GenericNotFoundException(id, "Note");
         }
@@ -111,10 +107,9 @@ public class NoteService {
         if (input.getContent() != null) {
             note.setContent(input.getContent());
 
-            //Métadata
+            // Recalculate Metadata
             String content = input.getContent();
-            int words = MetadataUtils.countWords(content);
-            note.setWordCount(words);
+            note.setWordCount(MetadataUtils.countWords(content));
             note.setLineCount(MetadataUtils.countLines(content));
             note.setCharacterCount(MetadataUtils.countCharacters(content));
             note.setSizeInBytes(MetadataUtils.calculateSizeInBytes(content));
@@ -138,15 +133,6 @@ public class NoteService {
         noteRepository.delete(note);
     }
 
-    // Method to get notes that are at the root (not in any folder)
-    @Transactional(readOnly = true)
-    public List<NoteDto> getRootNotes() {
-        DbUser user = getCurrentUser();
-        return noteRepository.findByUserIdAndFolderIsNull(user.getId()).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
     // --- Mapping Helpers ---
     private NoteDto convertToDto(DbNote entity) {
         NoteDto dto = new NoteDto();
@@ -154,11 +140,11 @@ public class NoteService {
         dto.setTitle(entity.getTitle());
         dto.setContent(entity.getContent());
 
-        // Audit dates for the front-end
+        // Audit dates
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setUpdatedAt(entity.getUpdatedAt());
 
-        // Zombie Palier Stats
+        // Technical Stats
         dto.setWordCount(entity.getWordCount());
         dto.setLineCount(entity.getLineCount());
         dto.setCharacterCount(entity.getCharacterCount());
