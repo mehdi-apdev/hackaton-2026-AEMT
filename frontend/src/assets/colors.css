@@ -1,0 +1,23 @@
+:root {
+    /* Orange */
+  --orange: #ff6600;
+  --orange-hover: #ff8800;
+  --orange-glow: #ff9100;
+  /* Purple */
+  --purple: #9b26b6;
+  --background-color: radial-gradient(circle at center, #1a051a 0%, #000000 100%);
+  --dark-purple: #1f0c26;
+  /* --glass-purple: rgba(95, 0, 100, 0.5); */
+  --purple-translucent : #150415e6;
+  /* Green */
+    --green: #00cc66;
+    --green-hover: #33dd88;
+    --green-glow: #3dee99;
+    /* Neutral / Dark Theme */
+  --black: #0a0a0a;
+  --dark-gray: #1a1a1a;
+  --text: #e0e0e0;
+  --glass: rgba(20, 20, 20, 0.85);
+  --border : #333333;
+  --shadow : rgba(0, 0, 0, 0.7);
+}

@@ -1,7 +1,7 @@
 .notesPage {
   min-height: 100vh;
   padding: 24px 28px;
-  color: var(--spooky-text);
+  color: var(--text);
 }
 
 .notesHeader {

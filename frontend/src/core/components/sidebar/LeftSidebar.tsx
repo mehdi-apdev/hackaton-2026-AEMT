@@ -6,7 +6,7 @@ import FolderService from "../../../features/notes/services/FolderService";
 import type { Folder } from "../../../features/notes/models/Folder";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 type LeftSidebarProps = {
   isLeftSidebarCollapsed: boolean;

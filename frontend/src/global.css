@@ -1,22 +1,6 @@
-/* --- Import de la police effrayante --- */
-@font-face {
-  font-family: 'Underdog';
-  src: url('./assets/fonts/Underdog-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-:root {
-  /* Palette Halloween */
-  --spooky-orange: #ff6600;
-  --spooky-orange-glow: #ff9100;
-  --spooky-purple: #9b26b6;
-  --spooky-black: #0a0a0a;
-  --spooky-dark-gray: #1a1a1a;
-  --spooky-text: #e0e0e0;
-  --spooky-glass: rgba(20, 20, 20, 0.85);
-  --spooky-dark-purple: #1f0c26;
-}
+/* --- Import des couleurs et styles globaux --- */
+@import './assets/colors.css';
+@import './assets/fonts/fonts.css';
 
 * {
   margin: 0;
@@ -25,22 +9,20 @@
 }
 
 body {
-  font-family: "Roboto", sans-serif; /* Texte lisible pour le corps */
-  background-color: var(--spooky-dark-purple);
-  color: var(--spooky-text);
+  font-family: var(--font-body);
+  background-color: var(--dark-purple);
+  color: var(--text);
   background-image: url('./assets/images/bats.png');
-  /* --- Le fond Chauve-souris --- */
 
-  background-repeat: repeat-x; /* Répète horizontalement */
+  background-repeat: repeat-x;
   background-position: top center;
-  background-size: 500px; /* Ajuste la taille des chauves-souris */
-  background-attachment: fixed; /* Le fond reste fixe quand on scrolle */
+  background-size: 500px;
+  background-attachment: fixed;
 }
 
-/* Appliquer la police Halloween aux titres */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Underdog', cursive;
-  color: var(--spooky-orange);
+  font-family: var(--font-heading);
+  color: var(--orange);
   text-shadow: 2px 2px 4px #000;
 }
 
@@ -49,9 +31,9 @@ h1, h2, h3, h4, h5, h6 {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--spooky-black);
+  background: var(--black);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--spooky-orange);
+  background: var(--orange);
   border-radius: 4px;
 }
