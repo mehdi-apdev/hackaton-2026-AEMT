@@ -15,6 +15,7 @@
   overflow-y: auto;
   transition: margin-left 0.3s ease;
   z-index: 1;
+  /* cursor: url("../assets/images/skeletons.png"), auto; */
 }
 
 .main-content.expanded {
@@ -22,21 +23,18 @@
 }
 
 /* --- 1. La Toile d'Araignée --- */
-.main-content::before {
+/* .main-content::before {
   content: "";
   position: absolute;
   top: 0;
   right: 0;
-  width: 300px;
-  height: 300px;
-  background-image: url('../assets/images/spiderweb.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: top right;
+  width: 500px;
+  height: 500px;
+  background: url('../assets/images/spiderweb.png') no-repeat top right / contain;
   opacity: 0.6;
   pointer-events: none;
   z-index: -1;
-}
+} */
 
 /* Bouton ouvrir sidebar */
 .btn-reopen-sidebar {
@@ -66,7 +64,7 @@
 }
 
 /* --- 2. Spider --- */
-.hanging-spider {
+/* .hanging-spider {
   position: fixed;
   top: -500px; 
   right: 100px;
@@ -87,7 +85,7 @@
 }
 
 /* Le fil blanc opaque */
-.hanging-spider::before {
+/* .hanging-spider::before {
   content: '';
   position: absolute;
   top: 0;
@@ -97,12 +95,12 @@
   background-color: #ffffff; 
   transform: translateX(-50%);
   z-index: -1;
-}
+} */
 
-@keyframes spider-drop {
+/* @keyframes spider-drop {
   0% { transform: translateY(0); }
   40% { transform: translateY(300px); }
   50% { transform: translateY(280px); }
   60% { transform: translateY(300px); }
   100% { transform: translateY(0); }
-}
+} */

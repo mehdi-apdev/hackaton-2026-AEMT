@@ -7,6 +7,7 @@ import type { Folder } from "../../../features/notes/models/Folder";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { Link } from "react-router";
 
 type LeftSidebarProps = {
   isLeftSidebarCollapsed: boolean;
@@ -62,7 +63,8 @@ const LeftSidebar = ({
       <div className="logo-container">
         {!isLeftSidebarCollapsed && (
           <Fragment>
-            <div className="logo-text">Spooky Notes</div>
+            {/* <div className="logo-text" onClick={}>Spooky Notes</div> */}
+            <Link to="/" className="logo-text">Spooky Notes</Link>
             <button className="icon-btn close-btn" onClick={closeSidenav} title="Fermer">
               <FontAwesomeIcon icon={faTimes} />  
             </button>

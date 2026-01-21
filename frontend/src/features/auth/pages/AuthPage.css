@@ -1,5 +1,5 @@
 /* =========================================
-   1. LAYOUT & CONTAINERS
+   1. LAYOUT & BACKGROUND
    ========================================= */
 .auth-container {
     height: 100vh;
@@ -7,68 +7,127 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--dark-purple);
-    background-image: var(--background-color);
+    
+    /* Fond atmosphérique : Noir profond avec une lueur violette centrale */
+    background: radial-gradient(circle at center, #2a0a33 0%, #000000 90%);
+    background-size: cover;
+    
     font-family: var(--font-heading);
     position: relative;
     overflow: hidden;
 }
 
+/* Effet de particules ou de brouillard (optionnel, via ::before) */
+.auth-container::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: url('https://raw.githubusercontent.com/transparenttextures/patterns/master/diagmonds-light.png'); /* Pattern subtil */
+    opacity: 0.05;
+    animation: drift 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes drift {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* =========================================
+   2. THE CARD (GLASSMORPHISM)
+   ========================================= */
 .auth-card {
-    background: var(--black);
-    border: 2px solid var(--border);
-    border-radius: 10px;
+    /* Verre fumé sombre */
+    background: rgba(20, 10, 25, 0.75); 
+    backdrop-filter: blur(15px); /* Le flou magique */
+    -webkit-backdrop-filter: blur(15px);
+    
+    border: 1px solid rgba(155, 38, 182, 0.3); /* Bordure violette fine */
+    border-radius: 20px;
     padding: 3rem;
+    
     width: 100%;
     max-width: 450px;
     text-align: center;
-    box-shadow: 0 0 20px, 0 0 10px var(--border);
+    
+    /* Lueur spectrale autour de la carte */
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.8), 
+        0 0 30px rgba(155, 38, 182, 0.15); /* Halo violet */
+
     position: relative;
     display: flex;
     flex-direction: column;
+    z-index: 10;
+    
+    /* Légère flottaison */
+    animation: floatCard 6s ease-in-out infinite;
+}
+
+@keyframes floatCard {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
 .divider {
     height: 1px;
-    background-color: var(--dark-gray);
+    background: linear-gradient(90deg, transparent, rgba(155, 38, 182, 0.5), transparent);
     margin: 1.5rem 0;
     width: 100%;
 }
 
 /* =========================================
-   2. TYPOGRAPHY
+   3. TYPOGRAPHY
    ========================================= */
 .auth-title {
-    color: var(--green);
-    font-size: 2rem;
+    color: var(--orange);
+    font-size: 2.2rem;
     margin-bottom: 0.5rem;
-    text-shadow: 2px 2px 0px #000;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-shadow: 
+        3px 3px 0px #000, 
+        0 0 15px rgba(255, 102, 0, 0.5);
 }
 
 .subtitle {
     font-size: 1rem;
-    color: var(--text);
-    margin-bottom: 1.5rem;
-    opacity: 0.8;
+    color: #bbb;
+    margin-bottom: 2rem;
+    font-family: var(--font-body);
 }
 
 .auth-link {
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     font-size: 0.9rem;
     color: var(--text);
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.auth-link a {
+    color: var(--green);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.auth-link a:hover {
+    text-decoration: underline;
+    text-shadow: 0 0 10px var(--green);
 }
 
 /* =========================================
-   3. FORM ELEMENTS
+   4. FORM ELEMENTS
    ========================================= */
 .auth-form {
     width: 100%;
     display: flex;
     flex-direction: column;
+    gap: 1.2rem; /* Espacement uniforme */
 }
 
 .form-group {
-    margin-bottom: 1.2rem;
     text-align: left;
     width: 100%;
 }
@@ -79,9 +138,10 @@
     color: var(--text);
     font-size: 0.9rem;
     margin-left: 0.5rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
 }
 
-/* Wrapper pour l'icône et l'input */
 .input-wrapper {
     position: relative;
     width: 100%;
@@ -92,70 +152,120 @@
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--orange);
+    color: var(--purple);
+    font-size: 1.1rem;
     pointer-events: none;
-    z-index: 1;
+    z-index: 2;
+    transition: color 0.3s;
 }
 
 .form-input {
     width: 100%;
-    height: 45px;
+    height: 50px; /* Un peu plus haut pour le confort */
     padding: 12px 12px 12px 3rem;
     border-radius: 12px;
-    background: var(--dark-gray);
-    border: 1.5px solid var(--orange);
-    color: var(--text);
+    
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid #444;
+    
+    color: #fff;
     font-size: 1rem;
+    font-family: var(--font-body);
     outline: none;
-    transition: all 0.3s ease;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* state inputs */
-.form-input:hover {
-    border-color: var(--orange-glow);
-    box-shadow: 0px 0px 15px rgba(255, 102, 0, 0.2);
+/* Placeholder discret */
+.form-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
 }
 
+/* FOCUS STATE : L'effet wow */
 .form-input:focus {
+    background: rgba(0, 0, 0, 0.6);
     border-color: var(--orange);
-    box-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
+    box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
 }
 
-/* erreurs */
+.form-input:focus + .input-icon, 
+.input-wrapper:focus-within .input-icon {
+    color: var(--orange); /* L'icône s'allume aussi */
+}
+
+/* ERROR STATE */
 .input-error {
     border-color: #ff4444 !important;
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.2);
+    animation: shake 0.4s ease-in-out;
 }
 
 .error-message {
     color: #ff4444;
     font-size: 0.8rem;
-    margin-top: 0.25rem;
+    margin-top: 0.4rem;
     margin-left: 0.5rem;
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.error-message::before {
+    content: "⚠️"; /* Petit warning pour le style */
+    font-size: 0.8rem;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
 }
 
 /* =========================================
-   4. BUTTONS
+   5. BUTTONS
    ========================================= */
 .btn-global {
     width: 100%;
     padding: 1rem;
-    background: var(--green);
-    color: var(--black);
-    border: none;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    font-family: 'Underdog', serif;
-    transition: transform 0.2s, background 0.2s;
     margin-top: 1rem;
-    border-radius: 10px;
+    
+    /* Gradient "Slime" */
+    background: linear-gradient(135deg, var(--green) 0%, #008f4c 100%);
+    
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-family: 'Underdog', serif;
+    cursor: pointer;
+    
+    box-shadow: 0 4px 15px rgba(0, 204, 102, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Effet de brillance au survol */
+.btn-global::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: 0.5s;
 }
 
 .btn-global:hover {
-    background: var(--green-hover);
-    transform: scale(1.02);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 204, 102, 0.5);
+}
+
+.btn-global:hover::after {
+    left: 100%;
 }
 
 .btn-global:active {
@@ -163,7 +273,7 @@
 }
 
 /* =========================================
-   5. ANIMATIONS & FEEDBACK
+   6. SCARY FEEDBACK (Success Animation)
    ========================================= */
 .scary-feedback {
     position: fixed;
@@ -171,74 +281,37 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: var(--black);
+    background: #000;
     z-index: 9999;
     display: flex;
     justify-content: center;
     align-items: center;
-    animation: flash 0.2s 3;
 }
 
 .success-text {
     font-size: 4rem;
-    color: var(--orange);
-    font-weight: bold;
-    text-shadow: 0 0 20px white;
-    animation: float 3s ease-in-out infinite; /* Animation définie ci-dessous */
-}
-
-@keyframes flash {
-    0% { background: var(--black); }
-    50% { background: var(--dark-purple); }
-    100% { background: var(--black); }
-}
-
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-    100% { transform: translateY(0px); }
+    color: var(--green); /* Vert succès */
+    font-family: 'Underdog', serif;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-shadow: 0 0 30px var(--green);
 }
 
 @keyframes zoomIn {
-
-    0% { transform: scale(0.1) rotate(0deg); opacity: 0; }
-
-    100% { transform: scale(1.5) rotate(10deg); opacity: 1; }
-
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
-
-
 /* =========================================
-
-   6. RESPONSIVE ADJUSTMENTS
-
+   7. RESPONSIVE
    ========================================= */
-
 @media (max-width: 480px) {
-
     .auth-card {
-
-        padding: 2rem 1.5rem; /* Moins de padding sur les côtés */
-
-        max-width: 90%;       /* Prend presque toute la largeur */
-
+        padding: 2rem;
+        max-width: 90%;
+        background: rgba(10, 5, 15, 0.9); /* Moins transparent sur mobile pour lisibilité */
     }
-
-
-
-    .auth-title {
-
-        font-size: 1.5rem;    /* Titre plus petit */
-
-    }
-
-
-
-    .success-text {
-
-        font-size: 2.5rem;    /* Texte de succès moins envahissant */
-
-    }
-
+    .auth-title { font-size: 1.8rem; }
+    .success-text { font-size: 2.5rem; }
 }

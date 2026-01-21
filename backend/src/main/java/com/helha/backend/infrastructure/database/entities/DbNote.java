@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class DbNote {
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id") // Pour le hackathon, on peut laisser nullable=true temporairement si tu as déjà des données, sinon nullable=false
+    @JoinColumn(name = "user_id")
     private DbUser user;
 
 
