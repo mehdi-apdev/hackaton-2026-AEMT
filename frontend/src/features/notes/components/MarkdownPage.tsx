@@ -1,3 +1,5 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faCircleNotch, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import {
   useCallback,
   useEffect,
@@ -284,14 +286,16 @@ const MarkdownPage = () => {
     }).format(date);
   };
 
+  const statusIcon = isSaving ? faCircleNotch : hasUnsavedChanges ? faExclamationCircle : faCheck;
+
   return (
     <div className="markdownPage">
       <header className="markdownHeader">
-        <div className="headerLeft"></div>
-
-        <span className={`saveStatus ${statusClass}`} aria-live="polite">
-          {statusLabel}
-        </span>
+        <div className="headerLeft">
+          <div className={`saveIndicator ${statusClass}`} title={statusLabel}>
+            <FontAwesomeIcon icon={statusIcon} spin={isSaving} />
+          </div>
+        </div>
 
         <button
           type="button"
@@ -339,7 +343,7 @@ const MarkdownPage = () => {
           <span className="metadataValue">{metadata.words}</span>
         </div>
         <div className="metadataGroup">
-          <span className="metadataLabel">Caracteres</span>
+          <span className="metadataLabel">Caractères</span>
           <span className="metadataValue">{metadata.characters}</span>
         </div>
         <div className="metadataGroup">
@@ -351,11 +355,11 @@ const MarkdownPage = () => {
           <span className="metadataValue">{metadata.bytes}</span>
         </div>
         <div className="metadataGroup">
-          <span className="metadataLabel">Cree le</span>
+          <span className="metadataLabel">Créé le</span>
           <span className="metadataValue">{formatDate(createdAt)}</span>
         </div>
         <div className="metadataGroup">
-          <span className="metadataLabel">Modifie le</span>
+          <span className="metadataLabel">Modifié le</span>
           <span className="metadataValue">{formatDate(updatedAt)}</span>
         </div>
       </footer>

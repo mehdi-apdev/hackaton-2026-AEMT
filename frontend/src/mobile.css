@@ -69,27 +69,40 @@
 
   /* 5. NOTES PAGE & EDITOR */
   .markdownPage {
-    padding: 10px !important;
+    padding: 10px 5px !important; /* Réduction du padding latéral */
+    margin: 0 !important;
+    border-radius: 0 !important; /* On gagne de la place sur les bords */
   }
 
   .markdownHeader {
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
+    padding: 0 5px !important;
   }
 
-  .saveStatus {
-    margin-left: 0 !important;
-    text-align: center;
-    margin-bottom: 10px;
+  .saveIndicator {
+    margin: 0 auto !important; /* Centré sur mobile */
   }
 
   .titleInput {
-    font-size: 1.5rem !important;
+    font-size: 1.4rem !important;
+    padding: 8px 5px !important;
   }
 
   .mdEditorShell {
+    padding: 5px !important; /* Padding minimal pour le texte */
+    margin: 0 !important;
+    width: 100% !important;
+    min-height: 300px !important;
+  }
+
+  /* Forcer le texte de Milkdown à prendre toute la place */
+  .mdEditorShell .milkdown .editor,
+  .mdEditorShell .milkdown .ProseMirror {
     padding: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   /* Masquer les métadonnées trop verbeuses sur mobile */
