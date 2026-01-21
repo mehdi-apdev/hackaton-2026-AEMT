@@ -1,15 +1,11 @@
 import api from "../../../services/api";
 
-const authBaseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
-
 type LoginPayload = {
   username: string;
   password: string;
 };
 
-type LoginResponse = {
-  token: string;
-};
+type LoginResponse = string;
 
 type RegisterPayload = {
   username: string;
@@ -23,12 +19,15 @@ type RegisterResponse = {
 
 const AuthService = {
   login: async (payload: LoginPayload): Promise<LoginResponse> => {
-    const response = await api.post<LoginResponse>(`${authBaseUrl}/auth/login`, payload);
+    const response = await api.post<LoginResponse>("/auth/login", payload);
     return response.data;
   },
   register: async (payload: RegisterPayload): Promise<RegisterResponse> => {
-    const response = await api.post<RegisterResponse>(`${authBaseUrl}/auth/register`, payload);
+    const response = await api.post<RegisterResponse>("/auth/register", payload);
     return response.data;
+  },
+  logout: async (): Promise<void> => {
+    await api.post("/auth/logout");
   },
 };
 

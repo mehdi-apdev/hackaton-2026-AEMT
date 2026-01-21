@@ -23,11 +23,11 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginForm) => {
     try {
-      const response = await AuthService.login({
+      await AuthService.login({
         username: data.username,
         password: data.password,
       });
-      login(response.token, data.username);
+      login(data.username);
       const state = location.state as { from?: { pathname?: string } } | null;
       const redirectTo = state?.from?.pathname || "/notes";
       navigate(redirectTo, { replace: true });
