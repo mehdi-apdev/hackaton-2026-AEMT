@@ -1,27 +1,38 @@
-import { useState, type MouseEvent, type FormEvent } from "react";
+import { useEffect, useState, type MouseEvent, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./FolderTree.css";
 import type { Folder } from "../models/Folder";
 import type { Note } from "../models/Note";
 import FolderService from "../services/FolderService";
 import NoteService from "../services/NoteService";
-import { faFileCirclePlus, faFolderPlus, faTrash, faFileAlt } from "@fortawesome/free-solid-svg-icons";
+import { faFileAlt, faFileCirclePlus, faFolderPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Modal } from "../../../shared/components/Modal";
 
 interface FolderTreeProps {
   folder: Folder;
+  openFolderIds: Set<number>;
+  onToggle: (folderId: number) => void;
+  onOpen: (folderId: number) => void;
   onRefresh: () => void;
 }
 
 type ModalType = "SUBFOLDER" | "NOTE" | null;
 
-export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+type ContextMenuState = {
+  type: "folder" | "note";
+  id: number;
+  name: string;
+  x: number;
+  y: number;
+} | null;
+
+export const FolderTree = ({ folder, openFolderIds, onToggle, onOpen, onRefresh }: FolderTreeProps) => {
+  const isOpen = openFolderIds.has(folder.id);
   const navigate = useNavigate();
   const { id: activeNoteId } = useParams();
+  const [contextMenu, setContextMenu] = useState<ContextMenuState>(null);
 
-// --- Modal Management ---
   const [modalType, setModalType] = useState<ModalType>(null);
   const [itemName, setItemName] = useState("");
 
@@ -32,37 +43,39 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
 
   const toggleOpen = (event: MouseEvent) => {
     event.stopPropagation();
-    setIsOpen(!isOpen);
+    onToggle(folder.id);
   };
 
-  // --- Actions ---
   const handleCreateSubFolderClick = (event: MouseEvent) => {
     event.stopPropagation();
+    onOpen(folder.id);
     setModalType("SUBFOLDER");
-    setIsOpen(true); // Open the parent folder to see the result.
   };
 
   const handleCreateNoteClick = (event: MouseEvent) => {
     event.stopPropagation();
+    onOpen(folder.id);
     setModalType("NOTE");
-    setIsOpen(true);
   };
 
-  const handleModalSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!itemName.trim()) return;
+  const handleModalSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    const name = itemName.trim();
+    if (!name) return;
 
     try {
       if (modalType === "SUBFOLDER") {
-        await FolderService.createFolder(itemName, folder.id);
+        await FolderService.createFolder(name, folder.id);
+        onOpen(folder.id);
       } else if (modalType === "NOTE") {
-        const newNote = await NoteService.createNote(itemName, folder.id);
+        const newNote = await NoteService.createNote(name, folder.id);
+        onOpen(folder.id);
         navigate(`/note/${newNote.id}`);
       }
       onRefresh();
       closeModal();
     } catch (error) {
-      alert("Erreur lors de la création.");
+      alert("Erreur lors de la creation.");
     }
   };
 
@@ -94,9 +107,69 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
     }
   };
 
+  const handleContextMenu = (event: MouseEvent, type: "folder" | "note", id: number, name: string) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setContextMenu({
+      type,
+      id,
+      name,
+      x: event.clientX,
+      y: event.clientY,
+    });
+  };
+
+  const handleRename = async () => {
+    if (!contextMenu) return;
+    const nextName = prompt("Nouveau nom :", contextMenu.name);
+    if (!nextName || nextName === contextMenu.name) {
+      setContextMenu(null);
+      return;
+    }
+    try {
+      if (contextMenu.type === "folder") {
+        await FolderService.renameFolder(contextMenu.id, nextName);
+      } else {
+        const note = await NoteService.getNoteById(contextMenu.id);
+        const safeContent = note.content ?? "";
+        await NoteService.updateNote(contextMenu.id, nextName, safeContent);
+        window.dispatchEvent(
+          new CustomEvent("note:renamed", {
+            detail: { id: contextMenu.id, title: nextName },
+          })
+        );
+      }
+      onRefresh();
+    } catch (error) {
+      alert("Impossible de renommer.");
+    } finally {
+      setContextMenu(null);
+    }
+  };
+
+  useEffect(() => {
+    if (!contextMenu) return;
+    const closeMenu = () => setContextMenu(null);
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setContextMenu(null);
+    };
+    window.addEventListener("click", closeMenu);
+    window.addEventListener("contextmenu", closeMenu);
+    window.addEventListener("keydown", handleEscape);
+    return () => {
+      window.removeEventListener("click", closeMenu);
+      window.removeEventListener("contextmenu", closeMenu);
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [contextMenu]);
+
   return (
     <div className="folder-tree">
-      <div className="folder-header" onClick={toggleOpen}>
+      <div
+        className="folder-header"
+        onClick={toggleOpen}
+        onContextMenu={(event) => handleContextMenu(event, "folder", folder.id, folder.name)}
+      >
         <span className="folder-icon">{isOpen ? "v" : ">"}</span>
         <span className="folder-name">{folder.name}</span>
 
@@ -116,12 +189,26 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
       {isOpen && (
         <div className="folder-content">
           {folder.children?.map((childFolder) => (
-            <FolderTree key={childFolder.id} folder={childFolder} onRefresh={onRefresh} />
+            <FolderTree
+              key={childFolder.id}
+              folder={childFolder}
+              openFolderIds={openFolderIds}
+              onToggle={onToggle}
+              onOpen={onOpen}
+              onRefresh={onRefresh}
+            />
           ))}
 
           {folder.notes?.map((note: Note) => (
-            <div key={note.id} className={`note-item ${String(activeNoteId) === String(note.id) ? "active" : ""}`} onClick={(event) => handleNoteClick(note.id, event)}>
-              <span className="note-icon"><FontAwesomeIcon icon={faFileAlt} /></span>
+            <div
+              key={note.id}
+              className={`note-item ${String(activeNoteId) === String(note.id) ? "active" : ""}`}
+              onClick={(event) => handleNoteClick(note.id, event)}
+              onContextMenu={(event) => handleContextMenu(event, "note", note.id, note.title)}
+            >
+              <span className="note-icon">
+                <FontAwesomeIcon icon={faFileAlt} />
+              </span>
               <span className="note-title">{note.title}</span>
               <button
                 className="btn-icon btn-delete note-delete"
@@ -139,18 +226,14 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
         </div>
       )}
 
-      {/* --- MODALE --- */}
-      <Modal 
-        isOpen={!!modalType} 
-        onClose={closeModal} 
+      <Modal
+        isOpen={!!modalType}
+        onClose={closeModal}
         title={modalType === "SUBFOLDER" ? "Nouveau Sous-Dossier" : "Nouvelle Note"}
       >
         <form onSubmit={handleModalSubmit}>
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label 
-              htmlFor="itemName" 
-              style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}
-            >
+          <div style={{ marginBottom: "1.5rem" }}>
+            <label htmlFor="itemName" style={{ display: "block", marginBottom: "0.5rem", color: "#ccc" }}>
               {modalType === "SUBFOLDER" ? "Nom du dossier" : "Titre de la note"}
             </label>
             <input
@@ -158,16 +241,16 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
               type="text"
               autoFocus
               value={itemName}
-              onChange={(e) => setItemName(e.target.value)}
+              onChange={(event) => setItemName(event.target.value)}
               placeholder="..."
               style={{
-                width: '100%',
-                padding: '10px',
-                background: 'rgba(0,0,0,0.5)',
-                border: '1px solid #ff6600',
-                borderRadius: '8px',
-                color: 'white',
-                outline: 'none'
+                width: "100%",
+                padding: "10px",
+                background: "rgba(0,0,0,0.5)",
+                border: "1px solid #ff6600",
+                borderRadius: "8px",
+                color: "white",
+                outline: "none",
               }}
             />
           </div>
@@ -177,11 +260,19 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
               Annuler
             </button>
             <button type="submit" className="btn-modal-confirm">
-              Créer
+              Creer
             </button>
           </div>
         </form>
       </Modal>
+
+      {contextMenu ? (
+        <div className="context-menu" style={{ top: contextMenu.y, left: contextMenu.x }}>
+          <button type="button" className="context-menu-item" onClick={handleRename}>
+            Renommer
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 };

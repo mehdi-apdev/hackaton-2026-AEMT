@@ -29,7 +29,16 @@ const FolderService = {
    */
   deleteFolder: async (id: number): Promise<void> => {
     await api.delete(`/folders/${id}`);
-  }
+  },
+
+  /**
+   * Renomme un dossier.
+   * PUT /folders/{id}
+   */
+  renameFolder: async (id: number, name: string): Promise<Folder> => {
+    const response = await api.put<Folder>(`/folders/${id}`, { name });
+    return response.data;
+  },
 };
 
 export default FolderService;
