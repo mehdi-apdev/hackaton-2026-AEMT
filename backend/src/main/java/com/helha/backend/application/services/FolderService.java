@@ -27,9 +27,7 @@ public class FolderService {
         this.userRepository = userRepository;
     }
 
-    /**
-     * Helper pour récupérer l'utilisateur actuellement connecté
-     */
+
     private DbUser getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username)
@@ -90,7 +88,7 @@ public class FolderService {
         FolderDto dto = new FolderDto();
         dto.setId(entity.getId());
         dto.setName(entity.getName());
-        // dto.setUserId(entity.getUser().getId()); // Optionnel si tu as le champ dans le DTO
+
 
         if (entity.getChildren() != null) {
             dto.setChildren(entity.getChildren().stream()
