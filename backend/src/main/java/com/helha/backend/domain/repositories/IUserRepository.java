@@ -1,6 +1,6 @@
-package com.helha.backend.infrastructure.database.repository;
+package com.helha.backend.domain.repositories;
 
-import com.helha.backend.infrastructure.database.entities.DbUser;
+import com.helha.backend.domain.models.DbUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

@@ -1,4 +1,4 @@
-package com.helha.backend.infrastructure.database.entities;
+package com.helha.backend.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -26,16 +26,16 @@ public class DbFolder {
     @Column(nullable = false)
     private String name;
 
-    // --- ANTI-BOUCLE INFINIE ---
+    //to prevent an infinite loop
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    @JsonIgnore // Empêche l'enfant de renvoyer le parent en JSON
+    @JsonIgnore //prevent the child to send back the parent in json
     private DbFolder parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DbFolder> children = new ArrayList<>();
 
-    // mappedBy = "folder" car c'est le nom de la variable dans DbNote
+    //folder because it's the variable name in DbNote
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DbNote> dbNotes = new ArrayList<>();
 

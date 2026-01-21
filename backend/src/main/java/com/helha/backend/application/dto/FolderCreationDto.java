@@ -1,10 +1,10 @@
 package com.helha.backend.application.dto;
 
 import lombok.Data;
-
+//dto for folder creation
 @Data
 public class FolderCreationDto {
     private String name;
-    // Peut être null si c'est un dossier racine
+    // can be null if he's a parent folder
     private Long parentId;
 }

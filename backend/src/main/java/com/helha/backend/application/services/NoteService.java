@@ -3,14 +3,14 @@ package com.helha.backend.application.services;
 import com.helha.backend.application.dto.NoteCreationDto;
 import com.helha.backend.application.dto.NoteDto;
 import com.helha.backend.application.dto.NoteUpdateDto;
-import com.helha.backend.application.utils.MetadataUtils;
+import com.helha.backend.domain.service.MetadataUtils;
 import com.helha.backend.controllers.exceptions.GenericNotFoundException;
-import com.helha.backend.infrastructure.database.entities.DbFolder;
-import com.helha.backend.infrastructure.database.entities.DbNote;
-import com.helha.backend.infrastructure.database.entities.DbUser;
-import com.helha.backend.infrastructure.database.repository.IFolderRepository;
-import com.helha.backend.infrastructure.database.repository.INoteRepository;
-import com.helha.backend.infrastructure.database.repository.IUserRepository;
+import com.helha.backend.domain.models.DbFolder;
+import com.helha.backend.domain.models.DbNote;
+import com.helha.backend.domain.models.DbUser;
+import com.helha.backend.domain.repositories.IFolderRepository;
+import com.helha.backend.domain.repositories.INoteRepository;
+import com.helha.backend.domain.repositories.IUserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,23 +32,23 @@ public class NoteService {
         this.modelMapper = modelMapper;
     }
 
-    /**
-     * Helper privé pour récupérer l'utilisateur qui fait la requête
-     */
+
+    //Private helper to retrieve the user making the request
     private DbUser getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new GenericNotFoundException(0L, "User " + username));
     }
 
-    // 1. Récupérer une note par son ID (avec vérification de propriété)
+
+    // retrieve a a note by it's ID with ownership verification
     @Transactional(readOnly = true)
     public NoteDto getNoteById(Long id) {
         DbUser user = getCurrentUser();
         DbNote note = noteRepository.findById(id)
                 .orElseThrow(() -> new GenericNotFoundException(id, "Note"));
 
-        // Sécurité : Si ce n'est pas ma note, je ne la vois pas
+        // Security if it's not my note I'm not able to see it
         if (!note.getUser().getId().equals(user.getId())) {
             throw new GenericNotFoundException(id, "Note");
         }
@@ -56,7 +56,8 @@ public class NoteService {
         return modelMapper.map(note, NoteDto.class);
     }
 
-    // 2. Créer une note (Liée à l'utilisateur et son dossier)
+
+    //Create a note bind to the user and it's folder
     @Transactional
     public NoteDto createNote(NoteCreationDto input) {
         DbUser user = getCurrentUser();
@@ -64,7 +65,7 @@ public class NoteService {
         DbFolder folder = folderRepository.findById(input.getFolderId())
                 .orElseThrow(() -> new GenericNotFoundException(input.getFolderId(), "Folder"));
 
-        // Sécurité : On ne peut pas créer une note dans le dossier de quelqu'un d'autre
+        // Security we cannot create a note in someone else's folder
         if (!folder.getUser().getId().equals(user.getId())) {
             throw new GenericNotFoundException(input.getFolderId(), "Folder");
         }
@@ -73,9 +74,10 @@ public class NoteService {
         note.setTitle(input.getTitle());
         note.setContent("");
         note.setFolder(folder);
-        note.setUser(user); // ATTRIBUTION À L'UTILISATEUR
+        //we attribute to the user
+        note.setUser(user);
 
-        // Init stats Zombie
+        // Init Metadata stats
         note.setWordCount(0);
         note.setLineCount(0);
         note.setCharacterCount(0);
@@ -85,14 +87,14 @@ public class NoteService {
         return modelMapper.map(savedNote, NoteDto.class);
     }
 
-    // 3. Mettre à jour (Stats Zombie + Twist Seuil Maudit)
+    // update a note
     @Transactional
     public NoteDto updateNote(Long id, NoteUpdateDto input) {
         DbUser user = getCurrentUser();
         DbNote note = noteRepository.findById(id)
                 .orElseThrow(() -> new GenericNotFoundException(id, "Note"));
 
-        // Sécurité propriété
+        // Security to check ownership
         if (!note.getUser().getId().equals(user.getId())) {
             throw new GenericNotFoundException(id, "Note");
         }
@@ -104,25 +106,20 @@ public class NoteService {
         if (input.getContent() != null) {
             note.setContent(input.getContent());
 
-            // --- PALIER ZOMBIE : Métadonnées ---
+            //Métadata
             String content = input.getContent();
             int words = MetadataUtils.countWords(content);
             note.setWordCount(words);
             note.setLineCount(MetadataUtils.countLines(content));
             note.setCharacterCount(MetadataUtils.countCharacters(content));
             note.setSizeInBytes(MetadataUtils.calculateSizeInBytes(content));
-
-//            // --- TWIST : Seuil Maudit ---
-//            if (words >= 666) {
-//                note.setCurseLevel(3); // Apocalypse
-//            }
         }
 
         DbNote updatedNote = noteRepository.save(note);
         return modelMapper.map(updatedNote, NoteDto.class);
     }
 
-    // 4. Supprimer une note (Propriétaire uniquement)
+    // Delete a note with ownership verification
     @Transactional
     public void deleteNote(Long id) {
         DbUser user = getCurrentUser();
