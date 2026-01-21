@@ -3,21 +3,27 @@ package com.helha.backend.controllers;
 import com.helha.backend.application.dto.NoteCreationDto;
 import com.helha.backend.application.dto.NoteDto;
 import com.helha.backend.application.dto.NoteUpdateDto;
-import com.helha.backend.application.services.ExportService;
+import com.helha.backend.application.services.ExportService; // <--- Import du service d'export
 import com.helha.backend.application.services.NoteService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
-@RequestMapping("/api/notes")
+@RequestMapping("/api/notes") // <--- Préfixe global "/api/notes"
 public class NoteController {
 
     private final NoteService noteService;
+    private final ExportService exportService; // <--- Nouvelle dépendance
 
-    public NoteController(NoteService noteService) {
+    // Injection des deux services via le constructeur
+    public NoteController(NoteService noteService, ExportService exportService) {
         this.noteService = noteService;
+        this.exportService = exportService;
     }
 
     @GetMapping("/{id}")
@@ -42,5 +48,20 @@ public class NoteController {
         noteService.deleteNote(id);
     }
 
+    // --- NOUVELLE ROUTE (Conforme à l'image) ---
+    // Chemin final : GET /api/notes/export/zip
+    @GetMapping("/export/zip")
+    public ResponseEntity<byte[]> downloadZip() {
+        try {
+            byte[] zipData = exportService.exportUserNotesToZip();
 
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mes_notes_hantees.zip\"")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(zipData);
+
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

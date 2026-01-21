@@ -3,10 +3,7 @@ package com.helha.backend;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@EnableJpaAuditing
-// On exclut la configuration de sécurité par défaut pour le développement initial
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 public class BackendApplication {
 
