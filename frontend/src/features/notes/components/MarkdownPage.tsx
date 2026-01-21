@@ -160,6 +160,22 @@ const MarkdownPage = () => {
     };
   }, [noteId]);
 
+  useEffect(() => {
+    const handleRename = (event: Event) => {
+      if (!noteId) return;
+      const detail = (event as CustomEvent<{ id: number; title: string }>).detail;
+      if (!detail || detail.id !== noteId) return;
+      setTitle(detail.title);
+      setSavedSnapshot((prev) => ({ ...prev, title: detail.title }));
+      setHasUnsavedChanges(false);
+    };
+
+    window.addEventListener("note:renamed", handleRename);
+    return () => {
+      window.removeEventListener("note:renamed", handleRename);
+    };
+  }, [noteId]);
+
   const handleSave = useCallback(async () => {
     if (!noteId) return;
     setIsSaving(true);
@@ -168,6 +184,7 @@ const MarkdownPage = () => {
       await NoteService.updateNote(noteId, title, content);
       setSavedSnapshot({ title, content });
       setHasUnsavedChanges(false);
+      window.dispatchEvent(new Event("notes:refresh"));
     } catch (error: unknown) {
       setErrorMessage(
         error instanceof Error ? error.message : "Impossible de sauvegarder la note!"
@@ -176,6 +193,14 @@ const MarkdownPage = () => {
       setIsSaving(false);
     }
   }, [noteId, title, content]);
+
+  useEffect(() => {
+    if (!noteId || isLoading || isSaving || !hasUnsavedChanges) return;
+    const timeoutId = window.setTimeout(() => {
+      void handleSave();
+    }, 800);
+    return () => window.clearTimeout(timeoutId);
+  }, [noteId, isLoading, isSaving, hasUnsavedChanges, handleSave]);
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
@@ -270,15 +295,6 @@ const MarkdownPage = () => {
 
         <button
           type="button"
-          className="saveBtn"
-          onClick={handleSave}
-          disabled={!noteId || isSaving || !hasUnsavedChanges}
-        >
-          Sauvegarder
-        </button>
-
-        <button
-          type="button"
           className="toggleBtn"
           onClick={() => setIsEditing((value) => !value)}
         >
@@ -297,7 +313,7 @@ const MarkdownPage = () => {
         value={title}
         onChange={handleTitleChange}
         placeholder="Titre de la note"
-        disabled={isLoading}
+        disabled={isLoading || !isEditing}
       />
 
       <div className="editorLabel">Contenu de la note</div>

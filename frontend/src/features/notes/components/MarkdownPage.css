@@ -31,8 +31,7 @@
   color: #a9a9a9;
 }
 
-.toggleBtn,
-.saveBtn {
+.toggleBtn {
   padding: 8px 12px;
   border-radius: 8px;
   border: 1px solid rgba(255, 102, 0, 0.5);
@@ -42,14 +41,12 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.toggleBtn:hover,
-.saveBtn:hover {
+.toggleBtn:hover {
   transform: translateY(-1px);
   box-shadow: 0 0 10px rgba(255, 102, 0, 0.4);
 }
 
-.toggleBtn:disabled,
-.saveBtn:disabled {
+.toggleBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   box-shadow: none;

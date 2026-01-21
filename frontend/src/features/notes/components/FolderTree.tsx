@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./FolderTree.css";
 import type { Folder } from "../models/Folder";
@@ -10,17 +10,35 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface FolderTreeProps {
   folder: Folder;
+  openFolderIds: Set<number>;
+  onToggle: (folderId: number) => void;
+  onOpen: (folderId: number) => void;
   onRefresh: () => void;
 }
 
-export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+type ContextMenuState = {
+  type: "folder" | "note";
+  id: number;
+  name: string;
+  x: number;
+  y: number;
+} | null;
+
+export const FolderTree = ({
+  folder,
+  openFolderIds,
+  onToggle,
+  onOpen,
+  onRefresh,
+}: FolderTreeProps) => {
+  const isOpen = openFolderIds.has(folder.id);
   const navigate = useNavigate();
   const { id: activeNoteId } = useParams();
+  const [contextMenu, setContextMenu] = useState<ContextMenuState>(null);
 
   const toggleOpen = (event: MouseEvent) => {
     event.stopPropagation();
-    setIsOpen(!isOpen);
+    onToggle(folder.id);
   };
 
   const handleCreateSubFolder = async (event: MouseEvent) => {
@@ -29,7 +47,7 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
     if (!name) return;
     try {
       await FolderService.createFolder(name, folder.id);
-      setIsOpen(true);
+      onOpen(folder.id);
       onRefresh();
     } catch (error) {
       alert("Erreur creation dossier");
@@ -42,7 +60,7 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
     if (!title) return;
     try {
       const newNote = await NoteService.createNote(title, folder.id);
-      setIsOpen(true);
+      onOpen(folder.id);
       onRefresh();
       navigate(`/note/${newNote.id}`);
     } catch (error) {
@@ -78,9 +96,74 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
     }
   };
 
+  const handleContextMenu = (
+    event: MouseEvent,
+    type: "folder" | "note",
+    id: number,
+    name: string
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setContextMenu({
+      type,
+      id,
+      name,
+      x: event.clientX,
+      y: event.clientY,
+    });
+  };
+
+  const handleRename = async () => {
+    if (!contextMenu) return;
+    const nextName = prompt("Nouveau nom :", contextMenu.name);
+    if (!nextName || nextName === contextMenu.name) {
+      setContextMenu(null);
+      return;
+    }
+    try {
+      if (contextMenu.type === "folder") {
+        await FolderService.renameFolder(contextMenu.id, nextName);
+      } else {
+        const note = await NoteService.getNoteById(contextMenu.id);
+        const safeContent = note.content ?? "";
+        await NoteService.updateNote(contextMenu.id, nextName, safeContent);
+        window.dispatchEvent(
+          new CustomEvent("note:renamed", {
+            detail: { id: contextMenu.id, title: nextName },
+          })
+        );
+      }
+      onRefresh();
+    } catch (error) {
+      alert("Impossible de renommer.");
+    } finally {
+      setContextMenu(null);
+    }
+  };
+
+  useEffect(() => {
+    if (!contextMenu) return;
+    const closeMenu = () => setContextMenu(null);
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setContextMenu(null);
+    };
+    window.addEventListener("click", closeMenu);
+    window.addEventListener("contextmenu", closeMenu);
+    window.addEventListener("keydown", handleEscape);
+    return () => {
+      window.removeEventListener("click", closeMenu);
+      window.removeEventListener("contextmenu", closeMenu);
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [contextMenu]);
+
   return (
     <div className="folder-tree">
-      <div className="folder-header" onClick={toggleOpen}>
+      <div
+        className="folder-header"
+        onClick={toggleOpen}
+        onContextMenu={(event) => handleContextMenu(event, "folder", folder.id, folder.name)}
+      >
         <span className="folder-icon">{isOpen ? "v" : ">"}</span>
         <span className="folder-name">{folder.name}</span>
 
@@ -100,12 +183,26 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
       {isOpen && (
         <div className="folder-content">
           {folder.children?.map((childFolder) => (
-            <FolderTree key={childFolder.id} folder={childFolder} onRefresh={onRefresh} />
+            <FolderTree
+              key={childFolder.id}
+              folder={childFolder}
+              openFolderIds={openFolderIds}
+              onToggle={onToggle}
+              onOpen={onOpen}
+              onRefresh={onRefresh}
+            />
           ))}
 
           {folder.notes?.map((note: Note) => (
-            <div key={note.id} className={`note-item ${String(activeNoteId) === String(note.id) ? "active" : ""}`} onClick={(event) => handleNoteClick(note.id, event)}>
-              <span className="note-icon"><FontAwesomeIcon icon={faFileCirclePlus} /></span>
+            <div
+              key={note.id}
+              className={`note-item ${String(activeNoteId) === String(note.id) ? "active" : ""}`}
+              onClick={(event) => handleNoteClick(note.id, event)}
+              onContextMenu={(event) => handleContextMenu(event, "note", note.id, note.title)}
+            >
+              <span className="note-icon">
+                <FontAwesomeIcon icon={faFileCirclePlus} />
+              </span>
               <span className="note-title">{note.title}</span>
               <button
                 className="btn-icon btn-delete note-delete"
@@ -122,6 +219,14 @@ export const FolderTree = ({ folder, onRefresh }: FolderTreeProps) => {
           )}
         </div>
       )}
+
+      {contextMenu ? (
+        <div className="context-menu" style={{ top: contextMenu.y, left: contextMenu.x }}>
+          <button type="button" className="context-menu-item" onClick={handleRename}>
+            Renommer
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 };
