@@ -6,15 +6,19 @@ import { BrowserRouter } from 'react-router-dom'
 import './assets/colors.css'       // 1. Variables de couleurs
 import './assets/fonts/fonts.css'  // 2. Polices
 import './global.css'              // 3. Reset et styles globaux
+import './mobile.css'              // 4. Correctifs Mobile
 
 import App from './App.tsx'
 import { AuthProvider } from './features/auth/context/AuthContext.tsx' 
+import { ModalProvider } from './shared/context/ModalContext'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <AuthProvider> 
-        <App />
+      <AuthProvider>
+        <ModalProvider>
+          <App />
+        </ModalProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>,

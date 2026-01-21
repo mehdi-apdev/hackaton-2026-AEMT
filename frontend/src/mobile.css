@@ -1,0 +1,100 @@
+/* --- MOBILE & TABLET OPTIMIZATIONS --- */
+
+@media (max-width: 768px) {
+  
+  /* 1. Désactiver les curseurs personnalisés (inutiles au tactile) */
+  * {
+    cursor: auto !important;
+  }
+
+  /* 2. AUTH PAGES (Login/Register) */
+  .auth-card {
+    padding: 1.5rem !important;
+    max-width: 90% !important;
+    margin: 0 auto;
+  }
+
+  .auth-title {
+    font-size: 1.8rem !important;
+  }
+
+  .form-input {
+    font-size: 16px !important; /* Évite le zoom automatique sur iOS */
+  }
+
+  /* 3. SIDEBAR */
+  .sidenav {
+    width: 85% !important; /* Ne prend pas tout l'écran mais presque */
+    box-shadow: 10px 0 50px rgba(0,0,0,0.8) !important;
+  }
+
+  /* Quand fermée sur mobile, elle disparaît totalement */
+  .sidenav-collapsed {
+    transform: translateX(-100%) !important;
+    width: 0 !important;
+  }
+
+  /* Le bouton menu (hamburger) doit être toujours accessible */
+  .logo-container {
+    padding: 15px !important;
+  }
+
+  /* 4. HOME PAGE */
+  .home-container {
+    padding: 1rem !important;
+  }
+
+  .home-card {
+    padding: 2rem 1.5rem !important;
+    margin-top: 60px; /* Espace pour ne pas être caché par une éventuelle navbar */
+  }
+
+  .welcome-title {
+    font-size: 2rem !important;
+  }
+
+  .giant-icon {
+    font-size: 3rem !important;
+  }
+
+  .home-actions {
+    flex-direction: column; /* Boutons l'un sous l'autre */
+    width: 100%;
+  }
+
+  .btn-ghost {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* 5. NOTES PAGE & EDITOR */
+  .markdownPage {
+    padding: 10px !important;
+  }
+
+  .markdownHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .saveStatus {
+    margin-left: 0 !important;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .titleInput {
+    font-size: 1.5rem !important;
+  }
+
+  .mdEditorShell {
+    padding: 10px !important;
+  }
+
+  /* Masquer les métadonnées trop verbeuses sur mobile */
+  .metadataPanel {
+    grid-template-columns: 1fr 1fr !important;
+    font-size: 0.7rem !important;
+  }
+}
