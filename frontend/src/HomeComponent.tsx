@@ -9,6 +9,12 @@ export function HomeComponent() {
 
   return (
     <section className="home-container">
+      {/* Effet de Brouillard */}
+      <div className="fog-container">
+        <div className="fog-img"></div>
+        <div className="fog-img fog-img-2"></div>
+      </div>
+
       <div className="home-card">
         
         <FontAwesomeIcon icon={faGhost} className="giant-icon" />

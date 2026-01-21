@@ -78,7 +78,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
               style={{
                 width: '100%', padding: '10px', 
                 background: 'rgba(0,0,0,0.5)', border: '1px solid #ff6600', 
-                borderRadius: '8px', color: 'white', outline: 'none'
+                borderRadius: '8px', color: 'white', outline: 'none',
               }}
             />
             <div className="modal-footer">
