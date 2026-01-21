@@ -7,7 +7,7 @@
 }
 
 /* Curseur au survol des éléments cliquables : Petit fantôme */
-a, button, [role="button"], .folder-item, .note-item {
+a, button, [role="button"], .folder-item, .note-item, .folder-header, .note-title, .btn-icon {
   cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size:24px'><text y='20'>👻</text></svg>"), pointer !important;
 }
 
