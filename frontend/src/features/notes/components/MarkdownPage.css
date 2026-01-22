@@ -272,9 +272,155 @@
   border-radius: 6px !important;
 }
 
+<<<<<<< Updated upstream
 /* Purple highlight on menu item hover */
 .milkdown-menu-item:hover, 
 .milkdown-slash-menu-item:hover {
   background-color: var(--purple) !important;
   color: #fff !important;
 }
+=======
+/* Ensure inner content of tippy doesn't have transparency */
+.tippy-content {
+  background: transparent !important;
+  padding: 8px !important;
+}
+
+/* Hide Tippy arrow if it interferes or looks bad */
+.tippy-arrow {
+  color: rgb(15, 10, 21) !important;
+}
+
+/* Specific buttons inside the bubble menu */
+.milkdown .crepe .bubble-menu button,
+.milkdown .crepe .slash-menu-item {
+  background: transparent !important;
+  color: #aaa !important;
+  border-radius: 4px !important;
+  transition: all 0.2s !important;
+}
+
+.milkdown .crepe .bubble-menu button:hover,
+.milkdown .crepe .slash-menu-item:hover,
+.milkdown .crepe .bubble-menu button.active {
+  background-color: var(--purple-dim) !important;
+  color: var(--orange) !important;
+  transform: scale(1.1);
+}
+
+.errorMessage {
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid var(--red);
+  color: var(--red);
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: shake 0.4s;
+}
+
+.mentionDropdown {
+  position: fixed;
+  min-width: 220px;
+  max-width: 320px;
+  max-height: 240px;
+  overflow-y: auto;
+  background: #141414;
+  border: 1px solid var(--orange);
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+  padding: 6px;
+  z-index: 12000;
+}
+
+.mentionItem {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: #eee;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--font-body, monospace);
+  font-size: 0.95rem;
+}
+
+.mentionItem:hover,
+.mentionItem.active {
+  background: rgba(255, 136, 0, 0.2);
+  color: #fff;
+}
+
+.mentionEmpty {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding: 6px 8px;
+}
+
+.noteContextMenu {
+  position: fixed;
+  min-width: 240px;
+  max-width: 320px;
+  max-height: 320px;
+  background: #141414;
+  border: 1px solid var(--orange);
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+  padding: 8px;
+  z-index: 13000;
+}
+
+.noteContextMenuHeader {
+  font-size: 0.85rem;
+  color: var(--orange);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.noteContextMenuInput {
+  width: 100%;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 136, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
+  color: #eee;
+  outline: none;
+}
+
+.noteContextMenuList {
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.noteContextMenuItem {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: #eee;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--font-body, monospace);
+  font-size: 0.95rem;
+}
+
+.noteContextMenuItem:hover {
+  background: rgba(255, 136, 0, 0.2);
+  color: #fff;
+}
+
+.noteContextMenuEmpty {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding: 6px 8px;
+}
+>>>>>>> Stashed changes

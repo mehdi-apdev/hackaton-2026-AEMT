@@ -8,12 +8,17 @@ import {
   useRef,
   useState,
   type ChangeEvent,
+  type MouseEvent,
 } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Milkdown, MilkdownProvider, useEditor } from "@milkdown/react";
 import { Crepe } from "@milkdown/crepe";
+import { editorViewCtx } from "@milkdown/core";
+import type { EditorView } from "@milkdown/prose/view";
 import { jsPDF } from "jspdf";
 import NoteService from "../services/NoteService";
+import FolderService from "../services/FolderService";
+import type { Folder } from "../models/Folder";
 import "@milkdown/crepe/theme/common/style.css";
 import "@milkdown/crepe/theme/frame-dark.css";
 import "./MarkdownPage.css";
@@ -32,11 +37,33 @@ Ecris ici en **Markdown**.
 - [ ] A faire
 `;
 
+type MentionNote = {
+  id: number;
+  title: string;
+};
+
+type MentionState = {
+  isOpen: boolean;
+  query: string;
+  startPos: number | null;
+  coords: { x: number; y: number } | null;
+  highlightedIndex: number;
+};
+
+const EMPTY_MENTION_STATE: MentionState = {
+  isOpen: false,
+  query: "",
+  startPos: null,
+  coords: null,
+  highlightedIndex: 0,
+};
+
 type MilkdownEditorProps = {
   defaultValue: string;
   editorKey: number;
   readonly: boolean;
   onChange: (markdown: string) => void;
+  onReady?: (crepe: Crepe) => void;
 };
 
 const MilkdownEditor = ({
@@ -44,6 +71,7 @@ const MilkdownEditor = ({
   editorKey,
   readonly,
   onChange,
+  onReady,
 }: MilkdownEditorProps) => {
   const crepeRef = useRef<Crepe | null>(null);
 
@@ -70,12 +98,19 @@ const MilkdownEditor = ({
     crepeRef.current?.setReadonly(readonly);
   }, [readonly]);
 
+  useEffect(() => {
+    if (crepeRef.current) {
+      onReady?.(crepeRef.current);
+    }
+  }, [editorKey, onReady]);
+
   return <Milkdown />;
 };
 
 const MarkdownPage = () => {
   const titleId = useId();
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const noteId = useMemo(() => {
     if (!id) return null;
@@ -99,9 +134,20 @@ const MarkdownPage = () => {
   const [editorKey, setEditorKey] = useState(0);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const [isExportingZip, setIsExportingZip] = useState(false);
+  const [mentionNotes, setMentionNotes] = useState<MentionNote[]>([]);
+  const [mentionState, setMentionState] = useState<MentionState>({ ...EMPTY_MENTION_STATE });
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const [contextFilter, setContextFilter] = useState("");
 
   const titleRef = useRef(title);
   const savedSnapshotRef = useRef(savedSnapshot);
+  const crepeRef = useRef<Crepe | null>(null);
+  const editorCleanupRef = useRef<(() => void) | null>(null);
+  const editorViewRef = useRef<EditorView | null>(null);
+  const listenersAttachedRef = useRef(false);
+  const mentionStateRef = useRef<MentionState>({ ...EMPTY_MENTION_STATE });
+  const filteredMentionNotesRef = useRef<MentionNote[]>([]);
+  const isEditingRef = useRef(isEditing);
   
   useEffect(() => {
     titleRef.current = title;
@@ -110,6 +156,68 @@ const MarkdownPage = () => {
   useEffect(() => {
     savedSnapshotRef.current = savedSnapshot;
   }, [savedSnapshot]);
+
+  useEffect(() => {
+    mentionStateRef.current = mentionState;
+  }, [mentionState]);
+
+  useEffect(() => {
+    isEditingRef.current = isEditing;
+  }, [isEditing]);
+
+  useEffect(() => {
+    setMentionState({ ...EMPTY_MENTION_STATE });
+  }, [editorKey]);
+
+  useEffect(() => {
+    if (!contextMenu) return;
+    const closeMenu = () => setContextMenu(null);
+    window.addEventListener("click", closeMenu);
+    window.addEventListener("contextmenu", closeMenu);
+    return () => {
+      window.removeEventListener("click", closeMenu);
+      window.removeEventListener("contextmenu", closeMenu);
+    };
+  }, [contextMenu]);
+
+  const loadMentionNotes = useCallback(async () => {
+    try {
+      const tree = await FolderService.getTree();
+      const collected: MentionNote[] = [];
+      const seen = new Set<number>();
+
+      const walk = (nodes: Folder[]) => {
+        nodes.forEach((folder) => {
+          folder.notes?.forEach((note) => {
+            if (!note || !Number.isFinite(note.id) || seen.has(note.id)) return;
+            seen.add(note.id);
+            collected.push({ id: note.id, title: note.title || `Note ${note.id}` });
+          });
+          if (folder.children?.length) walk(folder.children);
+        });
+      };
+
+      walk(tree);
+      collected.sort((a, b) => a.title.localeCompare(b.title));
+      setMentionNotes(collected);
+    } catch {
+      setMentionNotes([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadMentionNotes();
+  }, [loadMentionNotes]);
+
+  useEffect(() => {
+    const handleRefresh = () => {
+      void loadMentionNotes();
+    };
+    window.addEventListener("notes:refresh", handleRefresh);
+    return () => {
+      window.removeEventListener("notes:refresh", handleRefresh);
+    };
+  }, [loadMentionNotes]);
 
   const updateDirtyState = useCallback((nextTitle: string, nextContent: string) => {
     const snapshot = savedSnapshotRef.current;
@@ -333,6 +441,303 @@ const MarkdownPage = () => {
     [updateDirtyState]
   );
 
+  const resolveInternalNoteId = useCallback((href: string) => {
+    const trimmed = href.trim();
+    if (!trimmed) return null;
+
+    if (trimmed.startsWith("note://")) {
+      const rawId = trimmed.slice("note://".length);
+      const parsed = Number(rawId.split(/[?#]/)[0]);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    if (trimmed.startsWith("note:")) {
+      const rawId = trimmed.slice("note:".length);
+      const parsed = Number(rawId.split(/[?#]/)[0]);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    try {
+      const url = new URL(trimmed, window.location.origin);
+      if (!url.pathname.startsWith("/note/")) return null;
+      const rawId = url.pathname.slice("/note/".length);
+      const parsed = Number(rawId.split(/[?#]/)[0]);
+      return Number.isFinite(parsed) ? parsed : null;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const handleInternalLinkClick = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement | null;
+      const link = target?.closest("a");
+      if (!link) return;
+      const href = link.getAttribute("href") ?? "";
+      const internalId = resolveInternalNoteId(href);
+      if (!internalId) return;
+      event.preventDefault();
+      event.stopPropagation();
+      navigate(`/note/${internalId}`);
+    },
+    [navigate, resolveInternalNoteId]
+  );
+
+  const closeMention = useCallback(() => {
+    setMentionState((prev) => (prev.isOpen ? { ...EMPTY_MENTION_STATE } : prev));
+  }, []);
+
+  const openMentionAtPos = useCallback((view: EditorView, startPos: number) => {
+    const pos = Math.max(0, startPos);
+    const coords = view.coordsAtPos(Math.min(pos + 1, view.state.doc.content.size));
+    setMentionState({
+      isOpen: true,
+      query: "",
+      startPos: pos,
+      coords: { x: coords.left, y: coords.bottom },
+      highlightedIndex: 0,
+    });
+  }, []);
+
+  const updateMentionQueryFromView = useCallback((view: EditorView) => {
+    const { from } = view.state.selection;
+    setMentionState((prev) => {
+      if (!prev.isOpen || prev.startPos === null) return prev;
+      if (from <= prev.startPos) return { ...EMPTY_MENTION_STATE };
+      const raw = view.state.doc.textBetween(prev.startPos + 1, from, " ", " ");
+      if (/\s/.test(raw)) return { ...EMPTY_MENTION_STATE };
+      const coords = view.coordsAtPos(from);
+      return {
+        ...prev,
+        query: raw,
+        coords: { x: coords.left, y: coords.bottom },
+        highlightedIndex: 0,
+      };
+    });
+  }, []);
+
+  const filteredMentionNotes = useMemo(() => {
+    if (!mentionState.isOpen) return [];
+    const query = mentionState.query.trim().toLowerCase();
+    const list = query
+      ? mentionNotes.filter((note) => note.title.toLowerCase().includes(query))
+      : mentionNotes;
+    return list.slice(0, 8);
+  }, [mentionNotes, mentionState.isOpen, mentionState.query]);
+
+  const filteredContextNotes = useMemo(() => {
+    const query = contextFilter.trim().toLowerCase();
+    const list = query
+      ? mentionNotes.filter((note) => note.title.toLowerCase().includes(query))
+      : mentionNotes;
+    return list.slice(0, 20);
+  }, [contextFilter, mentionNotes]);
+
+  useEffect(() => {
+    filteredMentionNotesRef.current = filteredMentionNotes;
+  }, [filteredMentionNotes]);
+
+  const insertMentionLink = useCallback(
+    (note: MentionNote) => {
+    setContent((prev) => {
+      const spacer = prev.endsWith("\n") || prev.length === 0 ? "" : "\n";
+      const next = `${prev}${spacer}[${note.title}](note:${note.id})`;
+      updateDirtyState(titleRef.current, next);
+      return next;
+    });
+    setUpdatedAt(new Date().toISOString());
+    setEditorKey((value) => value + 1);
+    closeMention();
+  },
+  [closeMention, updateDirtyState]
+);
+
+  const insertNoteLink = useCallback((note: MentionNote) => {
+    if (!isEditingRef.current) return;
+    setContent((prev) => {
+      const spacer = prev.endsWith("\n") || prev.length === 0 ? "" : "\n";
+      const next = `${prev}${spacer}[${note.title}](note:${note.id})`;
+      updateDirtyState(titleRef.current, next);
+      return next;
+    });
+    setUpdatedAt(new Date().toISOString());
+    setEditorKey((value) => value + 1);
+    setContextMenu(null);
+  }, [updateDirtyState]);
+
+  const handleEditorKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (!mentionStateRef.current.isOpen) return;
+      const list = filteredMentionNotesRef.current;
+      if (!list.length) return;
+
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        setMentionState((prev) => {
+          const delta = event.key === "ArrowDown" ? 1 : -1;
+          const nextIndex = (prev.highlightedIndex + delta + list.length) % list.length;
+          return { ...prev, highlightedIndex: nextIndex };
+        });
+        return;
+      }
+
+      if (event.key === "Enter" || event.key === "Tab") {
+        event.preventDefault();
+        const index = mentionStateRef.current.highlightedIndex;
+        const selected = list[index] ?? list[0];
+        if (selected) insertMentionLink(selected);
+        return;
+      }
+
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeMention();
+      }
+    },
+    [closeMention, insertMentionLink]
+  );
+
+  const handleEditorInput = useCallback(
+    (view: EditorView) => {
+      if (!isEditingRef.current) return;
+      const { from } = view.state.selection;
+      const lastChar = view.state.doc.textBetween(Math.max(0, from - 1), from, " ", " ");
+      const isOpen = mentionStateRef.current.isOpen;
+
+      if (!isOpen && lastChar === "@") {
+        openMentionAtPos(view, from - 1);
+        return;
+      }
+
+      if (isOpen) {
+        updateMentionQueryFromView(view);
+      }
+    },
+    [openMentionAtPos, updateMentionQueryFromView]
+  );
+
+  const attachEditorListeners = useCallback(
+    (view: EditorView) => {
+      if (listenersAttachedRef.current) return;
+      listenersAttachedRef.current = true;
+      editorCleanupRef.current?.();
+      editorViewRef.current = view;
+
+      const handleKeyDown = (event: KeyboardEvent) => {
+        handleEditorKeyDown(event);
+      };
+      const handleInput = () => {
+        handleEditorInput(view);
+      };
+      const handleKeyUp = (event: KeyboardEvent) => {
+        if (event.key === "@" || mentionStateRef.current.isOpen) {
+          handleEditorInput(view);
+        }
+      };
+      const handleClick = (event: MouseEvent) => {
+        const target = event.target as HTMLElement | null;
+        const link = target?.closest("a");
+        if (!link) return;
+        const href = link.getAttribute("href") ?? "";
+        const internalId = resolveInternalNoteId(href);
+        if (!internalId) return;
+        event.preventDefault();
+        event.stopPropagation();
+        navigate(`/note/${internalId}`);
+      };
+      const handleBlur = () => {
+        closeMention();
+      };
+      const handleContextMenu = (event: MouseEvent) => {
+        if (!isEditingRef.current) return;
+        event.preventDefault();
+        event.stopPropagation();
+        closeMention();
+        setContextFilter("");
+        setContextMenu({ x: event.clientX, y: event.clientY });
+      };
+
+      view.dom.addEventListener("keydown", handleKeyDown, true);
+      view.dom.addEventListener("input", handleInput, true);
+      view.dom.addEventListener("keyup", handleKeyUp, true);
+      view.dom.addEventListener("click", handleClick, true);
+      view.dom.addEventListener("blur", handleBlur, true);
+      view.dom.addEventListener("contextmenu", handleContextMenu, true);
+
+      editorCleanupRef.current = () => {
+        view.dom.removeEventListener("keydown", handleKeyDown, true);
+        view.dom.removeEventListener("input", handleInput, true);
+        view.dom.removeEventListener("keyup", handleKeyUp, true);
+        view.dom.removeEventListener("click", handleClick, true);
+        view.dom.removeEventListener("blur", handleBlur, true);
+        view.dom.removeEventListener("contextmenu", handleContextMenu, true);
+        editorViewRef.current = null;
+        listenersAttachedRef.current = false;
+      };
+    },
+    [
+      closeMention,
+      handleEditorInput,
+      handleEditorKeyDown,
+      navigate,
+      resolveInternalNoteId,
+    ]
+  );
+
+  const handleEditorReady = useCallback(
+    (crepe: Crepe) => {
+      crepeRef.current = crepe;
+      crepe.on((listener) => {
+        listener.mounted((ctx) => {
+          const view = ctx.get(editorViewCtx);
+          attachEditorListeners(view);
+        });
+        listener.selectionUpdated((ctx) => {
+          try {
+            const view = ctx.get(editorViewCtx);
+            handleEditorInput(view);
+          } catch {
+            // Editor view not ready yet.
+          }
+        });
+      });
+      try {
+        crepe.editor.action((ctx) => {
+          const view = ctx.get(editorViewCtx);
+          attachEditorListeners(view);
+        });
+      } catch {
+        // Mounted listener will attach once ready.
+      }
+    },
+    [attachEditorListeners, handleEditorInput]
+  );
+
+  useEffect(() => {
+    return () => {
+      editorCleanupRef.current?.();
+    };
+  }, []);
+
+  const handleEditorContextMenu = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      if (!isEditingRef.current) return;
+      event.preventDefault();
+      event.stopPropagation();
+      try {
+        crepeRef.current?.editor.action((ctx) => {
+          editorViewRef.current = ctx.get(editorViewCtx);
+        });
+      } catch {
+        // Editor view not ready.
+      }
+      closeMention();
+      setContextFilter("");
+      setContextMenu({ x: event.clientX, y: event.clientY });
+    },
+    [closeMention]
+  );
+
   const metadata = useMemo(() => {
     const stripMarkdown = (value: string) => {
       let result = value;
@@ -428,9 +833,19 @@ const MarkdownPage = () => {
         disabled={isLoading || !isEditing}
       />
 
+<<<<<<< Updated upstream
       <div className="editorLabel">Contenu de la note</div>
 
       <div className="mdEditorShell" data-color-mode="dark">
+=======
+      <div
+        className="mdEditorShell"
+        data-color-mode="dark"
+        onClickCapture={handleInternalLinkClick}
+        onContextMenu={handleEditorContextMenu}
+        onContextMenuCapture={handleEditorContextMenu}
+      >
+>>>>>>> Stashed changes
         {isLoading ? (
           <p className="loadingText">Chargement...</p>
         ) : (
@@ -440,10 +855,80 @@ const MarkdownPage = () => {
               editorKey={editorKey}
               readonly={!isEditing}
               onChange={handleContentChange}
+              onReady={handleEditorReady}
             />
           </MilkdownProvider>
         )}
       </div>
+
+      {contextMenu ? (
+        <div
+          className="noteContextMenu"
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+          onClick={(event) => event.stopPropagation()}
+          onContextMenu={(event) => event.preventDefault()}
+        >
+          <div className="noteContextMenuHeader">Inserer un lien vers une note</div>
+          <input
+            className="noteContextMenuInput"
+            placeholder="Filtrer..."
+            value={contextFilter}
+            onChange={(event) => setContextFilter(event.target.value)}
+          />
+          <div className="noteContextMenuList">
+            {filteredContextNotes.length ? (
+              filteredContextNotes.map((note) => (
+                <button
+                  key={note.id}
+                  type="button"
+                  className="noteContextMenuItem"
+                  onMouseDown={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    insertNoteLink(note);
+                  }}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    insertNoteLink(note);
+                  }}
+                >
+                  {note.title}
+                </button>
+              ))
+            ) : (
+              <div className="noteContextMenuEmpty">Aucune note</div>
+            )}
+          </div>
+        </div>
+      ) : null}
+
+      {mentionState.isOpen && mentionState.coords ? (
+        <div
+          className="mentionDropdown"
+          style={{ top: mentionState.coords.y + 6, left: mentionState.coords.x }}
+        >
+          {filteredMentionNotes.length ? (
+            filteredMentionNotes.map((note, index) => (
+              <button
+                key={note.id}
+                type="button"
+                className={`mentionItem ${
+                  index === mentionState.highlightedIndex ? "active" : ""
+                }`}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  insertMentionLink(note);
+                }}
+              >
+                {note.title}
+              </button>
+            ))
+          ) : (
+            <div className="mentionEmpty">Aucune note</div>
+          )}
+        </div>
+      ) : null}
 
       <footer className="metadataPanel">
         <div className="metadataGroup">
