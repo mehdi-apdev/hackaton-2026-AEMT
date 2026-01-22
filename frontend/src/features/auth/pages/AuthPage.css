@@ -1,5 +1,6 @@
 /* =========================================
    1. LAYOUT & BACKGROUND
+   Main container for authentication pages
    ========================================= */
 .auth-container {
     height: 100vh;
@@ -8,42 +9,26 @@
     justify-content: center;
     align-items: center;
     
-    /* Fond atmosphérique : Noir profond avec une lueur violette centrale */
+    /* Atmospheric background: Deep black with a central purple glow */
     background: radial-gradient(circle at center, #2a0a33 0%, #000000 90%);
-    background-size: cover;
+    /* background-size: cover; */
     
     font-family: var(--font-heading);
     position: relative;
     overflow: hidden;
 }
 
-/* Effet de particules ou de brouillard (optionnel, via ::before) */
-.auth-container::before {
-    content: "";
-    position: absolute;
-    width: 200%;
-    height: 200%;
-    background: url('https://raw.githubusercontent.com/transparenttextures/patterns/master/diagmonds-light.png'); /* Pattern subtil */
-    opacity: 0.05;
-    animation: drift 20s linear infinite;
-    pointer-events: none;
-}
-
-@keyframes drift {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
 /* =========================================
    2. THE CARD (GLASSMORPHISM)
+   Login/Register card with glass effect
    ========================================= */
 .auth-card {
-    /* Verre fumé sombre */
+    /* Dark frosted glass effect */
     background: rgba(20, 10, 25, 0.75); 
-    backdrop-filter: blur(15px); /* Le flou magique */
+    backdrop-filter: blur(15px); /* The magic blur effect */
     -webkit-backdrop-filter: blur(15px);
     
-    border: 1px solid rgba(155, 38, 182, 0.3); /* Bordure violette fine */
+    border: 1px solid rgba(155, 38, 182, 0.3); /* Thin purple border */
     border-radius: 20px;
     padding: 3rem;
     
@@ -51,25 +36,21 @@
     max-width: 450px;
     text-align: center;
     
-    /* Lueur spectrale autour de la carte */
+    /* Spectral glow around the card */
     box-shadow: 
         0 20px 50px rgba(0, 0, 0, 0.8), 
-        0 0 30px rgba(155, 38, 182, 0.15); /* Halo violet */
+        0 0 30px rgba(155, 38, 182, 0.15); /* Purple halo effect */
 
     position: relative;
     display: flex;
     flex-direction: column;
     z-index: 10;
     
-    /* Légère flottaison */
+    /* Subtle floating animation */
     animation: floatCard 6s ease-in-out infinite;
 }
 
-@keyframes floatCard {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
+/* Visual separator with gradient effect */
 .divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(155, 38, 182, 0.5), transparent);
@@ -79,7 +60,9 @@
 
 /* =========================================
    3. TYPOGRAPHY
+   Title, subtitle, and link styles
    ========================================= */
+/* Main title with orange glow effect */
 .auth-title {
     color: var(--orange);
     font-size: 2.2rem;
@@ -91,6 +74,7 @@
         0 0 15px rgba(255, 102, 0, 0.5);
 }
 
+/* Subtitle text below the main title */
 .subtitle {
     font-size: 1rem;
     color: #bbb;
@@ -98,6 +82,7 @@
     font-family: var(--font-body);
 }
 
+/* Link to switch between login and register pages */
 .auth-link {
     margin-top: 1.5rem;
     font-size: 0.9rem;
@@ -108,7 +93,6 @@
 
 .auth-link a {
     color: var(--green);
-    text-decoration: none;
     font-weight: bold;
 }
 
@@ -119,19 +103,22 @@
 
 /* =========================================
    4. FORM ELEMENTS
+   Input fields, labels, icons, and error states
    ========================================= */
+/* Form wrapper container */
 .auth-form {
     width: 100%;
     display: flex;
-    flex-direction: column;
-    gap: 1.2rem; /* Espacement uniforme */
 }
 
+/* Individual form field container */
 .form-group {
     text-align: left;
     width: 100%;
+    margin-bottom: 1.5rem;
 }
 
+/* Label above each input field */
 .form-label {
     display: block;
     margin-bottom: 0.5rem;
@@ -139,14 +126,16 @@
     font-size: 0.9rem;
     margin-left: 0.5rem;
     font-weight: bold;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 }
 
+/* Wrapper for input field and its icon */
 .input-wrapper {
     position: relative;
     width: 100%;
 }
 
+/* Icon displayed inside the input field (left side) */
 .input-icon {
     position: absolute;
     left: 1rem;
@@ -159,9 +148,10 @@
     transition: color 0.3s;
 }
 
+/* Styled input field with glassmorphism effect */
 .form-input {
     width: 100%;
-    height: 50px; /* Un peu plus haut pour le confort */
+    height: 50px;
     padding: 12px 12px 12px 3rem;
     border-radius: 12px;
     
@@ -175,30 +165,32 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Placeholder discret */
+/* Subtle placeholder text */
 .form-input::placeholder {
     color: rgba(255, 255, 255, 0.3);
 }
 
-/* FOCUS STATE : L'effet wow */
+/* FOCUS STATE: The wow effect - orange glow when field is active */
 .form-input:focus {
     background: rgba(0, 0, 0, 0.6);
     border-color: var(--orange);
     box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
 }
 
+/* Icon changes color when input is focused */
 .form-input:focus + .input-icon, 
 .input-wrapper:focus-within .input-icon {
-    color: var(--orange); /* L'icône s'allume aussi */
+    color: var(--orange); /* Icon lights up too */
 }
 
-/* ERROR STATE */
+/* ERROR STATE: Red styling for invalid inputs */
 .input-error {
     border-color: #ff4444 !important;
     box-shadow: 0 0 10px rgba(255, 68, 68, 0.2);
     animation: shake 0.4s ease-in-out;
 }
 
+/* Error message text displayed below invalid inputs */
 .error-message {
     color: #ff4444;
     font-size: 0.8rem;
@@ -209,11 +201,13 @@
     gap: 5px;
 }
 
+/* Warning icon before error message */
 .error-message::before {
-    content: "⚠️"; /* Petit warning pour le style */
+    content: "⚠️"; /* Small warning icon for style */
     font-size: 0.8rem;
 }
 
+/* Shake animation for error feedback */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
@@ -222,13 +216,15 @@
 
 /* =========================================
    5. BUTTONS
+   Submit button with gradient and hover effects
    ========================================= */
+/* Primary action button with slime green gradient */
 .btn-global {
     width: 100%;
     padding: 1rem;
     margin-top: 1rem;
     
-    /* Gradient "Slime" */
+    /* "Slime" gradient effect */
     background: linear-gradient(135deg, var(--green) 0%, #008f4c 100%);
     
     color: #000;
@@ -247,7 +243,7 @@
     overflow: hidden;
 }
 
-/* Effet de brillance au survol */
+/* Shine effect that sweeps across button on hover */
 .btn-global::after {
     content: '';
     position: absolute;
@@ -259,6 +255,7 @@
     transition: 0.5s;
 }
 
+/* Lift button up on hover with enhanced shadow */
 .btn-global:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(0, 204, 102, 0.5);
@@ -268,49 +265,20 @@
     left: 100%;
 }
 
+/* Slight scale down on button click */
 .btn-global:active {
     transform: scale(0.98);
 }
 
 /* =========================================
-   6. SCARY FEEDBACK (Success Animation)
-   ========================================= */
-.scary-feedback {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #000;
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.success-text {
-    font-size: 4rem;
-    color: var(--green); /* Vert succès */
-    font-family: 'Underdog', serif;
-    text-transform: uppercase;
-    letter-spacing: 5px;
-    animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    text-shadow: 0 0 30px var(--green);
-}
-
-@keyframes zoomIn {
-    0% { transform: scale(0); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-/* =========================================
-   7. RESPONSIVE
+   6. RESPONSIVE DESIGN
+   Mobile-specific adjustments
    ========================================= */
 @media (max-width: 480px) {
     .auth-card {
         padding: 2rem;
         max-width: 90%;
-        background: rgba(10, 5, 15, 0.9); /* Moins transparent sur mobile pour lisibilité */
+        background: rgba(10, 5, 15, 0.9); /* Less transparent on mobile for better readability */
     }
     .auth-title { font-size: 1.8rem; }
     .success-text { font-size: 2.5rem; }

@@ -10,18 +10,18 @@ const MainLayout = () => {
 
   return (
     <div className="layout-container">
-     {/* The Sidebar */}
+      {/* The Sidebar */}
       <LeftSidebar
         isLeftSidebarCollapsed={isLeftSidebarCollapsed}
         changeIsLeftSidebarCollapsed={setIsLeftSidebarCollapsed}
       />
 
-    {/* The main content */}
+      {/* The main content */}
       <div className={`main-content ${isLeftSidebarCollapsed ? 'expanded' : ''}`}>
-        
-       {/* Reopen button */}
+
+        {/* Reopen button */}
         {isLeftSidebarCollapsed && (
-          <button 
+          <button
             className="btn-reopen-sidebar"
             onClick={() => setIsLeftSidebarCollapsed(false)}
             title="Ouvrir le menu"
@@ -32,9 +32,6 @@ const MainLayout = () => {
 
         <Outlet />
       </div>
-
-   {/* 🕷️ animated spider */}
-      <div className="hanging-spider"></div>
     </div>
   );
 };

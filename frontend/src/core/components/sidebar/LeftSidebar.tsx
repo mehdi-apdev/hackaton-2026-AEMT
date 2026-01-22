@@ -123,8 +123,8 @@ const LeftSidebar = ({
 
   const handleAddRootFolder = () => {
     openInputModal(
-      "Nouveau Grimoire",
-      "Nom du grimoire...",
+      "Nouveau dossier",
+      "Nom du dossier...",
       async (name) => {
         if (!name.trim()) return;
         await FolderService.createFolder(name, null);
@@ -150,7 +150,7 @@ const LeftSidebar = ({
         {!isLeftSidebarCollapsed && (
           <div className="sidebar-actions">
             <button onClick={handleAddRootFolder} className="btn-add-root">
-              <FontAwesomeIcon icon={faPlus} /> Nouveau grimoire
+              <FontAwesomeIcon icon={faPlus} /> Nouveau dossier
             </button>
           </div>
         )}

@@ -1,38 +1,53 @@
+/* --- NotesPage.css (Final Clean) --- */
+
 .notesPage {
   min-height: 100vh;
-  padding: 24px 28px;
+  padding: 20px;
   color: var(--text);
+  display: flex;
+  flex-direction: column;
 }
 
 .notesHeader {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 20px;
-}
-
-.notesTitle {
-  margin: 0;
-}
-
-.notesSubtitle {
-  margin: 0;
-  color: #b5b5b5;
-  font-size: 0.9rem;
+  display: none; 
 }
 
 .notesBody {
-  min-height: 70vh;
-  border: 1px solid rgba(255, 102, 0, 0.25);
-  border-radius: 14px;
-  padding: 18px;
-  background: rgba(10, 10, 10, 0.55);
-  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.45);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .notesPlaceholder {
-  padding: 60px 20px;
+
+  flex: 1;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
   text-align: center;
-  color: #b0b0b0;
+
+  
+
+  color: var(--text-muted);
+
   font-style: italic;
+
+  font-family: var(--font-heading);
+
+  font-size: 1.5rem;
+
+  
+
+  background: var(--surface-overlay);
+
+  /* Coins organiques pour le placeholder */
+
+  border-radius: 40px 20px 50px 15px / 15px 50px 20px 40px;
+
+  border: 1px dashed var(--purple-dim);
+
 }

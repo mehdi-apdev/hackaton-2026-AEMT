@@ -1,106 +1,54 @@
-/* --- MainLayout.css --- */
+/* --- MainLayout.css (Nettoyé) --- */
 
 .layout-container {
   display: flex;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  background-color: var(--dark-purple); /* Fallback */
 }
 
 .main-content {
   flex: 1;
   position: relative;
-  margin-left: 290px;
+  margin-left: 290px; /* Largeur de la sidebar */
   height: 100vh;
   overflow-y: auto;
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   z-index: 1;
-  /* cursor: url("../assets/images/skeletons.png"), auto; */
 }
 
 .main-content.expanded {
   margin-left: 0;
 }
 
-/* --- 1. La Toile d'Araignée --- */
-/* .main-content::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 500px;
-  height: 500px;
-  background: url('../assets/images/spiderweb.png') no-repeat top right / contain;
-  opacity: 0.6;
-  pointer-events: none;
-  z-index: -1;
-} */
-
-/* Bouton ouvrir sidebar */
+/* Bouton pour rouvrir la sidebar quand elle est fermée */
 .btn-reopen-sidebar {
   position: absolute;
-  top: 15px;
-  left: 15px;
-  z-index: 999;
-  background-color: rgba(0, 0, 0, 0.6);
-  color: rgb(255, 102, 0);
-  border: 1px solid rgb(255, 102, 0);
-  border-radius: 4px;
-  width: 40px;
-  height: 40px;
-  font-size: 1.2rem;
+  top: 10px; /* Un peu plus haut */
+  left: 10px; /* Un peu plus à gauche */
+  z-index: 1100; /* Doit être au-dessus de tout le contenu */
+  
+  background-color: var(--surface-dark);
+  color: var(--orange);
+  border: 1px solid var(--orange);
+  border-radius: 8px;
+  
+  width: 36px; /* Légèrement plus petit */
+  height: 36px;
+  font-size: 1rem;
   cursor: pointer;
+  
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
 
 .btn-reopen-sidebar:hover {
-  background-color: rgb(255, 102, 0);
-  color: #000;
+  background-color: var(--orange);
+  color: var(--black);
   transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
+  box-shadow: 0 0 15px var(--orange-glow);
 }
-
-/* --- 2. Spider --- */
-/* .hanging-spider {
-  position: fixed;
-  top: -500px; 
-  right: 100px;
-  width: 100px;
-  height: 500px; 
-  
-  background-image: url('../assets/images/spider.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: bottom center;
-  
-  z-index: 10;
-  pointer-events: none;
-  
-  filter: invert(1); 
-  
-  animation: spider-drop 8s ease-in-out infinite;
-}
-
-/* Le fil blanc opaque */
-/* .hanging-spider::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 1px;
-  height: 100%;
-  background-color: #ffffff; 
-  transform: translateX(-50%);
-  z-index: -1;
-} */
-
-/* @keyframes spider-drop {
-  0% { transform: translateY(0); }
-  40% { transform: translateY(300px); }
-  50% { transform: translateY(280px); }
-  60% { transform: translateY(300px); }
-  100% { transform: translateY(0); }
-} */
