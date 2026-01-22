@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,7 +21,6 @@ import java.util.stream.Collectors;
 public class FolderService {
 
     private final IFolderRepository folderRepository;
-    // added for the filtering
     private final IUserRepository userRepository;
 
     public FolderService(IFolderRepository folderRepository, IUserRepository userRepository) {
@@ -28,103 +28,114 @@ public class FolderService {
         this.userRepository = userRepository;
     }
 
-    //we retrieve the user that is logged in to be sure he's getting only his folders
     private DbUser getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new GenericNotFoundException(0L, "User " + username));
     }
 
+    // --- Active Tree ---
     @Transactional(readOnly = true)
     public List<FolderDto> getFolderTree() {
         DbUser user = getCurrentUser();
-
-        //filtering by "perentIsNull" and by user id
-        // Correction : On transforme l'Optional en Stream pour retourner une liste (1 ou 0 élément)
-        return folderRepository.findByUserIdAndParentIsNull(user.getId())
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        // Fetch only active roots
+        List<DbFolder> roots = folderRepository.findByUserIdAndParentIsNullAndDeletedFalse(user.getId());
+        return roots.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
     @Transactional
     public FolderDto createFolder(FolderCreationDto input) {
         DbUser user = getCurrentUser();
-
         DbFolder folder = new DbFolder();
         folder.setName(input.getName());
-        //important to link the folder at the user
         folder.setUser(user);
 
         if (input.getParentId() != null) {
             DbFolder parent = folderRepository.findById(input.getParentId())
                     .orElseThrow(() -> new GenericNotFoundException(input.getParentId(), "Folder"));
-
-            //Security check that the parent folder belongs to the user
-            if (!parent.getUser().getId().equals(user.getId())) {
-                throw new GenericNotFoundException(input.getParentId(), "Folder (Access Denied)");
-            }
+            if (!parent.getUser().getId().equals(user.getId())) throw new GenericNotFoundException(input.getParentId(), "Folder");
             folder.setParent(parent);
         }
-
-        DbFolder savedFolder = folderRepository.save(folder);
-        return convertToDto(savedFolder);
+        return convertToDto(folderRepository.save(folder));
     }
 
-    //to delete a folder
+    // --- RECYCLE BIN LOGIC ---
+
+    // 1. Soft Delete
     @Transactional
     public void deleteFolder(Long id) {
         DbUser user = getCurrentUser();
         DbFolder folder = folderRepository.findById(id)
                 .orElseThrow(() -> new GenericNotFoundException(id, "Folder"));
+        if (!folder.getUser().getId().equals(user.getId())) throw new GenericNotFoundException(id, "Folder");
 
-        // Sécurité : On ne peut supprimer que ses propres dossiers
-        if (!folder.getUser().getId().equals(user.getId())) {
-            throw new GenericNotFoundException(id, "Folder (Access Denied)");
-        }
+        folder.setDeleted(true);
+        folder.setDeletedAt(LocalDateTime.now()); // Set timestamp
+        folderRepository.save(folder);
+    }
+
+    // 2. Get Deleted Folders
+    @Transactional(readOnly = true)
+    public List<FolderDto> getDeletedFolders() {
+        return folderRepository.findByUserIdAndDeletedTrue(getCurrentUser().getId()).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    // 3. Restore Folder
+    @Transactional
+    public void restoreFolder(Long id) {
+        DbUser user = getCurrentUser();
+        DbFolder folder = folderRepository.findById(id)
+                .orElseThrow(() -> new GenericNotFoundException(id, "Folder"));
+        if (!folder.getUser().getId().equals(user.getId())) throw new GenericNotFoundException(id, "Folder");
+
+        folder.setDeleted(false);
+        folder.setDeletedAt(null); // Clear timestamp
+        folderRepository.save(folder);
+    }
+
+    // 4. Hard Delete
+    @Transactional
+    public void hardDeleteFolder(Long id) {
+        DbUser user = getCurrentUser();
+        DbFolder folder = folderRepository.findById(id)
+                .orElseThrow(() -> new GenericNotFoundException(id, "Folder"));
+        if (!folder.getUser().getId().equals(user.getId())) throw new GenericNotFoundException(id, "Folder");
 
         folderRepository.delete(folder);
     }
 
-    // --- Mapping Helpers ---
-
-    // Converts Folder entity to DTO (recursive tree structure)
+    // --- Helpers ---
     private FolderDto convertToDto(DbFolder entity) {
         FolderDto dto = new FolderDto();
         dto.setId(entity.getId());
         dto.setName(entity.getName());
 
-        // Recursive mapping for sub-folders
         if (entity.getChildren() != null) {
             dto.setChildren(entity.getChildren().stream()
+                    .filter(child -> !child.isDeleted()) // Filter out deleted children
                     .map(this::convertToDto)
                     .collect(Collectors.toList()));
         }
 
-        // Map associated notes
         if (entity.getDbNotes() != null) {
             dto.setNotes(entity.getDbNotes().stream()
+                    .filter(note -> !note.isDeleted()) // Filter out deleted notes
                     .map(this::convertNoteToDto)
                     .collect(Collectors.toList()));
         }
         return dto;
     }
 
-    // Converts Note entity to DTO
     private NoteDto convertNoteToDto(DbNote entity) {
         NoteDto dto = new NoteDto();
         dto.setId(entity.getId());
         dto.setTitle(entity.getTitle());
         dto.setContent(entity.getContent());
-
-        // Audit dates
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setUpdatedAt(entity.getUpdatedAt());
-
-        // Link folder ID only
-        if (entity.getFolder() != null) {
-            dto.setFolderId(entity.getFolder().getId());
-        }
+        if (entity.getFolder() != null) dto.setFolderId(entity.getFolder().getId());
         return dto;
     }
 }

@@ -1,40 +1,69 @@
-import { faGhost, faSignOutAlt, faBookDead } from "@fortawesome/free-solid-svg-icons";
+import { faGhost, faSignOutAlt, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAuth } from "./features/auth/context/AuthContext";
+import { useModal } from "./shared/context/ModalContext";
+import { useNavigate } from "react-router-dom";
 import "./HomeComponent.css";
-import { Link } from "react-router-dom";
 
+/**
+ * HomeComponent - Dashboard landing page
+ * Displays welcome message, user name, and quick action to create notes
+ */
 export function HomeComponent() {
   const { user, logout } = useAuth();
+  const { openInputModal } = useModal();
+  const navigate = useNavigate();
+  /**
+   * Opens a modal to create a quick note with a title
+   * Then navigates to the notes page
+   */
+  const handleCreateQuickNote = () => {
+    openInputModal(
+      "Nouvelle Note Rapide",
+      "Titre de votre pensée...",
+      async (title) => {
+        if (!title.trim()) return;
+        navigate("/notes");
+      }
+    );
+  };
 
   return (
     <section className="home-container">
-      <div className="home-card">
+      <div className="home-card dashboard-card">
         
-        <FontAwesomeIcon icon={faGhost} className="giant-icon" />
+        {/* Header: Welcome message and decorative ghost icon */}
+        <header className="dashboard-header">
+          <div className="user-info">
+            <h1 className="welcome-title">
+              <span className="greeting">Bon retour parmi nous,</span>
+              <span className="user-name">{user?.username || "Mortel"}</span>
+            </h1>
+          </div>
+          <FontAwesomeIcon icon={faGhost} className="header-icon" />
+        </header>
 
-        <h1 className="welcome-title">
-          Bienvenue <br/>
-          <span className="user-name">{user?.username || "Mortel"}</span>
-        </h1>
+        {/* Main content: Subtitle and quick action cards */}
+        <div className="dashboard-content">
+          <p className="dashboard-subtitle">
+            Que souhaitez-vous faire aujourd'hui ?
+          </p>
 
-        <p className="welcome-subtitle">
-          Le cimetière est calme ce soir... <br/>
-          Prêt à consigner vos pensées les plus sombres ?
-        </p>
-
-        <div className="home-actions">
-          {/* Quick link to notes (if you have a default /notes route or just for example purposes) */}
-          <Link to="/notes" className="btn-ghost btn-primary-ghost">
-            <FontAwesomeIcon icon={faBookDead} />
-            Mes Grimoires
-          </Link>
-
-          <button onClick={logout} className="btn-ghost btn-logout">
-            <FontAwesomeIcon icon={faSignOutAlt} />
-            Fuir (Déconnexion)
-          </button>
+          {/* Action cards: Quick note creation button */}
+          <div className="action-grid">
+            <button onClick={handleCreateQuickNote} className="action-card secondary">
+              <FontAwesomeIcon icon={faPlusCircle} className="action-icon" />
+              <h3>Note Rapide</h3>
+            </button>
+          </div>
         </div>
+
+        {/* Footer: Logout button */}
+        <footer className="dashboard-footer">
+          <button onClick={logout} className="btn-text-logout">
+            <FontAwesomeIcon icon={faSignOutAlt} /> Fuir les lieux
+          </button>
+        </footer>
 
       </div>
     </section>

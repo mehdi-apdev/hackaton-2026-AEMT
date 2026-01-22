@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,14 @@ public class DbFolder {
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private boolean deleted = false; // By default, the note is not deleted
+
+
+    @Column
+    private LocalDateTime deletedAt;
+
 
     //to prevent an infinite loop
     @ManyToOne(fetch = FetchType.LAZY)

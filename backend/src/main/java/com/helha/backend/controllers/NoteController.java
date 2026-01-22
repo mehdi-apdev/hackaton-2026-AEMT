@@ -60,7 +60,8 @@ public class NoteController {
             byte[] zipData = exportService.exportUserNotesToZip();
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mes_notes_hantees.zip\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
+                            "mes_notes_hantees.zip\"")
                     .contentType(MediaType.valueOf("application/zip"))
                     .body(zipData);
 

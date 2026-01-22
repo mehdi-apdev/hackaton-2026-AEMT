@@ -5,15 +5,16 @@ import type { Folder } from "../models/Folder";
 import type { Note } from "../models/Note";
 import FolderService from "../services/FolderService";
 import NoteService from "../services/NoteService";
-import { faFileAlt, faFileCirclePlus, faFolderPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faFileAlt, faEllipsisV, faFolderOpen, faFolder } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useModal } from "../../../shared/context/ModalContext";
 
+// Props enrichies
 interface FolderTreeProps {
   folder: Folder;
-  openFolderIds: Set<number>;
-  onToggle: (folderId: number) => void;
-  onOpen: (folderId: number) => void;
+  openFolderIds?: Set<number>;
+  onToggle?: (folderId: number) => void;
+  onOpen?: (folderId: number) => void;
   onRefresh: () => void;
 }
 
@@ -26,96 +27,86 @@ type ContextMenuState = {
 } | null;
 
 export const FolderTree = ({ folder, openFolderIds, onToggle, onOpen, onRefresh }: FolderTreeProps) => {
-  const isOpen = openFolderIds.has(folder.id);
+  const [localIsOpen, setLocalIsOpen] = useState(false);
+  const isOpen = openFolderIds ? openFolderIds.has(folder.id) : localIsOpen;
+
   const navigate = useNavigate();
   const { id: activeNoteId } = useParams();
   const [contextMenu, setContextMenu] = useState<ContextMenuState>(null);
 
-  // Utilisation de la Modale Globale
   const { openInputModal, openConfirmModal } = useModal();
 
   const toggleOpen = (event: MouseEvent) => {
     event.stopPropagation();
-    onToggle(folder.id);
+    if (onToggle) {
+      onToggle(folder.id);
+    } else {
+      setLocalIsOpen(!localIsOpen);
+    }
   };
 
   // --- ACTIONS (CREATION) ---
-  const handleCreateSubFolder = (event: MouseEvent) => {
-    event.stopPropagation();
-    onOpen(folder.id);
+  const handleCreateSubFolder = () => {
+    if (!contextMenu) return;
     openInputModal(
       "Nouveau Sous-Dossier",
       "Nom du dossier...",
       async (name) => {
         if (!name.trim()) return;
-        await FolderService.createFolder(name, folder.id);
+        await FolderService.createFolder(name, contextMenu.id);
         onRefresh();
+        if (onOpen) onOpen(contextMenu.id);
+        else setLocalIsOpen(true);
       }
     );
+    setContextMenu(null);
   };
 
-  const handleCreateNote = (event: MouseEvent) => {
-    event.stopPropagation();
-    onOpen(folder.id);
+  const handleCreateNote = () => {
+    if (!contextMenu) return;
     openInputModal(
       "Nouvelle Note",
       "Titre de la note...",
       async (title) => {
         if (!title.trim()) return;
-        const newNote = await NoteService.createNote(title, folder.id);
+        const newNote = await NoteService.createNote(title, contextMenu.id);
         onRefresh();
+        if (onOpen) onOpen(contextMenu.id);
+        else setLocalIsOpen(true);
         navigate(`/note/${newNote.id}`);
       }
     );
+    setContextMenu(null);
   };
 
   // --- ACTIONS (SUPPRESSION) ---
-  const handleDeleteFolder = (event: MouseEvent) => {
-    event.stopPropagation();
+  const handleDelete = () => {
+    if (!contextMenu) return;
+    const isFolder = contextMenu.type === "folder";
+    const msg = isFolder
+      ? `Voulez-vous vraiment détruire "${contextMenu.name}" et tout son contenu ?`
+      : `Voulez-vous réduire "${contextMenu.name}" en cendres ?`;
+
     openConfirmModal(
-      "Supprimer le dossier ?",
-      `Voulez-vous vraiment détruire "${folder.name}" et tout son contenu ?`,
+      `Supprimer ${isFolder ? "le dossier" : "la note"} ?`,
+      msg,
       async () => {
-        await FolderService.deleteFolder(folder.id);
+        if (isFolder) await FolderService.deleteFolder(contextMenu.id);
+        else await NoteService.deleteNote(contextMenu.id);
         onRefresh();
       }
     );
-  };
-
-  const handleDeleteNote = (noteId: number, noteTitle: string, event: MouseEvent) => {
-    event.stopPropagation();
-    openConfirmModal(
-      "Supprimer la note ?",
-      `Voulez-vous réduire "${noteTitle}" en cendres ?`,
-      async () => {
-        await NoteService.deleteNote(noteId);
-        onRefresh();
-      }
-    );
-  };
-
-  const handleNoteClick = (noteId: number, event: MouseEvent) => {
-    event.stopPropagation();
-    navigate(`/note/${noteId}`);
-  };
-
-  // --- CONTEXT MENU (RENOMMER) ---
-  const handleContextMenu = (event: MouseEvent, type: "folder" | "note", id: number, name: string) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setContextMenu({ type, id, name, x: event.clientX, y: event.clientY });
+    setContextMenu(null);
   };
 
   const handleRename = () => {
     if (!contextMenu) return;
-    
-    // On utilise aussi la modale pour le renommage !
     openInputModal(
       `Renommer ${contextMenu.type === 'folder' ? 'le dossier' : 'la note'}`,
-      contextMenu.name, // Valeur par défaut (placeholder ici, idéalement input value)
+      contextMenu.name,
       async (newName) => {
         if (!newName || newName === contextMenu.name) return;
-        
+
         if (contextMenu.type === "folder") {
           await FolderService.renameFolder(contextMenu.id, newName);
         } else {
@@ -123,25 +114,32 @@ export const FolderTree = ({ folder, openFolderIds, onToggle, onOpen, onRefresh 
           await NoteService.updateNote(contextMenu.id, newName, note.content || "");
         }
         onRefresh();
-      }
+      },
+      contextMenu.name
     );
     setContextMenu(null);
   };
 
-  // Fermeture du menu contextuel au clic ailleurs
+  const handleNoteClick = (noteId: number, event: MouseEvent) => {
+    event.stopPropagation();
+    navigate(`/note/${noteId}`);
+  };
+
+  // --- MENU ---
+  const openMenu = (event: MouseEvent, type: "folder" | "note", id: number, name: string) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setContextMenu({ type, id, name, x: event.clientX, y: event.clientY });
+  };
+
   useEffect(() => {
     if (!contextMenu) return;
     const closeMenu = () => setContextMenu(null);
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setContextMenu(null);
-    };
     window.addEventListener("click", closeMenu);
-    window.addEventListener("contextmenu", closeMenu);
-    window.addEventListener("keydown", handleEscape);
+    window.addEventListener("contextmenu", closeMenu); // Ferme si on reclique ailleurs
     return () => {
       window.removeEventListener("click", closeMenu);
       window.removeEventListener("contextmenu", closeMenu);
-      window.removeEventListener("keydown", handleEscape);
     };
   }, [contextMenu]);
 
@@ -150,30 +148,28 @@ export const FolderTree = ({ folder, openFolderIds, onToggle, onOpen, onRefresh 
       <div
         className="folder-header"
         onClick={toggleOpen}
-        onContextMenu={(event) => handleContextMenu(event, "folder", folder.id, folder.name)}
+        onContextMenu={(e) => openMenu(e, "folder", folder.id, folder.name)}
       >
-        <span className="folder-icon">{isOpen ? "v" : ">"}</span>
+        <span className="folder-icon">
+          <FontAwesomeIcon icon={isOpen ? faFolderOpen : faFolder} />
+        </span>
         <span className="folder-name">{folder.name}</span>
 
-        <div className="folder-actions">
-          <button onClick={handleCreateSubFolder} title="Nouveau dossier" className="btn-icon">
-            <FontAwesomeIcon icon={faFolderPlus} />
-          </button>
-          <button onClick={handleCreateNote} title="Nouvelle note" className="btn-icon">
-            <FontAwesomeIcon icon={faFileCirclePlus} />
-          </button>
-          <button onClick={handleDeleteFolder} title="Supprimer" className="btn-icon btn-delete">
-            <FontAwesomeIcon icon={faTrash} />
-          </button>
-        </div>
+        {/* Bouton Menu (...) pour ceux qui n'ont pas de clic droit ou sur mobile */}
+        <button
+          className="btn-options"
+          onClick={(e) => openMenu(e, "folder", folder.id, folder.name)}
+        >
+          <FontAwesomeIcon icon={faEllipsisV} />
+        </button>
       </div>
 
       {isOpen && (
         <div className="folder-content">
-          {folder.children?.map((childFolder) => (
+          {folder.children?.map((child) => (
             <FolderTree
-              key={childFolder.id}
-              folder={childFolder}
+              key={child.id}
+              folder={child}
               openFolderIds={openFolderIds}
               onToggle={onToggle}
               onOpen={onOpen}
@@ -185,18 +181,19 @@ export const FolderTree = ({ folder, openFolderIds, onToggle, onOpen, onRefresh 
             <div
               key={note.id}
               className={`note-item ${String(activeNoteId) === String(note.id) ? "active" : ""}`}
-              onClick={(event) => handleNoteClick(note.id, event)}
-              onContextMenu={(event) => handleContextMenu(event, "note", note.id, note.title)}
+              onClick={(e) => handleNoteClick(note.id, e)}
+              onContextMenu={(e) => openMenu(e, "note", note.id, note.title)}
             >
               <span className="note-icon">
                 <FontAwesomeIcon icon={faFileAlt} />
               </span>
               <span className="note-title">{note.title}</span>
+
               <button
-                className="btn-icon btn-delete note-delete"
-                onClick={(event) => handleDeleteNote(note.id, note.title, event)}
+                className="btn-options"
+                onClick={(e) => openMenu(e, "note", note.id, note.title)}
               >
-                <FontAwesomeIcon icon={faTrash} />
+                <FontAwesomeIcon icon={faEllipsisV} />
               </button>
             </div>
           ))}
@@ -207,37 +204,33 @@ export const FolderTree = ({ folder, openFolderIds, onToggle, onOpen, onRefresh 
         </div>
       )}
 
-      {/* Menu Contextuel Personnalisé */}
+      {/* Menu Contextuel */}
       {contextMenu && (
-        <div 
-          className="context-menu" 
-          style={{ 
-            top: contextMenu.y, 
+        <div
+          className="context-menu"
+          style={{
+            top: contextMenu.y,
             left: contextMenu.x,
             position: 'fixed',
-            background: '#333',
-            border: '1px solid #555',
-            padding: '5px',
-            borderRadius: '4px',
-            zIndex: 9999
+            background: '#222',
+            border: '1px solid var(--orange)',
+            padding: '5px 0',
+            borderRadius: '6px',
+            zIndex: 9999,
+            boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+            minWidth: '150px',
+            color: '#eee'
           }}
         >
-          <button 
-            type="button" 
-            className="context-menu-item" 
-            onClick={handleRename}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'white',
-              cursor: 'pointer',
-              padding: '5px 10px',
-              textAlign: 'left',
-              width: '100%'
-            }}
-          >
-            Renommer
-          </button>
+          {contextMenu.type === "folder" && (
+            <>
+              <div className="menu-item" onClick={handleCreateSubFolder}>+ Dossier</div>
+              <div className="menu-item" onClick={handleCreateNote}>+ Note</div>
+              <div className="menu-divider" style={{ height: 1, background: '#444', margin: '4px 0' }}></div>
+            </>
+          )}
+          <div className="menu-item" onClick={handleRename}>Renommer</div>
+          <div className="menu-item delete" onClick={handleDelete} style={{ color: '#ff4444' }}>Supprimer</div>
         </div>
       )}
     </div>

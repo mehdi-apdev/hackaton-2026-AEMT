@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import classNames from "classnames";
 import "./sidebar.css";
 import { FolderTree } from "../../../features/notes/components/FolderTree";
@@ -8,6 +8,7 @@ import type { Folder } from "../../../features/notes/models/Folder";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useModal } from "../../../shared/context/ModalContext"; // Import du hook
 
 type LeftSidebarProps = {
   isLeftSidebarCollapsed: boolean;
@@ -23,6 +24,9 @@ const LeftSidebar = ({
   const [openFolderIds, setOpenFolderIds] = useState<Set<number>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // RÉCUPÉRATION DE LA MODALE
+  const { openInputModal } = useModal();
 
   const sidebarClasses = classNames({
     sidenav: true,
@@ -117,15 +121,16 @@ const LeftSidebar = ({
     });
   }, []);
 
-  const handleAddRootFolder = async () => {
-    const name = prompt("Nom du nouveau grimoire :");
-    if (!name) return;
-    try {
-      await FolderService.createFolder(name, null);
-      refreshTree();
-    } catch (error) {
-      alert("Erreur lors de la creation du grimoire.");
-    }
+  const handleAddRootFolder = () => {
+    openInputModal(
+      "Nouveau dossier",
+      "Nom du dossier...",
+      async (name) => {
+        if (!name.trim()) return;
+        await FolderService.createFolder(name, null);
+        refreshTree();
+      }
+    );
   };
 
   return (
@@ -133,7 +138,7 @@ const LeftSidebar = ({
       <div className="logo-container">
         {!isLeftSidebarCollapsed && (
           <Fragment>
-            <div className="logo-text">Spooky Notes</div>
+            <Link to="/" className="logo-text">Spooky Notes</Link>
             <button className="icon-btn close-btn" onClick={closeSidenav} title="Fermer">
               <FontAwesomeIcon icon={faTimes} />
             </button>
@@ -145,7 +150,7 @@ const LeftSidebar = ({
         {!isLeftSidebarCollapsed && (
           <div className="sidebar-actions">
             <button onClick={handleAddRootFolder} className="btn-add-root">
-              <FontAwesomeIcon icon={faPlus} /> Nouveau grimoire
+              <FontAwesomeIcon icon={faPlus} /> Nouveau dossier
             </button>
           </div>
         )}

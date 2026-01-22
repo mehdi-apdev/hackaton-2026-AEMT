@@ -1,13 +1,22 @@
-/* --- MOBILE & TABLET OPTIMIZATIONS --- */
+/* ========================================
+   MOBILE & TABLET OPTIMIZATIONS
+   ======================================== */
 
 @media (max-width: 768px) {
   
-  /* 1. Désactiver les curseurs personnalisés (inutiles au tactile) */
+  /* ----------------------------------------
+     1. GLOBAL MOBILE ADJUSTMENTS
+     ---------------------------------------- */
+  
+  /* Disable custom cursors (unnecessary for touch devices) */
   * {
     cursor: auto !important;
   }
 
-  /* 2. AUTH PAGES (Login/Register) */
+  /* ----------------------------------------
+     2. AUTHENTICATION PAGES (Login/Register)
+     ---------------------------------------- */
+  
   .auth-card {
     padding: 1.5rem !important;
     max-width: 90% !important;
@@ -18,35 +27,44 @@
     font-size: 1.8rem !important;
   }
 
+  /* Prevent automatic zoom on iOS when focusing inputs */
   .form-input {
-    font-size: 16px !important; /* Évite le zoom automatique sur iOS */
+    font-size: 16px !important;
   }
 
-  /* 3. SIDEBAR */
+  /* ----------------------------------------
+     3. SIDEBAR NAVIGATION
+     ---------------------------------------- */
+  
+  /* Sidebar takes 85% of screen width when open */
   .sidenav {
-    width: 85% !important; /* Ne prend pas tout l'écran mais presque */
+    width: 85% !important;
     box-shadow: 10px 0 50px rgba(0,0,0,0.8) !important;
   }
 
-  /* Quand fermée sur mobile, elle disparaît totalement */
+  /* When collapsed, sidebar is completely hidden off-screen */
   .sidenav-collapsed {
     transform: translateX(-100%) !important;
     width: 0 !important;
   }
 
-  /* Le bouton menu (hamburger) doit être toujours accessible */
+  /* Ensure hamburger menu button is always accessible */
   .logo-container {
     padding: 15px !important;
   }
 
-  /* 4. HOME PAGE */
+  /* ----------------------------------------
+     4. HOME PAGE
+     ---------------------------------------- */
+  
   .home-container {
     padding: 1rem !important;
   }
 
+  /* Add top margin to avoid being hidden by navbar */
   .home-card {
     padding: 2rem 1.5rem !important;
-    margin-top: 60px; /* Espace pour ne pas être caché par une éventuelle navbar */
+    margin-top: 60px;
   }
 
   .welcome-title {
@@ -57,8 +75,9 @@
     font-size: 3rem !important;
   }
 
+  /* Stack action buttons vertically */
   .home-actions {
-    flex-direction: column; /* Boutons l'un sous l'autre */
+    flex-direction: column;
     width: 100%;
   }
 
@@ -67,32 +86,52 @@
     justify-content: center;
   }
 
-  /* 5. NOTES PAGE & EDITOR */
+  /* ----------------------------------------
+     5. NOTES PAGE & MARKDOWN EDITOR
+     ---------------------------------------- */
+  
+  /* Reduce lateral padding and remove border radius to maximize space */
   .markdownPage {
-    padding: 10px !important;
+    padding: 10px 5px !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
   }
 
+  /* Stack header elements vertically */
   .markdownHeader {
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
+    padding: 0 5px !important;
   }
 
-  .saveStatus {
-    margin-left: 0 !important;
-    text-align: center;
-    margin-bottom: 10px;
+  /* Center save indicator on mobile */
+  .saveIndicator {
+    margin: 0 auto !important;
   }
 
   .titleInput {
-    font-size: 1.5rem !important;
+    font-size: 1.4rem !important;
+    padding: 8px 5px !important;
   }
 
+  /* Minimal padding for text editor */
   .mdEditorShell {
-    padding: 10px !important;
+    padding: 5px !important;
+    margin: 0 !important;
+    width: 100% !important;
+    min-height: 300px !important;
   }
 
-  /* Masquer les métadonnées trop verbeuses sur mobile */
+  /* Force Milkdown editor to take full available width */
+  .mdEditorShell .milkdown .editor,
+  .mdEditorShell .milkdown .ProseMirror {
+    padding: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Simplify metadata panel layout for mobile */
   .metadataPanel {
     grid-template-columns: 1fr 1fr !important;
     font-size: 0.7rem !important;
