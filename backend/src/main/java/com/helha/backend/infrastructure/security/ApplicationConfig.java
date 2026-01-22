@@ -21,8 +21,8 @@ public class ApplicationConfig {
     private final IUserRepository userRepository;
 
 
-     //Bridges Spring Security with our Database
-     //Converts a DbUser entity into a Spring Security User object
+    //Bridges Spring Security with our Database
+    //Converts a DbUser entity into a Spring Security User object
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -36,8 +36,8 @@ public class ApplicationConfig {
     }
 
 
-     //Configures the strategy to verify credentials
-     //Links our UserDetailsService and the BCrypt encoder
+    //Configures the strategy to verify credentials
+    //Links our UserDetailsService and the BCrypt encoder
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
