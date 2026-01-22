@@ -37,7 +37,7 @@ public class NoteService {
     }
 
     /**
-     * Helper to get the current authenticated user from security context.
+     * Helper to retrieve the current authenticated user.
      */
     private DbUser getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -46,7 +46,7 @@ public class NoteService {
     }
 
     /**
-     * Creates a new note. If no folderId is provided, it defaults to the user's root folder.
+     * Creates a new note. If no folderId is provided, it assigns the note to the user's root folder.
      */
     @Transactional
     public NoteDto createNote(NoteCreationDto input) {
@@ -57,7 +57,7 @@ public class NoteService {
         note.setUser(user);
 
         if (input.getFolderId() != null) {
-            // Assign to specific folder requested by user
+            // Assign to specific folder
             DbFolder folder = folderRepository.findById(input.getFolderId())
                     .orElseThrow(() -> new GenericNotFoundException(input.getFolderId(), "Folder"));
             note.setFolder(folder);
@@ -70,13 +70,13 @@ public class NoteService {
             note.setFolder(root);
         }
 
-        // Calculate and set note statistics (word count, size, etc.)
+        // Calculate statistics before saving
         updateMetadata(note, note.getContent());
         return convertToDto(noteRepository.save(note));
     }
 
     /**
-     * Updates note statistics based on its content using MetadataUtils utility.
+     * Updates note statistics (words, lines, size) using MetadataUtils.
      */
     private void updateMetadata(DbNote note, String content) {
         if (content == null) content = "";
@@ -87,7 +87,7 @@ public class NoteService {
     }
 
     /**
-     * Updates an existing note and refreshes its metadata if content is changed.
+     * Updates an existing note and refreshes metadata.
      */
     @Transactional
     public NoteDto updateNote(Long id, NoteUpdateDto input) {
@@ -111,7 +111,7 @@ public class NoteService {
         return convertToDto(noteRepository.save(note));
     }
 
-    // --- Bin & Lifecycle Management ---
+    // --- Soft Delete, Restore and Permanently Delete methods ---
 
     @Transactional
     public void deleteNote(Long id) {

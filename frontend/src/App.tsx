@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "./layout/MainLayout";
-import { HomeComponent } from "./HomeComponent";
+import DashboardPage from "./features/dashboard/pages/DashboardPage";
 import NotFoundComponent from "./core/components/NotFoundComponent";
 
 // --- Auth Imports ---
@@ -11,7 +11,6 @@ import RegisterPage from "./features/auth/pages/RegisterPage";
 // --- Features Imports ---
 import NotesPage from "./features/notes/pages/NotesPage";
 import BinPage from "./features/notes/pages/BinPage";
-import systemRoutes from "./features/system/system-routes";
 
 function App() {
   return (
@@ -26,21 +25,12 @@ function App() {
           {/* Main Layout (Sidebar + Content) */}
           <Route path="/" element={<MainLayout />}>
             {/* Default Home Page */}
-            <Route index element={<HomeComponent />} />
+            <Route index element={<DashboardPage />} />
 
             {/* Notes Feature */}
             <Route path="notes" element={<NotesPage />} />
             <Route path="note/:id" element={<NotesPage />} />
             <Route path="bin" element={<BinPage />} />
-
-            {/* System Feature: Mapping the array to dynamically create <Route> */}
-            {systemRoutes.map((route) => (
-              <Route 
-                key={route.path}
-                path={route.path} 
-                element={route.element} 
-              />
-            ))}
 
             <Route path="*" element={<NotFoundComponent />} />
           </Route>

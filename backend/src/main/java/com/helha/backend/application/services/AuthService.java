@@ -25,7 +25,7 @@ public class AuthService {
 
     /**
      * Registers a new user and automatically creates their default root folder.
-     * Transactional ensures that if folder creation fails, the user is not created.
+     * Transactional ensures both user and folder are created or none.
      */
     @Transactional
     public void register(AuthRequestDto request) {
@@ -40,18 +40,18 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         DbUser savedUser = userRepository.save(user);
 
-        // 2. Create the default root folder "Ma bibliothèque" for the new user
+        // 2. Create the default root folder for the new user
         DbFolder rootFolder = new DbFolder();
         rootFolder.setName("Ma bibliothèque");
-        rootFolder.setUser(savedUser); // Link the folder to the newly created user
-        rootFolder.setParent(null);    // Explicitly set as a root folder (no parent)
-        rootFolder.setDeleted(false);  // Ensure it's active by default
+        rootFolder.setUser(savedUser); // Link the folder to the saved user
+        rootFolder.setParent(null);    // Root folder has no parent
+        rootFolder.setDeleted(false);  // Ensure it is active
 
         folderRepository.save(rootFolder);
     }
 
     /**
-     * Authenticates a user and returns a JWT token if valid.
+     * Authenticates a user and returns a JWT token.
      */
     public String login(AuthRequestDto request) {
         authenticationManager.authenticate(

@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCircleNotch, faExclamationCircle, faEye, faPen } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCircleNotch, faExclamationCircle} from "@fortawesome/free-solid-svg-icons";
 import {
   useCallback,
   useEffect,
@@ -102,7 +102,7 @@ const MarkdownPage = () => {
 
   const titleRef = useRef(title);
   const savedSnapshotRef = useRef(savedSnapshot);
-  
+
   useEffect(() => {
     titleRef.current = title;
   }, [title]);
@@ -410,12 +410,16 @@ const MarkdownPage = () => {
     <div className="markdownPage">
       <header className="markdownHeader">
         <div className="headerLeft">
+          
+          {/* Save status indicator */}
           <div className={`saveIndicator ${statusClass}`} title={statusLabel}>
             <FontAwesomeIcon icon={statusIcon} spin={isSaving} />
           </div>
+
         </div>
 
         <div className="headerActions">
+          {/* Button to export the actual note as a PDF */}
           <button
             type="button"
             className="exportBtn"
@@ -424,6 +428,7 @@ const MarkdownPage = () => {
           >
             {isExportingPdf ? "Export PDF..." : "Export PDF"}
           </button>
+          {/* Button to export the actual note as a ZIP archive */}
           <button
             type="button"
             className="exportBtn exportBtnSecondary"
@@ -432,15 +437,18 @@ const MarkdownPage = () => {
           >
             {isExportingZip ? "Export Archive..." : "Export Archive"}
           </button>
-          <button
-            type="button"
-            className="toggleBtn"
-            onClick={() => setIsEditing((value) => !value)}
-          >
-            {isEditing ? "Mode lecture" : "Mode edition"}
-          </button>
-          
-          
+
+          {/* toggle switch to enable or disable edition mode */}
+          <div className={`toggle-container ${isEditing ? "active" : ""}`}>
+            <span>{isEditing ? "Édition" : "Lecture"}</span>
+            <button
+              type="button"
+              className={`switch ${isEditing ? "on" : "off"}`}
+              onClick={() => setIsEditing((prev) => !prev)} >
+              <div className="handle" />
+            </button>
+          </div>
+
         </div>
       </header>
 

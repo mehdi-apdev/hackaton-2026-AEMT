@@ -1,16 +1,16 @@
-import { faGhost, faSignOutAlt, faPlusCircle, faBookSkull } from "@fortawesome/free-solid-svg-icons";
+import { faSignOutAlt, faBookSkull } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useAuth } from "./features/auth/context/AuthContext";
-import { useModal } from "./shared/context/ModalContext";
+import { useAuth } from "../../auth/context/AuthContext";
+import { useModal } from "../../../shared/context/ModalContext";
 import { Link, useNavigate } from "react-router-dom";
-import "./HomeComponent.css";
+import "./DashboardPage.css";
 
 /**
- * HomeComponent - Dashboard landing page
+ * DashboardPage - Dashboard landing page
  * Displays welcome message, user name, and quick action to create notes
  */
-export function HomeComponent() {
-  const { user, logout, login } = useAuth();
+export default function DashboardPage() {
+  const { user, logout} = useAuth();
   const { openInputModal } = useModal();
   const navigate = useNavigate();
   /**

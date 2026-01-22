@@ -147,25 +147,24 @@ public class FolderService {
      * @param input The DTO containing the new name.
      * @return The updated folder as a DTO.
      */
+    /**
+     * Updates the name of a folder (root or subfolder).
+     * Ownership is verified before the update.
+     */
     @Transactional
     public FolderDto updateFolder(Long id, FolderUpdateDto input) {
-        DbUser user = getCurrentUser(); // Get currently logged-in user
-
-        // Find the folder or throw an exception if not found
+        DbUser user = getCurrentUser();
         DbFolder folder = folderRepository.findById(id)
                 .orElseThrow(() -> new GenericNotFoundException(id, "Folder"));
 
-        // Security: Check if the folder belongs to the current user
         if (!folder.getUser().getId().equals(user.getId())) {
             throw new GenericNotFoundException(id, "Folder");
         }
 
-        // Update the name if provided and not blank
         if (input.getName() != null && !input.getName().isBlank()) {
             folder.setName(input.getName());
         }
 
-        DbFolder updatedFolder = folderRepository.save(folder);
-        return convertToDto(updatedFolder); // Convert back to DTO for the front-end
+        return convertToDto(folderRepository.save(folder));
     }
 }
