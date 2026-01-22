@@ -1,7 +1,6 @@
 import { faSignOutAlt, faBookSkull } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAuth } from "../../auth/context/AuthContext";
-// import { useModal } from "../../../shared/context/ModalContext";
 import { Link, useNavigate } from "react-router-dom";
 import "./DashboardPage.css";
 
@@ -11,23 +10,7 @@ import "./DashboardPage.css";
  */
 export default function DashboardPage() {
   const { user, logout} = useAuth();
-  // const { openInputModal } = useModal();
   const navigate = useNavigate();
-  /**
-   * Opens a modal to create a quick note with a title
-   * Then navigates to the notes page
-   */
-  // const handleCreateQuickNote = () => {
-  //   openInputModal(
-  //     "Nouvelle Note Rapide",
-  //     "Titre de votre pensée...",
-  //     async (title) => {
-  //       if (!title.trim()) return;
-  //       navigate("/notes");
-  //     }
-  //   );
-  // };
-
   const redirectToLogin = () => {
     navigate("/login");
   };

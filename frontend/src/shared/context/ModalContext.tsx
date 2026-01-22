@@ -1,14 +1,14 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { Modal } from "../components/Modal";
 
-// Types d'actions possibles
+// Actions types for modals. Every type we can use 
 type ModalType = "NONE" | "INPUT" | "CONFIRM";
 
 interface ModalConfig {
   type: ModalType;
   title: string;
-  message?: string;       // Pour la suppression
-  placeholder?: string;   // Pour la création
+  message?: string;       // For deletion
+  placeholder?: string;   // For creation
   onConfirm: (inputValue?: string) => void | Promise<void>;
 }
 

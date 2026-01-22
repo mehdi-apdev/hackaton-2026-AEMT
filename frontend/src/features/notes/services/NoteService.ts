@@ -53,7 +53,7 @@ const NoteService = {
   },
  
   /**
-   * Exporte toutes les notes et dossiers en archive ZIP.
+   * Export every note as a ZIP archive.
    * GET /notes/export/zip
    */
   exportArchive: async (): Promise<Blob> => {
