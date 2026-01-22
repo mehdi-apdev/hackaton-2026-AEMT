@@ -1,8 +1,8 @@
-import { faGhost, faSignOutAlt, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import { faGhost, faSignOutAlt, faPlusCircle, faBookSkull } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAuth } from "./features/auth/context/AuthContext";
 import { useModal } from "./shared/context/ModalContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./HomeComponent.css";
 
 /**
@@ -35,14 +35,14 @@ export function HomeComponent() {
         {/* Header: Welcome message and decorative ghost icon */}
         <header className="dashboard-header">
           <div className="user-info">
-            <h1 className="welcome-title">
-              <span className="greeting">Bon retour parmi nous,</span>
-              <span className="user-name">{user?.username || "Mortel"}</span>
-            </h1>
+            <div className="welcome-title">
+              <span className="greeting">Bienvenue, Mortel</span>
+              <span className="user-name" data-text={user?.username || "Étranger"}>
+                {user?.username || "Étranger"}
+              </span>
+            </div>
           </div>
-          <FontAwesomeIcon icon={faGhost} className="header-icon" />
         </header>
-
         {/* Main content: Subtitle and quick action cards */}
         <div className="dashboard-content">
           <p className="dashboard-subtitle">
@@ -51,10 +51,11 @@ export function HomeComponent() {
 
           {/* Action cards: Quick note creation button */}
           <div className="action-grid">
-            <button onClick={handleCreateQuickNote} className="action-card secondary">
-              <FontAwesomeIcon icon={faPlusCircle} className="action-icon" />
-              <h3>Note Rapide</h3>
-            </button>
+            <Link to="/notes" className="action-card">
+              <FontAwesomeIcon icon={faBookSkull} className="action-icon" />
+              <h3>Entrer dans le Grimoire</h3>
+              <p>Consultez vos notes interdites et sorts obscurs.</p>
+            </Link>
           </div>
         </div>
 

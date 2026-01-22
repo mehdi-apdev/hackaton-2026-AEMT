@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import LeftSidebar from '../core/components/sidebar/LeftSidebar';
 import './MainLayout.css';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { faSkull } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const MainLayout = () => {
@@ -26,7 +26,7 @@ const MainLayout = () => {
             onClick={() => setIsLeftSidebarCollapsed(false)}
             title="Ouvrir le menu"
           >
-            <FontAwesomeIcon icon={faBars} />
+            <FontAwesomeIcon icon={faSkull} />
           </button>
         )}
 
