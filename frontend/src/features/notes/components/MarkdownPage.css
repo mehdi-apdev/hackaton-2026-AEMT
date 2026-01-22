@@ -3,7 +3,9 @@
 
 /* Main container: A dark surface with depth and atmosphere */
 .markdownPage {
-  background: linear-gradient(135deg, #281328 0%, #3d1d3d 100%);
+  background: 
+    url("../../../assets/images/web.png") center/cover no-repeat,
+    linear-gradient(135deg, #281328 0%, #3d1d3d 100%);
   border: 1px solid var(--purple-border);
   border-radius: 16px;
   padding: 30px;

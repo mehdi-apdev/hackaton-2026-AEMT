@@ -22,16 +22,12 @@ function App() {
 
         {/* --- 2. Protected Routes (Guard) --- */}
         <Route element={<RequireAuth />}>
-          {/* Main Layout (Sidebar + Content) */}
           <Route path="/" element={<MainLayout />}>
-            {/* Default Home Page */}
-            <Route index element={<DashboardPage />} />
+            <Route index element={<DashboardPage />} /> {/* Default Home Page */}
 
-            {/* Notes Feature */}
             <Route path="notes" element={<NotesPage />} />
             <Route path="note/:id" element={<NotesPage />} />
             <Route path="bin" element={<BinPage />} />
-
             <Route path="*" element={<NotFoundComponent />} />
           </Route>
         </Route>
