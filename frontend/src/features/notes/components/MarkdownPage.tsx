@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCircleNotch, faExclamationCircle} from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCircleNotch, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import {
   useCallback,
   useEffect,
@@ -8,12 +8,17 @@ import {
   useRef,
   useState,
   type ChangeEvent,
+  type MouseEvent,
 } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Milkdown, MilkdownProvider, useEditor } from "@milkdown/react";
 import { Crepe } from "@milkdown/crepe";
+import { editorViewCtx } from "@milkdown/core";
+import type { EditorView } from "@milkdown/prose/view";
 import { jsPDF } from "jspdf";
 import NoteService from "../services/NoteService";
+import FolderService from "../services/FolderService";
+import type { Folder } from "../models/Folder";
 import "@milkdown/crepe/theme/common/style.css";
 import "@milkdown/crepe/theme/frame-dark.css";
 import "./MarkdownPage.css";
@@ -32,11 +37,17 @@ Ecris ici en **Markdown**.
 - [ ] A faire
 `;
 
+type LinkNote = {
+  id: number;
+  title: string;
+};
+
 type MilkdownEditorProps = {
   defaultValue: string;
   editorKey: number;
   readonly: boolean;
   onChange: (markdown: string) => void;
+  onReady?: (crepe: Crepe) => void;
 };
 
 const MilkdownEditor = ({
@@ -44,6 +55,7 @@ const MilkdownEditor = ({
   editorKey,
   readonly,
   onChange,
+  onReady,
 }: MilkdownEditorProps) => {
   const crepeRef = useRef<Crepe | null>(null);
 
@@ -70,12 +82,19 @@ const MilkdownEditor = ({
     crepeRef.current?.setReadonly(readonly);
   }, [readonly]);
 
+  useEffect(() => {
+    if (crepeRef.current) {
+      onReady?.(crepeRef.current);
+    }
+  }, [editorKey, onReady]);
+
   return <Milkdown />;
 };
 
 const MarkdownPage = () => {
   const titleId = useId();
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const noteId = useMemo(() => {
     if (!id) return null;
@@ -99,9 +118,15 @@ const MarkdownPage = () => {
   const [editorKey, setEditorKey] = useState(0);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const [isExportingZip, setIsExportingZip] = useState(false);
+  const [linkNotes, setLinkNotes] = useState<LinkNote[]>([]);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const [contextFilter, setContextFilter] = useState("");
 
   const titleRef = useRef(title);
   const savedSnapshotRef = useRef(savedSnapshot);
+  const crepeRef = useRef<Crepe | null>(null);
+  const editorCleanupRef = useRef<(() => void) | null>(null);
+  const isEditingRef = useRef(isEditing);
 
   useEffect(() => {
     titleRef.current = title;
@@ -110,6 +135,60 @@ const MarkdownPage = () => {
   useEffect(() => {
     savedSnapshotRef.current = savedSnapshot;
   }, [savedSnapshot]);
+
+  useEffect(() => {
+    isEditingRef.current = isEditing;
+  }, [isEditing]);
+
+  useEffect(() => {
+    if (!contextMenu) return;
+    const closeMenu = () => setContextMenu(null);
+    window.addEventListener("click", closeMenu);
+    window.addEventListener("contextmenu", closeMenu);
+    return () => {
+      window.removeEventListener("click", closeMenu);
+      window.removeEventListener("contextmenu", closeMenu);
+    };
+  }, [contextMenu]);
+
+  const loadLinkNotes = useCallback(async () => {
+    try {
+      const tree = await FolderService.getTree();
+      const collected: LinkNote[] = [];
+      const seen = new Set<number>();
+
+      const walk = (nodes: Folder[]) => {
+        nodes.forEach((folder) => {
+          folder.notes?.forEach((note) => {
+            if (!note || !Number.isFinite(note.id) || seen.has(note.id)) return;
+            seen.add(note.id);
+            collected.push({ id: note.id, title: note.title || `Note ${note.id}` });
+          });
+          if (folder.children?.length) walk(folder.children);
+        });
+      };
+
+      walk(tree);
+      collected.sort((a, b) => a.title.localeCompare(b.title));
+      setLinkNotes(collected);
+    } catch {
+      setLinkNotes([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadLinkNotes();
+  }, [loadLinkNotes]);
+
+  useEffect(() => {
+    const handleRefresh = () => {
+      void loadLinkNotes();
+    };
+    window.addEventListener("notes:refresh", handleRefresh);
+    return () => {
+      window.removeEventListener("notes:refresh", handleRefresh);
+    };
+  }, [loadLinkNotes]);
 
   const updateDirtyState = useCallback((nextTitle: string, nextContent: string) => {
     const snapshot = savedSnapshotRef.current;
@@ -199,12 +278,6 @@ const MarkdownPage = () => {
     }
   }, [noteId, title, content]);
 
-  /**
-   * Exports the current note as a PDF file.
-   * Handles markdown stripping and formatting.
-   * Sets error messages on failure.
-   * Manages exporting state.
-   */
   const handleExportPdf = useCallback(async () => {
     setIsExportingPdf(true);
     setErrorMessage(null);
@@ -226,13 +299,6 @@ const MarkdownPage = () => {
     const safeTitle = (title || "note").trim().replace(/[<>:"/\\|?*]+/g, "_");
     const plainText = stripMarkdown(content || "");
 
-    /**
-     * Generates a PDF from the note content.
-     * Handles pagination and text wrapping.
-     * Saves the PDF file with a safe filename.
-     * Catches and sets error messages on failure.
-     * Finally, resets the exporting state.
-     */
     try {
       const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
       doc.setFillColor(255, 255, 255);
@@ -277,12 +343,6 @@ const MarkdownPage = () => {
     }
   }, [title, content]);
 
-  /**
-   * Exports all notes as a ZIP archive.
-   * Initiates download of the ZIP file.
-   * Sets error messages on failure.
-   * Manages exporting state.
-   */
   const handleExportZip = useCallback(async () => {
     setIsExportingZip(true);
     setErrorMessage(null);
@@ -305,15 +365,6 @@ const MarkdownPage = () => {
     }
   }, []);
 
-  /**
-   * Auto-saves the note after a delay when there are unsaved changes (Delay is 800ms).
-   * Skips saving if loading or already saving.
-   * Also sets up a keyboard shortcut (Ctrl+S / Cmd+S) for manual saving.
-   * Prevents default browser behavior on shortcut.
-   * Skips saving if there are no unsaved changes.
-   * Cleans up timeouts and event listeners appropriately.
-   * Dependencies include noteId, isLoading, isSaving, hasUnsavedChanges, and handleSave.
-   */
   useEffect(() => {
     if (!noteId || isLoading || isSaving || !hasUnsavedChanges) return;
     const timeoutId = window.setTimeout(() => {
@@ -338,7 +389,7 @@ const MarkdownPage = () => {
   const statusLabel = isSaving
     ? "Sauvegarde..."
     : hasUnsavedChanges
-      ? "Modifications non enregistrées"
+      ? "Modifications non enregistrees"
       : "Sauvegarde";
   const statusClass = isSaving
     ? "status-saving"
@@ -360,6 +411,139 @@ const MarkdownPage = () => {
     },
     [updateDirtyState]
   );
+
+  const resolveInternalNoteId = useCallback((href: string) => {
+    const trimmed = href.trim();
+    if (!trimmed) return null;
+
+    if (trimmed.startsWith("note://")) {
+      const rawId = trimmed.slice("note://".length);
+      const parsed = Number(rawId.split(/[?#]/)[0]);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    if (trimmed.startsWith("note:")) {
+      const rawId = trimmed.slice("note:".length);
+      const parsed = Number(rawId.split(/[?#]/)[0]);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    try {
+      const url = new URL(trimmed, window.location.origin);
+      if (!url.pathname.startsWith("/note/")) return null;
+      const rawId = url.pathname.slice("/note/".length);
+      const parsed = Number(rawId.split(/[?#]/)[0]);
+      return Number.isFinite(parsed) ? parsed : null;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const handleInternalLinkClick = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement | null;
+      const link = target?.closest("a");
+      if (!link) return;
+      const href = link.getAttribute("href") ?? "";
+      const internalId = resolveInternalNoteId(href);
+      if (!internalId) return;
+      event.preventDefault();
+      event.stopPropagation();
+      navigate(`/note/${internalId}`);
+    },
+    [navigate, resolveInternalNoteId]
+  );
+
+  const handleEditorContextMenu = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      if (!isEditingRef.current) return;
+      event.preventDefault();
+      event.stopPropagation();
+      setContextFilter("");
+      setContextMenu({ x: event.clientX, y: event.clientY });
+    },
+    []
+  );
+
+  const insertNoteLink = useCallback(
+    (note: LinkNote) => {
+      if (!isEditingRef.current) return;
+      setContent((prev) => {
+        const spacer = prev.endsWith("\n") || prev.length === 0 ? "" : "\n";
+        const next = `${prev}${spacer}[${note.title}](note:${note.id})`;
+        updateDirtyState(titleRef.current, next);
+        return next;
+      });
+      setUpdatedAt(new Date().toISOString());
+      setEditorKey((value) => value + 1);
+      setContextMenu(null);
+    },
+    [updateDirtyState]
+  );
+
+  const attachEditorHandlers = useCallback(
+    (view: EditorView) => {
+      editorCleanupRef.current?.();
+      const handleContextMenu = (event: globalThis.MouseEvent) => {
+        if (!isEditingRef.current) return;
+        event.preventDefault();
+        event.stopPropagation();
+        setContextFilter("");
+        setContextMenu({ x: event.clientX, y: event.clientY });
+      };
+
+      const handleLinkClick = (event: globalThis.MouseEvent) => {
+        const target = event.target as HTMLElement | null;
+        const link = target?.closest("a");
+        if (!link) return;
+        const href = link.getAttribute("href") ?? "";
+        const internalId = resolveInternalNoteId(href);
+        if (!internalId) return;
+        event.preventDefault();
+        event.stopPropagation();
+        navigate(`/note/${internalId}`);
+      };
+
+      view.dom.addEventListener("contextmenu", handleContextMenu, true);
+      view.dom.addEventListener("click", handleLinkClick, true);
+      editorCleanupRef.current = () => {
+        view.dom.removeEventListener("contextmenu", handleContextMenu, true);
+        view.dom.removeEventListener("click", handleLinkClick, true);
+      };
+    },
+    [navigate, resolveInternalNoteId]
+  );
+
+  const handleEditorReady = useCallback(
+    (crepe: Crepe) => {
+      crepeRef.current = crepe;
+      crepe.on((listener) => {
+        listener.mounted((ctx) => {
+          try {
+            const view = ctx.get(editorViewCtx);
+            attachEditorHandlers(view);
+          } catch {
+            // Editor view not ready yet.
+          }
+        });
+      });
+    },
+    [attachEditorHandlers]
+  );
+
+  useEffect(() => {
+    return () => {
+      editorCleanupRef.current?.();
+    };
+  }, []);
+
+  const filteredContextNotes = useMemo(() => {
+    const query = contextFilter.trim().toLowerCase();
+    const list = query
+      ? linkNotes.filter((note) => note.title.toLowerCase().includes(query))
+      : linkNotes;
+    return list.slice(0, 20);
+  }, [contextFilter, linkNotes]);
 
   const metadata = useMemo(() => {
     const stripMarkdown = (value: string) => {
@@ -410,16 +594,12 @@ const MarkdownPage = () => {
     <div className="markdownPage">
       <header className="markdownHeader">
         <div className="headerLeft">
-          
-          {/* Save status indicator */}
           <div className={`saveIndicator ${statusClass}`} title={statusLabel}>
             <FontAwesomeIcon icon={statusIcon} spin={isSaving} />
           </div>
-
         </div>
 
         <div className="headerActions">
-          {/* Button to export the actual note as a PDF */}
           <button
             type="button"
             className="exportBtn"
@@ -428,7 +608,6 @@ const MarkdownPage = () => {
           >
             {isExportingPdf ? "Export PDF..." : "Export PDF"}
           </button>
-          {/* Button to export the actual note as a ZIP archive */}
           <button
             type="button"
             className="exportBtn exportBtnSecondary"
@@ -437,18 +616,16 @@ const MarkdownPage = () => {
           >
             {isExportingZip ? "Export Archive..." : "Export Archive"}
           </button>
-
-          {/* toggle switch to enable or disable edition mode */}
           <div className={`toggle-container ${isEditing ? "active" : ""}`}>
-            <span>{isEditing ? "Édition" : "Lecture"}</span>
+            <span>{isEditing ? "Edition" : "Lecture"}</span>
             <button
               type="button"
               className={`switch ${isEditing ? "on" : "off"}`}
-              onClick={() => setIsEditing((prev) => !prev)} >
+              onClick={() => setIsEditing((prev) => !prev)}
+            >
               <div className="handle" />
             </button>
           </div>
-
         </div>
       </header>
 
@@ -463,7 +640,13 @@ const MarkdownPage = () => {
         disabled={isLoading || !isEditing}
       />
 
-      <div className="mdEditorShell" data-color-mode="dark">
+      <div
+        className="mdEditorShell"
+        data-color-mode="dark"
+        onClickCapture={handleInternalLinkClick}
+        onContextMenu={handleEditorContextMenu}
+        onContextMenuCapture={handleEditorContextMenu}
+      >
         {isLoading ? (
           <p className="loadingText">Chargement...</p>
         ) : (
@@ -473,10 +656,53 @@ const MarkdownPage = () => {
               editorKey={editorKey}
               readonly={!isEditing}
               onChange={handleContentChange}
+              onReady={handleEditorReady}
             />
           </MilkdownProvider>
         )}
       </div>
+
+      {contextMenu ? (
+        <div
+          className="noteContextMenu"
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+          onClick={(event) => event.stopPropagation()}
+          onContextMenu={(event) => event.preventDefault()}
+        >
+          <div className="noteContextMenuHeader">Inserer un lien vers une note</div>
+          <input
+            className="noteContextMenuInput"
+            placeholder="Filtrer..."
+            value={contextFilter}
+            onChange={(event) => setContextFilter(event.target.value)}
+          />
+          <div className="noteContextMenuList">
+            {filteredContextNotes.length ? (
+              filteredContextNotes.map((note) => (
+                <button
+                  key={note.id}
+                  type="button"
+                  className="noteContextMenuItem"
+                  onMouseDown={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    insertNoteLink(note);
+                  }}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    insertNoteLink(note);
+                  }}
+                >
+                  {note.title}
+                </button>
+              ))
+            ) : (
+              <div className="noteContextMenuEmpty">Aucune note</div>
+            )}
+          </div>
+        </div>
+      ) : null}
 
       <footer className="metadataPanel">
         <div className="metadataGroup">
@@ -484,7 +710,7 @@ const MarkdownPage = () => {
           <span className="metadataValue">{metadata.words}</span>
         </div>
         <div className="metadataGroup">
-          <span className="metadataLabel">Caractères</span>
+          <span className="metadataLabel">Caracteres</span>
           <span className="metadataValue">{metadata.characters}</span>
         </div>
         <div className="metadataGroup">
@@ -496,11 +722,11 @@ const MarkdownPage = () => {
           <span className="metadataValue">{metadata.bytes}</span>
         </div>
         <div className="metadataGroup">
-          <span className="metadataLabel">Créé le</span>
+          <span className="metadataLabel">Cree le</span>
           <span className="metadataValue">{formatDate(createdAt)}</span>
         </div>
         <div className="metadataGroup">
-          <span className="metadataLabel">Modifié le</span>
+          <span className="metadataLabel">Modifie le</span>
           <span className="metadataValue">{formatDate(updatedAt)}</span>
         </div>
       </footer>

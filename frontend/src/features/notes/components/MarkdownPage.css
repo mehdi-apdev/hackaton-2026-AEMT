@@ -393,3 +393,73 @@ Toggle (Preview/Edit) Button - Reforged
   gap: 10px;
   animation: shake 0.4s;
 }
+
+/* --- INTERNAL LINK CONTEXT MENU --- */
+.noteContextMenu {
+  position: fixed;
+  z-index: 10050;
+  min-width: 240px;
+  max-width: 320px;
+  background: rgba(10, 7, 16, 0.95);
+  border: 1px solid var(--purple-border);
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  padding: 10px;
+}
+
+.noteContextMenuHeader {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--orange);
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.noteContextMenuInput {
+  width: 100%;
+  border-radius: 6px;
+  padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.4);
+  color: #e0e0e0;
+  font-family: var(--font-code);
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+.noteContextMenuInput:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 8px rgba(255, 102, 0, 0.2);
+}
+
+.noteContextMenuList {
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.noteContextMenuItem {
+  text-align: left;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 6px 8px;
+  color: #e0e0e0;
+  font-family: var(--font-code);
+  cursor: pointer;
+}
+
+.noteContextMenuItem:hover {
+  border-color: var(--orange);
+  background: rgba(255, 102, 0, 0.12);
+}
+
+.noteContextMenuEmpty {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  font-style: italic;
+  padding: 6px 4px;
+}
