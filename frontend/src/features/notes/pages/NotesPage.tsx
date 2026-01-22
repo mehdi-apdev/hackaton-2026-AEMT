@@ -24,7 +24,7 @@ export default function NotesPage() {
         window.dispatchEvent(new CustomEvent("notes:refresh"));
         
         // Navigate immediately to the new note
-        navigate(`/notes/${newNote.id}`);
+        navigate(`/note/${newNote.id}`);
       } catch (error) {
         console.error("Error creating note from event:", error);
       }
