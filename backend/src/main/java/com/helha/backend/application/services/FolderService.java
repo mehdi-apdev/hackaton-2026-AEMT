@@ -57,6 +57,10 @@ public class FolderService {
     public FolderDto createFolder(FolderCreationDto input) {
         DbUser user = getCurrentUser();
 
+        if (input.getParentId() != null && input.getParentId() <= 0) {
+            input.setParentId(null); // On force à null si c'est 0 ou négatif
+        }
+
         // RÈGLE : Un seul dossier racine actif par utilisateur
         if (input.getParentId() == null) {
             if (folderRepository.existsByUserIdAndParentIsNullAndDeletedFalse(user.getId())) {
