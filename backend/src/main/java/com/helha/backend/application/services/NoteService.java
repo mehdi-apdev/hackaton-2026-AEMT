@@ -43,7 +43,16 @@ public class NoteService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new GenericNotFoundException(0L, "User " + username));
     }
-
+    private void updateMetadata(DbNote note, String content) {
+        if (content == null) {
+            content = "";
+        }
+        // Utilise les méthodes statiques de MetadataUtils pour calculer les stats
+        note.setWordCount(MetadataUtils.countWords(content));
+        note.setLineCount(MetadataUtils.countLines(content));
+        note.setCharacterCount(MetadataUtils.countCharacters(content));
+        note.setSizeInBytes(MetadataUtils.calculateSizeInBytes(content));
+    }
 
     // retrieve a a note by it's ID with ownership verification
     @Transactional(readOnly = true)
@@ -61,37 +70,6 @@ public class NoteService {
     }
 
 
-    //Create a note bind to the user and it's folder
-    @Transactional
-    public NoteDto createNote(NoteCreationDto input) {
-        DbUser user = getCurrentUser();
-        DbNote note = new DbNote();
-        note.setTitle(input.getTitle());
-        note.setContent("");
-        note.setUser(user);
-
-        if (input.getFolderId() != null) {
-            DbFolder folder = folderRepository.findById(input.getFolderId())
-                    .orElseThrow(() -> new GenericNotFoundException(input.getFolderId(), "Folder"));
-
-            // Vérification de sécurité : le dossier appartient bien à l'utilisateur
-            if (!folder.getUser().getId().equals(user.getId())) {
-                throw new GenericNotFoundException(input.getFolderId(), "Folder");
-            }
-            note.setFolder(folder);
-        }
-
-        //if folderId is null note.setFolder stays null (the note is in the root file)
-
-        // Initialisation des stats techniques
-        note.setWordCount(0);
-        note.setLineCount(0);
-        note.setCharacterCount(0);
-        note.setSizeInBytes(0L);
-
-        DbNote savedNote = noteRepository.save(note);
-        return convertToDto(savedNote);
-    }
 
     // update a note
     @Transactional
@@ -228,5 +206,36 @@ public class NoteService {
         return noteRepository.findByUserIdAndDeletedTrue(getCurrentUser().getId()).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
+    }
+    @Transactional
+    public NoteDto createNote(NoteCreationDto input) {
+        DbUser user = getCurrentUser(); // Récupère l'utilisateur connecté
+        DbNote note = new DbNote();
+        note.setTitle(input.getTitle());
+        note.setContent(input.getContent() != null ? input.getContent() : "");
+        note.setUser(user);
+
+        if (input.getFolderId() != null) {
+            // Cas où un dossier spécifique est demandé
+            DbFolder folder = folderRepository.findById(input.getFolderId())
+                    .orElseThrow(() -> new GenericNotFoundException(input.getFolderId(), "Folder"));
+            note.setFolder(folder);
+        } else {
+            // RÈGLE : Si pas de folderId, on cherche ou on crée le dossier racine actif
+            DbFolder root = folderRepository.findByUserIdAndParentIsNullAndDeletedFalse(user.getId())
+                    .stream()
+                    .findFirst()
+                    .orElseGet(() -> {
+                        // Création automatique si aucun dossier racine n'existe
+                        DbFolder newRoot = new DbFolder();
+                        newRoot.setName("Ma Bibliothèque");
+                        newRoot.setUser(user);
+                        return folderRepository.save(newRoot);
+                    });
+            note.setFolder(root);
+        }
+
+        updateMetadata(note, note.getContent()); // Met à jour les stats (mots, lignes, etc.)
+        return convertToDto(noteRepository.save(note));
     }
 }
