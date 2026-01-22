@@ -38,7 +38,16 @@ const NoteService = {
    */
   deleteNote: async (id: number): Promise<void> => {
     await api.delete(`/notes/${id}`);
-  }
+  },
+
+  /**
+   * Exporte toutes les notes et dossiers en archive ZIP.
+   * GET /notes/export/zip
+   */
+  exportArchive: async (): Promise<Blob> => {
+    const response = await api.get<Blob>('/notes/export/zip', { responseType: 'blob' });
+    return response.data;
+  },
 };
 
 export default NoteService;
