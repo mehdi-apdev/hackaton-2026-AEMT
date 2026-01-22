@@ -24,40 +24,32 @@ public class AuthService {
     private final JwtUtils jwtUtils;
 
     /**
-     * Registers a new user and automatically creates their default root folder.
-     * Transactional ensures both user and folder are created or none.
+     * Registers a new user and pre-creates a root folder.
      */
     @Transactional
     public void register(AuthRequestDto request) {
-        // Check if the username is already taken
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException("This username is already taken!");
+            throw new RuntimeException("Ce nom d'utilisateur est déjà pris !");
         }
 
-        // 1. Create and save the new user
         DbUser user = new DbUser();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         DbUser savedUser = userRepository.save(user);
 
-        // 2. Create the default root folder for the new user
+        // Pre-create the root folder "Ma bibliothèque"
         DbFolder rootFolder = new DbFolder();
         rootFolder.setName("Ma bibliothèque");
-        rootFolder.setUser(savedUser); // Link the folder to the saved user
-        rootFolder.setParent(null);    // Root folder has no parent
-        rootFolder.setDeleted(false);  // Ensure it is active
+        rootFolder.setUser(savedUser);
+        rootFolder.setParent(null);
 
         folderRepository.save(rootFolder);
     }
 
-    /**
-     * Authenticates a user and returns a JWT token.
-     */
     public String login(AuthRequestDto request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
-
         return jwtUtils.generateToken(request.getUsername());
     }
 }
