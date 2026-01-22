@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -40,23 +41,23 @@ public class ExportService {
     public byte[] exportUserNotesToZip() throws IOException {
         DbUser user = getCurrentUser();
 
-        // CORRECTION 1 : Utiliser la méthode "...AndDeletedFalse"
-        List<DbFolder> rootFolders = folderRepository.findByUserIdAndParentIsNullAndDeletedFalse(user.getId());
+        // On récupère l'unique dossier racine (Optional)
+        Optional<DbFolder> rootFolderOpt = folderRepository.findByUserIdAndParentIsNullAndDeletedFalse(user.getId());
 
-        // AJOUT : Récupérer aussi les notes qui sont à la racine (sans dossier)
+        // On récupère les éventuelles notes orphelines (sans dossier)
         List<DbNote> rootNotes = noteRepository.findByUserIdAndFolderIsNullAndDeletedFalse(user.getId());
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-            // 1. Exporter les dossiers racines (et leur contenu récursivement)
-            for (DbFolder folder : rootFolders) {
-                zipFolder(folder, "", zos);
+
+            // CORRECTION LIGNE 54 : On utilise .ifPresent au lieu d'une boucle for
+            if (rootFolderOpt.isPresent()) {
+                zipFolder(rootFolderOpt.get(), "", zos);
             }
 
             // 2. Exporter les notes racines (à la base du ZIP)
             for (DbNote note : rootNotes) {
-                // On vérifie (redondant avec la requête SQL mais plus sûr)
                 if (note.isDeleted()) continue;
 
                 String noteFileName = sanitizeFilename(note.getTitle()) + ".md";
@@ -72,7 +73,6 @@ public class ExportService {
     }
 
     private void zipFolder(DbFolder folder, String parentPath, ZipOutputStream zos) throws IOException {
-        // CORRECTION 2 : Si le dossier est supprimé (bug de synchro possible), on l'ignore
         if (folder.isDeleted()) return;
 
         String currentPath = parentPath + sanitizeFilename(folder.getName()) + "/";
@@ -80,10 +80,8 @@ public class ExportService {
         zos.putNextEntry(new ZipEntry(currentPath));
         zos.closeEntry();
 
-        // Ajout des notes du dossier courant
         if (folder.getDbNotes() != null) {
             for (DbNote note : folder.getDbNotes()) {
-                // CORRECTION 3 : Ne pas exporter les notes supprimées
                 if (note.isDeleted()) continue;
 
                 String noteFileName = currentPath + sanitizeFilename(note.getTitle()) + ".md";
@@ -95,12 +93,9 @@ public class ExportService {
             }
         }
 
-        // Récursivité sur les enfants
         if (folder.getChildren() != null) {
             for (DbFolder child : folder.getChildren()) {
-                // CORRECTION 4 : Ne pas exporter les sous-dossiers supprimés
                 if (child.isDeleted()) continue;
-
                 zipFolder(child, currentPath, zos);
             }
         }

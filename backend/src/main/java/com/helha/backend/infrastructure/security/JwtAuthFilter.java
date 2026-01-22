@@ -28,9 +28,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String token = null;
 
-
-        //extraction of the token by the cookies
-        if (request.getCookies() != null) {
+        // 1. D'ABORD, on cherche dans le Header Authorization (Standard pour Swagger)
+        final String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+        }
+        // 2. SINON, on cherche dans les Cookies (Optionnel pour ton frontend)
+        else if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("token".equals(cookie.getName())) {
                     token = cookie.getValue();
@@ -39,7 +43,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
-        // validation and Authentification
+        // validation and Authentification (Le reste ne change pas)
         if (token != null && jwtUtils.validateToken(token)) {
             String username = jwtUtils.extractUsername(token);
 
@@ -56,7 +60,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
-        // we continue the filter chain
         filterChain.doFilter(request, response);
     }
 }

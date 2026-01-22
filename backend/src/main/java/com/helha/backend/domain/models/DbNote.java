@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.time.LocalDateTime;
-// ... autres imports
 
 @Entity
 @Table(name = "NOTES")
@@ -17,15 +15,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class DbNote {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id") // Pour le hackathon, on peut laisser nullable=true temporairement si tu as déjà des données, sinon nullable=false
-    private DbUser user;
-
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
+    private DbUser user;
 
     @Column(nullable = false)
     private String title;
@@ -34,11 +30,10 @@ public class DbNote {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    //Métadata
-    private int wordCount;      // Number of words
-    private int lineCount;      // Number of lines
-    private int characterCount; // Number of Characters
-    private long sizeInBytes;   // Size in byte
+    private int wordCount;
+    private int lineCount;
+    private int characterCount;
+    private long sizeInBytes;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -50,18 +45,17 @@ public class DbNote {
     @Column(nullable = false)
     private boolean deleted = false;
 
-    @Column
     private LocalDateTime deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-
     @JoinColumn(name = "folder_id", nullable = true)
     @JsonIgnoreProperties("dbNotes")
     private DbFolder folder;
 
-    public DbNote(String title, String content, DbFolder folder) {
+    public DbNote(String title, String content, DbFolder folder, DbUser user) {
         this.title = title;
         this.content = content;
         this.folder = folder;
+        this.user = user;
     }
 }
