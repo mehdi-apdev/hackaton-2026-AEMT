@@ -5,6 +5,7 @@ import com.helha.backend.application.dto.NoteDto;
 import com.helha.backend.application.dto.NoteUpdateDto;
 import com.helha.backend.application.services.ExportService;
 import com.helha.backend.application.services.NoteService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,11 +33,12 @@ public class NoteController {
         return noteService.getNoteById(id);
     }
 
-    // Create a new note
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public NoteDto create(@RequestBody NoteCreationDto input) {
-        return noteService.createNote(input);
+    public ResponseEntity<NoteDto> create(@Valid @RequestBody NoteCreationDto dto) {
+        // Changement de .create(dto) vers .createNote(dto)
+        NoteDto createdNote = noteService.createNote(dto);
+        return new ResponseEntity<>(createdNote, HttpStatus.CREATED);
     }
 
     // Update an existing note
