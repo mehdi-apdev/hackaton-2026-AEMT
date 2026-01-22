@@ -85,7 +85,7 @@ body::before {
 
 /* 6. TYPOGRAPHIE */
 h1, h2, h3, h4, h5, h6, .logo-text {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-heading);
   color: var(--orange);
   text-shadow: 2px 2px 0px #000;
   letter-spacing: 1px;

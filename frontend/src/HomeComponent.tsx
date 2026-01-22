@@ -10,7 +10,7 @@ import "./HomeComponent.css";
  * Displays welcome message, user name, and quick action to create notes
  */
 export function HomeComponent() {
-  const { user, logout } = useAuth();
+  const { user, logout, login } = useAuth();
   const { openInputModal } = useModal();
   const navigate = useNavigate();
   /**
@@ -26,6 +26,10 @@ export function HomeComponent() {
         navigate("/notes");
       }
     );
+  };
+
+  const redirectToLogin = () => {
+    navigate("/login");
   };
 
   return (
@@ -62,7 +66,10 @@ export function HomeComponent() {
         {/* Footer: Logout button */}
         <footer className="dashboard-footer">
           <button onClick={logout} className="btn-text-logout">
-            <FontAwesomeIcon icon={faSignOutAlt} /> Fuir les lieux
+            <FontAwesomeIcon icon={faSignOutAlt} /> Se déconnecter
+          </button>
+          <button onClick={redirectToLogin} className="btn-text-login">
+            <FontAwesomeIcon icon={faSignOutAlt} /> Se connecter
           </button>
         </footer>
 

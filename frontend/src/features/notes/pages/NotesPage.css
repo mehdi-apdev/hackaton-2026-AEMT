@@ -31,12 +31,12 @@
   gap: 20px;
 
   color: var(--text-muted);
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-heading);
   font-size: 1.8rem;
   letter-spacing: 1px;
 
   /* Ghostly container */
-  background: radial-gradient(circle, rgba(20, 10, 30, 0.4) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(41, 20, 61, 0.4) 0%, transparent 70%);
   border: 2px dashed rgba(157, 0, 255, 0.3);
   border-radius: 50%; /* Circle shape suggestion */
   

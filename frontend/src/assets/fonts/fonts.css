@@ -8,4 +8,6 @@
 :root {
     --font-heading: 'Underdog', cursive;
     --font-body: 'Roboto', sans-serif;
+    --font-text: 'Merriweather', serif;
+    --font-code: 'Fira Code', monospace;
 }

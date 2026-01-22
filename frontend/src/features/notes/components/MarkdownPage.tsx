@@ -439,6 +439,8 @@ const MarkdownPage = () => {
           >
             {isEditing ? "Mode lecture" : "Mode edition"}
           </button>
+          
+          
         </div>
       </header>
 

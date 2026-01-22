@@ -12,7 +12,7 @@
     /* Atmospheric background: Deep black with a central purple glow */
     background: radial-gradient(circle at center, #2a0a33 0%, #000000 90%);
     
-    font-family: 'Cinzel', serif; /* Fallback if var not defined */
+    font-family: var(--font-heading); /* Fallback if var not defined */
     position: relative;
     overflow: hidden;
 }

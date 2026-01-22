@@ -10,13 +10,12 @@ import RegisterPage from "./features/auth/pages/RegisterPage";
 
 // --- Features Imports ---
 import NotesPage from "./features/notes/pages/NotesPage";
+import BinPage from "./features/notes/pages/BinPage";
 import systemRoutes from "./features/system/system-routes";
-import SpookyCursor from "./shared/components/SpookyCursor";
 
 function App() {
   return (
     <>
-      <SpookyCursor />
       <Routes>
         {/* --- 1. Public Routes --- */}
         <Route path="/login" element={<LoginPage />} />
@@ -32,6 +31,7 @@ function App() {
             {/* Notes Feature */}
             <Route path="notes" element={<NotesPage />} />
             <Route path="note/:id" element={<NotesPage />} />
+            <Route path="bin" element={<BinPage />} />
 
             {/* System Feature: Mapping the array to dynamically create <Route> */}
             {systemRoutes.map((route) => (

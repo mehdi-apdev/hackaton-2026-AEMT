@@ -3,7 +3,7 @@
 
 /* Main container: A dark surface with depth and atmosphere */
 .markdownPage {
-  background: linear-gradient(135deg, #120a1a 0%, #050505 100%);
+  background: linear-gradient(135deg, #281328 0%, #3d1d3d 100%);
   border: 1px solid var(--purple-border);
   border-radius: 16px;
   padding: 30px;
@@ -50,7 +50,7 @@
   border: none;
   border-bottom: 2px solid transparent;
   
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-heading);
   font-size: 2.2rem;
   color: var(--orange);
   letter-spacing: 1px;
@@ -76,7 +76,7 @@
 /* --- ACTION BUTTONS --- */
 /* Common button styles */
 .toggleBtn, .exportBtn {
-  font-family: 'Merriweather', serif;
+  font-family: var(--font-heading);
   font-size: 0.9rem;
   font-weight: bold;
   cursor: pointer;
@@ -226,7 +226,7 @@
 
 .mdEditorShell .milkdown .editor {
   padding: 40px;
-  font-family: 'Merriweather', serif;
+  font-family: var(--font-code);
   line-height: 1.8;
   font-size: 1.1rem;
   color: #d0d0d0;
@@ -247,7 +247,7 @@
   margin-top: 15px;
   padding-top: 15px;
   border-top: 1px dashed rgba(255, 255, 255, 0.1);
-  font-family: 'Consolas', monospace;
+  font-family: var(--font-heading);
   font-size: 0.75rem;
   color: #666;
 }

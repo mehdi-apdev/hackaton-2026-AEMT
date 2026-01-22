@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import classNames from "classnames";
 import "./sidebar.css";
 import { FolderTree } from "../../../features/notes/components/FolderTree";
@@ -20,6 +20,7 @@ const LeftSidebar = ({
   changeIsLeftSidebarCollapsed,
 }: LeftSidebarProps) => {
   const { id: activeNoteId } = useParams();
+  const navigate = useNavigate();
   const [folders, setFolders] = useState<Folder[]>([]);
   const [openFolderIds, setOpenFolderIds] = useState<Set<number>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
@@ -149,9 +150,8 @@ const LeftSidebar = ({
 
   // OPEN BIN
   const handleBin = () => {
-    const openBinEvent = new CustomEvent("notes:openBin");
-    window.dispatchEvent(openBinEvent);
-  };
+    navigate("/bin");
+  }
 
   /**
    * Renders the left sidebar with folder structure and actions.
@@ -182,7 +182,7 @@ const LeftSidebar = ({
             </button>
 
             <button onClick={handleBin} className="btn-bin-root">
-              <FontAwesomeIcon icon={faTrash} /> Corbeille
+              <FontAwesomeIcon icon={faTrash} />
             </button>
           </div>
         )}

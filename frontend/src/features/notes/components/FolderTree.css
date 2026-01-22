@@ -48,7 +48,7 @@
 }
 
 .folder-name {
-  font-family: 'Cinzel', serif; /* Majestic & Spooky */
+  font-family: var(--font-heading); /* Majestic & Spooky */
   font-weight: 700;
   flex: 1;
   z-index: 1;
@@ -151,7 +151,7 @@
   font-size: 0.8rem;
   color: #444;
   font-style: italic;
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-heading);
 }
 
 /* --- CONTEXT MENU (The Cursed Scroll) --- */
