@@ -1,21 +1,20 @@
 services:
-  # --- Service Base de Données ---
+  # --- Base de Données ---
   mysql:
     image: mysql:8.0
     container_name: mysql_server
-    # Redémarrer automatiquement si ça plante
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      # Le nom de la BDD doit correspondre à application.properties
       MYSQL_DATABASE: hackathon_db
     ports:
       - "3306:3306"
     volumes:
-      # Pour garder les données même si on éteint le container
       - mysql_data:/var/lib/mysql
+    networks:
+      - hackathon-network
 
-  # --- Service PhpMyAdmin (bonus visuel) ---
+  # --- Interface Base de Données ---
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin_client
@@ -27,7 +26,43 @@ services:
       PMA_PASSWORD: root
     ports:
       - "8081:80"
+    networks:
+      - hackathon-network
 
-# Déclaration du volume pour le stockage persistant
+  # --- Backend (Spring Boot) ---
+  backend:
+    container_name: hackathon_backend
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/hackathon_db?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - hackathon-network
+
+  # --- Frontend (Mode Dev) ---
+  frontend:
+    container_name: hackathon_frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    # Mapping direct du port Vite (5173)
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - hackathon-network
+
 volumes:
   mysql_data:
+
+networks:
+  hackathon-network:
+    driver: bridge
