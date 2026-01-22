@@ -10,12 +10,21 @@ import java.util.List;
 @Repository
 public interface INoteRepository extends JpaRepository<DbNote, Long> {
 
+    // --- RECHERCHE DE BASE ---
+    List<DbNote> findByUserId(Long userId);
+    List<DbNote> findByFolderId(Long folderId);
 
-    List<DbNote> findByFolderIdAndDeletedFalse(Long folderId);
+    // --- RECHERCHE ACTIVE (Hors corbeille) ---
     List<DbNote> findByUserIdAndDeletedFalse(Long userId);
+    List<DbNote> findByFolderIdAndDeletedFalse(Long folderId);
+
+    // Notes à la racine (si tu n'utilises pas le dossier "Ma Racine")
     List<DbNote> findByUserIdAndFolderIsNullAndDeletedFalse(Long userId);
-    // Find deleted notes only (to display in the bin)
+
+    // --- CORBEILLE ---
     List<DbNote> findByUserIdAndDeletedTrue(Long userId);
-    //   Find deleted notes where the deletion date is before a specific date
+
+    // Pour le nettoyage automatique
     List<DbNote> findByDeletedTrueAndDeletedAtBefore(LocalDateTime thresholdDate);
+    List<DbNote> findByTitleContainingIgnoreCaseAndUserIdAndDeletedFalse(String title, Long userId);
 }

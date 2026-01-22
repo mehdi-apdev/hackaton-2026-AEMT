@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -40,23 +41,23 @@ public class ExportService {
     public byte[] exportUserNotesToZip() throws IOException {
         DbUser user = getCurrentUser();
 
-        // CORRECTION 1 : Utiliser la méthode "...AndDeletedFalse"
-        List<DbFolder> rootFolders = folderRepository.findByUserIdAndParentIsNullAndDeletedFalse(user.getId());
+        // On récupère l'unique dossier racine (Optional)
+        Optional<DbFolder> rootFolderOpt = folderRepository.findByUserIdAndParentIsNullAndDeletedFalse(user.getId());
 
-        // AJOUT : Récupérer aussi les notes qui sont à la racine (sans dossier)
+        // Récupérer les notes qui n'ont pas de dossier (orphelines)
         List<DbNote> rootNotes = noteRepository.findByUserIdAndFolderIsNullAndDeletedFalse(user.getId());
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-            // 1. Exporter les dossiers racines (et leur contenu récursivement)
-            for (DbFolder folder : rootFolders) {
-                zipFolder(folder, "", zos);
+
+            // CORRECTION : On vérifie si l'Optional contient le dossier racine
+            if (rootFolderOpt.isPresent()) {
+                zipFolder(rootFolderOpt.get(), "", zos);
             }
 
             // 2. Exporter les notes racines (à la base du ZIP)
             for (DbNote note : rootNotes) {
-                // On vérifie (redondant avec la requête SQL mais plus sûr)
                 if (note.isDeleted()) continue;
 
                 String noteFileName = sanitizeFilename(note.getTitle()) + ".md";
@@ -70,7 +71,6 @@ public class ExportService {
 
         return baos.toByteArray();
     }
-
     private void zipFolder(DbFolder folder, String parentPath, ZipOutputStream zos) throws IOException {
         // CORRECTION 2 : Si le dossier est supprimé (bug de synchro possible), on l'ignore
         if (folder.isDeleted()) return;
