@@ -39,8 +39,10 @@ public class FolderService {
     public List<FolderDto> getFolderTree() {
         DbUser user = getCurrentUser();
         // Fetch only active roots
-        List<DbFolder> roots = folderRepository.findByUserIdAndParentIsNullAndDeletedFalse(user.getId());
-        return roots.stream().map(this::convertToDto).collect(Collectors.toList());
+        return folderRepository.findByUserIdAndParentIsNullAndDeletedFalse(user.getId())
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -59,9 +61,47 @@ public class FolderService {
         return convertToDto(folderRepository.save(folder));
     }
 
+    //update a folder (name or parent folder)
+    @Transactional
+    public FolderDto updateFolder(Long id, FolderCreationDto input) {
+        DbUser user = getCurrentUser();
+        DbFolder folder = folderRepository.findById(id)
+                .orElseThrow(() -> new GenericNotFoundException(id, "Folder"));
+
+        // check the user
+        if (!folder.getUser().getId().equals(user.getId())) {
+            throw new GenericNotFoundException(id, "Folder");
+        }
+
+        // update the name
+        if (input.getName() != null && !input.getName().isBlank()) {
+            folder.setName(input.getName());
+        }
+
+        //update parent folder
+        if (input.getParentId() != null) {
+            // prevent a folder to be is parent
+            if (input.getParentId().equals(id)) {
+                throw new RuntimeException("Un dossier ne peut pas être son propre parent");
+            }
+
+            DbFolder newParent = folderRepository.findById(input.getParentId())
+                    .orElseThrow(() -> new GenericNotFoundException(input.getParentId(), "Dossier Parent"));
+
+            //check if the folder belongs to the user
+            if (!newParent.getUser().getId().equals(user.getId())) {
+                throw new GenericNotFoundException(input.getParentId(), "Dossier Parent");
+            }
+
+            folder.setParent(newParent);
+        }
+
+        return convertToDto(folderRepository.save(folder));
+    }
+
     // --- RECYCLE BIN LOGIC ---
 
-    // 1. Soft Delete
+    // Soft Delete
     @Transactional
     public void deleteFolder(Long id) {
         DbUser user = getCurrentUser();
@@ -70,11 +110,11 @@ public class FolderService {
         if (!folder.getUser().getId().equals(user.getId())) throw new GenericNotFoundException(id, "Folder");
 
         folder.setDeleted(true);
-        folder.setDeletedAt(LocalDateTime.now()); // Set timestamp
+        folder.setDeletedAt(LocalDateTime.now());
         folderRepository.save(folder);
     }
 
-    // 2. Get Deleted Folders
+    // Get Deleted Folders
     @Transactional(readOnly = true)
     public List<FolderDto> getDeletedFolders() {
         return folderRepository.findByUserIdAndDeletedTrue(getCurrentUser().getId()).stream()
@@ -82,7 +122,7 @@ public class FolderService {
                 .collect(Collectors.toList());
     }
 
-    // 3. Restore Folder
+    // Restore Folder
     @Transactional
     public void restoreFolder(Long id) {
         DbUser user = getCurrentUser();
@@ -91,7 +131,7 @@ public class FolderService {
         if (!folder.getUser().getId().equals(user.getId())) throw new GenericNotFoundException(id, "Folder");
 
         folder.setDeleted(false);
-        folder.setDeletedAt(null); // Clear timestamp
+        folder.setDeletedAt(null);
         folderRepository.save(folder);
     }
 
@@ -114,14 +154,14 @@ public class FolderService {
 
         if (entity.getChildren() != null) {
             dto.setChildren(entity.getChildren().stream()
-                    .filter(child -> !child.isDeleted()) // Filter out deleted children
+                    .filter(child -> !child.isDeleted())
                     .map(this::convertToDto)
                     .collect(Collectors.toList()));
         }
 
         if (entity.getDbNotes() != null) {
             dto.setNotes(entity.getDbNotes().stream()
-                    .filter(note -> !note.isDeleted()) // Filter out deleted notes
+                    .filter(note -> !note.isDeleted())
                     .map(this::convertNoteToDto)
                     .collect(Collectors.toList()));
         }

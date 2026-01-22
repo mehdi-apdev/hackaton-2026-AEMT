@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IFolderRepository extends JpaRepository<DbFolder, Long> {
@@ -16,4 +17,5 @@ public interface IFolderRepository extends JpaRepository<DbFolder, Long> {
     List<DbFolder> findByUserIdAndDeletedFalse(Long userId);
     // Find deleted folders where the deletion date is before a specific date
     List<DbFolder> findByDeletedTrueAndDeletedAtBefore(LocalDateTime thresholdDate);
+    Optional<DbFolder> findByUserIdAndParentIsNull(Long userId);
 }

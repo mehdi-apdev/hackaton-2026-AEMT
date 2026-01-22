@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+//manage the zip export
 @Service
 public class ExportService {
     private final IFolderRepository folderRepository;
@@ -30,84 +31,132 @@ public class ExportService {
         this.noteRepository = noteRepository;
     }
 
+    //retrieve the connected user
     private DbUser getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new GenericNotFoundException(0L, "User " + username));
     }
 
-    @Transactional(readOnly = true)
+
+    //main entry point to generate the ZIP folder
+    @Transactional(readOnly = true) // Important pour le Lazy Loading des enfants/notes
     public byte[] exportUserNotesToZip() throws IOException {
         DbUser user = getCurrentUser();
 
-        // CORRECTION 1 : Utiliser la méthode "...AndDeletedFalse"
-        List<DbFolder> rootFolders = folderRepository.findByUserIdAndParentIsNullAndDeletedFalse(user.getId());
 
-        // AJOUT : Récupérer aussi les notes qui sont à la racine (sans dossier)
-        List<DbNote> rootNotes = noteRepository.findByUserIdAndFolderIsNullAndDeletedFalse(user.getId());
+        //retrieve the unique root folder
+        DbFolder rootFolder = folderRepository.findByUserIdAndParentIsNull(user.getId())
+                .orElseThrow(() -> new GenericNotFoundException(0L, "Root Folder not found"));
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-            // 1. Exporter les dossiers racines (et leur contenu récursivement)
-            for (DbFolder folder : rootFolders) {
-                zipFolder(folder, "", zos);
-            }
 
-            // 2. Exporter les notes racines (à la base du ZIP)
-            for (DbNote note : rootNotes) {
-                // On vérifie (redondant avec la requête SQL mais plus sûr)
-                if (note.isDeleted()) continue;
-
-                String noteFileName = sanitizeFilename(note.getTitle()) + ".md";
-                ZipEntry entry = new ZipEntry(noteFileName);
-                zos.putNextEntry(entry);
-                String content = note.getContent() != null ? note.getContent() : "";
-                zos.write(content.getBytes(StandardCharsets.UTF_8));
-                zos.closeEntry();
-            }
+            zipFolder(rootFolder, "", zos);
         }
 
         return baos.toByteArray();
     }
 
+    //Recursive method for traversing the tree
     private void zipFolder(DbFolder folder, String parentPath, ZipOutputStream zos) throws IOException {
-        // CORRECTION 2 : Si le dossier est supprimé (bug de synchro possible), on l'ignore
-        if (folder.isDeleted()) return;
-
+        // 1. Construire le chemin du dossier courant
+        // Exemple : "Horreur/Zombies/"
         String currentPath = parentPath + sanitizeFilename(folder.getName()) + "/";
 
+
+        //add an entry for the folder itself
         zos.putNextEntry(new ZipEntry(currentPath));
         zos.closeEntry();
 
-        // Ajout des notes du dossier courant
+
+        //adding notes to the curent folder
         if (folder.getDbNotes() != null) {
             for (DbNote note : folder.getDbNotes()) {
-                // CORRECTION 3 : Ne pas exporter les notes supprimées
-                if (note.isDeleted()) continue;
 
+                //creation of a .md file
                 String noteFileName = currentPath + sanitizeFilename(note.getTitle()) + ".md";
                 ZipEntry entry = new ZipEntry(noteFileName);
+
                 zos.putNextEntry(entry);
+
+
+                //writing content
                 String content = note.getContent() != null ? note.getContent() : "";
                 zos.write(content.getBytes(StandardCharsets.UTF_8));
+
                 zos.closeEntry();
             }
         }
 
-        // Récursivité sur les enfants
+
+        //recursion on the children
         if (folder.getChildren() != null) {
             for (DbFolder child : folder.getChildren()) {
-                // CORRECTION 4 : Ne pas exporter les sous-dossiers supprimés
-                if (child.isDeleted()) continue;
-
                 zipFolder(child, currentPath, zos);
             }
         }
     }
 
+
+    //Clean files name to prevent forbiden characters in the zip path
     private String sanitizeFilename(String input) {
         if (input == null) return "SansTitre";
+        // Replace everything that is not alphanumeric , spaces , dash by a underscore
         return input.replaceAll("[^a-zA-Z0-9 \\-_\\.]", "_");
     }
+
+    /*export PDF
+    public byte[] exportAllNotesToPdf() {
+        DbUser user = getCurrentUser();
+
+        List<DbNote> notes = noteRepository.findByUserId(user.getId());
+        //permet de creer un tuyau en memoire vive le pdf est construit dans la RAM avec un try pour etre sur que le tuyau soit fermer a la fin
+        // baos = ByteArrayOutputStream
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            // 1. Créer le document PDF
+            Document document = new Document(PageSize.A4);
+            PdfWriter.getInstance(document, baos);
+
+            // 2. Ouvrir le document pour écrire dedans
+            document.open();
+
+            // 3. Ajouter un titre principal
+            Font fontTitrePrincipal = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20);
+            Paragraph titreExport = new Paragraph("Mes Notes Spooky - Export", fontTitrePrincipal);
+            titreExport.setAlignment(Element.ALIGN_CENTER);
+            titreExport.setSpacingAfter(20);
+            document.add(titreExport);
+
+            // 4. Boucler sur les notes
+            Font fontTitreNote = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14);
+            Font fontContenu = FontFactory.getFont(FontFactory.HELVETICA, 12);
+
+            for (DbNote note : notes) {
+                // Titre de la note
+                Paragraph pTitre = new Paragraph(note.getTitle(), fontTitreNote);
+                pTitre.setSpacingBefore(10);
+                document.add(pTitre);
+
+                // Contenu de la note
+                Paragraph pContenu = new Paragraph(note.getContent(), fontContenu);
+                pContenu.setSpacingAfter(10);
+                document.add(pContenu);
+
+                // Une petite ligne de séparation
+                document.add(new Paragraph("--------------------------------------------------"));
+            }
+
+            // 5. Fermer le document
+            document.close();
+            return baos.toByteArray();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la génération du PDF", e);
+        }
+    }
+    */
+
 }
+
