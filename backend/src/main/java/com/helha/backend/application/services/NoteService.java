@@ -49,6 +49,10 @@ public class NoteService {
      * Creates a new note.
      * If folderId is null, it finds OR creates a default root folder for the user.
      */
+    /**
+     * Creates a note. If folderId is null, it finds OR creates a root folder.
+     * This ensures the application keeps working even if the user deleted their root folder.
+     */
     @Transactional
     public NoteDto createNote(NoteCreationDto input) {
         DbUser user = getCurrentUser();
@@ -58,24 +62,21 @@ public class NoteService {
         note.setUser(user);
 
         if (input.getFolderId() != null) {
-            // Assign to specific folder with ownership check
             DbFolder folder = folderRepository.findById(input.getFolderId())
                     .orElseThrow(() -> new GenericNotFoundException(input.getFolderId(), "Folder"));
-
-            if (!folder.getUser().getId().equals(user.getId())) {
-                throw new GenericNotFoundException(input.getFolderId(), "Folder");
-            }
             note.setFolder(folder);
         } else {
-            // "Find or Create" logic for the root folder
+            // Find an existing active root folder OR create a new one if missing
             DbFolder root = folderRepository.findByUserIdAndParentIsNullAndDeletedFalse(user.getId())
                     .stream()
                     .findFirst()
                     .orElseGet(() -> {
+                        // Logic to recreate the root folder on the fly
                         DbFolder newRoot = new DbFolder();
                         newRoot.setName("Ma bibliothèque");
                         newRoot.setUser(user);
                         newRoot.setParent(null);
+                        newRoot.setDeleted(false);
                         return folderRepository.save(newRoot);
                     });
             note.setFolder(root);

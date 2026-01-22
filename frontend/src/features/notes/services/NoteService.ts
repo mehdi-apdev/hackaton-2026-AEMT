@@ -18,10 +18,22 @@ const NoteService = {
    * Creates a new empty note in a folder.
    * POST /notes
    */
-  createNote: async (title: string, folderId: number): Promise<Note> => {
-    const response = await api.post<Note>('/notes', { title, folderId });
-    return response.data;
+
+ 
+/**
+ * Service to manage note-related API calls.
+ */
+
+  // Creates a new note. If folderId is null, the backend logic handles it.
+  createNote: async (title: string, content: string, folderId: number | null): Promise<Note> => {
+      const response = await api.post<Note>('/notes', { 
+          title, 
+          content, 
+          folderId: folderId ?? null 
+      });
+      return response.data;
   },
+  // ...
 
   /**
    * Saves the title or Markdown content.
@@ -39,7 +51,7 @@ const NoteService = {
   deleteNote: async (id: number): Promise<void> => {
     await api.delete(`/notes/${id}`);
   },
-
+ 
   /**
    * Exporte toutes les notes et dossiers en archive ZIP.
    * GET /notes/export/zip

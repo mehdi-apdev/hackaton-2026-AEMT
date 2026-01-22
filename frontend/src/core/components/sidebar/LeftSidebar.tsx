@@ -134,20 +134,34 @@ const LeftSidebar = ({
       }
     );
   };
-  // ADD ROOT NOTE
-  const handleAddRootNote = () => {
-    openInputModal(
-      "Nouvelle note",
-      "Titre de la note...",
-      async (name) => {
-        if (!name.trim()) return;
-        const newNoteEvent = new CustomEvent("notes:create", { detail: { title: name } });
-        window.dispatchEvent(newNoteEvent);
-        refreshTree();
-      }
-    );
-  };
 
+/**
+   * Action to create a new note at the root level.
+   * We explicitly set folderId to null so the Backend 
+   * assigns it to the default "Ma bibliothèque" folder.
+   */
+const handleAddRootNote = () => {
+  openInputModal(
+    "Nouvelle note",
+    "Titre de la note...",
+    async (name) => {
+      if (!name.trim()) return;
+
+      // Create the event and force folderId to null
+      const newNoteEvent = new CustomEvent("notes:create", { 
+        detail: { 
+          title: name,
+          folderId: null // THIS IS THE KEY: it triggers root folder assignment in Java
+        } 
+      });
+      
+      window.dispatchEvent(newNoteEvent);
+      
+      // Refresh the tree to see the new note appearing in "Ma bibliothèque"
+      refreshTree();
+    }
+  );
+};
   // OPEN BIN
   const handleBin = () => {
     navigate("/bin");
