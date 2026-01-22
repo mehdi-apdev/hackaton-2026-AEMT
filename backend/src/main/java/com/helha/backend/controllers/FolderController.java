@@ -2,6 +2,7 @@ package com.helha.backend.controllers;
 
 import com.helha.backend.application.dto.FolderCreationDto;
 import com.helha.backend.application.dto.FolderDto;
+import com.helha.backend.application.dto.FolderUpdateDto;
 import com.helha.backend.application.services.FolderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

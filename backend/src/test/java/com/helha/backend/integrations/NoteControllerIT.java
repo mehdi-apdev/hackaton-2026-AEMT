@@ -126,16 +126,17 @@ public class NoteControllerIT extends AbstractSpookyIT {
                 .andExpect(status().isNoContent());
 
         // 3. Verify it is in the bin
-        mockMvc.perform(get("/api/bin").cookie(jwt))
+        mockMvc.perform(get("/api/corbeille").cookie(jwt))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title", is("Trash me")));
 
-        // 4. Restore
-        mockMvc.perform(post("/api/bin/notes/" + note.getId() + "/restore").cookie(jwt))
+// 4. Restore
+        mockMvc.perform(post("/api/corbeille/notes/" + note.getId() + "/restore").cookie(jwt))
                 .andExpect(status().isOk());
 
         // 5. Verify it is NO LONGER in the bin
-        mockMvc.perform(get("/api/bin").cookie(jwt))
+        // C'EST ICI QU'EST L'ERREUR : Il restait "/api/bin"
+        mockMvc.perform(get("/api/corbeille").cookie(jwt))  // <--- Remplace par /api/corbeille
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }

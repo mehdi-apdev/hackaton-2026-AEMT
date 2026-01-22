@@ -26,4 +26,5 @@ public interface INoteRepository extends JpaRepository<DbNote, Long> {
 
     // Pour le nettoyage automatique
     List<DbNote> findByDeletedTrueAndDeletedAtBefore(LocalDateTime thresholdDate);
+    List<DbNote> findByTitleContainingIgnoreCaseAndUserIdAndDeletedFalse(String title, Long userId);
 }
