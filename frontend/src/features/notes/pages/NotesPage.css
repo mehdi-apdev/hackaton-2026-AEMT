@@ -1,4 +1,4 @@
-/* --- NotesPage.css (Final Clean) --- */
+/* --- NotesPage.css (Ghostly Void Edition) --- */
 
 .notesPage {
   min-height: 100vh;
@@ -6,48 +6,78 @@
   color: var(--text);
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
-.notesHeader {
-  display: none; 
-}
-
+/* Body fills the remaining space */
 .notesBody {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
+/* 
+  THE PLACEHOLDER (Empty State)
+  Appears when no note is selected.
+  Styled as a "summoning circle" or waiting void.
+*/
 .notesPlaceholder {
-
   flex: 1;
-
   display: flex;
-
+  flex-direction: column;
   align-items: center;
-
   justify-content: center;
-
   text-align: center;
-
-  
+  gap: 20px;
 
   color: var(--text-muted);
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
 
-  font-style: italic;
-
-  font-family: var(--font-heading);
-
-  font-size: 1.5rem;
-
+  /* Ghostly container */
+  background: radial-gradient(circle, rgba(20, 10, 30, 0.4) 0%, transparent 70%);
+  border: 2px dashed rgba(157, 0, 255, 0.3);
+  border-radius: 50%; /* Circle shape suggestion */
   
+  /* Size constraint for the circle effect */
+  max-width: 600px;
+  max-height: 600px;
+  margin: auto; /* Center in the flex container */
+  aspect-ratio: 1/1;
+  
+  box-shadow: 0 0 50px rgba(0,0,0,0.5);
+  animation: breatheVoid 6s infinite ease-in-out;
+  
+  position: relative;
+}
 
-  background: var(--surface-overlay);
+/* Floating Icon (Ghost) inside the placeholder */
+.placeholder-icon {
+  font-size: 4rem;
+  opacity: 0.5;
+  animation: floatGhost 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
+}
 
-  /* Coins organiques pour le placeholder */
+/* --- ANIMATIONS --- */
 
-  border-radius: 40px 20px 50px 15px / 15px 50px 20px 40px;
+/* Breathing effect for the circle */
+@keyframes breatheVoid {
+  0%, 100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 30px rgba(157, 0, 255, 0.1);
+    border-color: rgba(157, 0, 255, 0.2);
+  }
+  50% {
+    transform: scale(1);
+    box-shadow: 0 0 60px rgba(157, 0, 255, 0.3);
+    border-color: rgba(157, 0, 255, 0.5);
+  }
+}
 
-  border: 1px dashed var(--purple-dim);
-
+/* Floating motion for the icon/text */
+@keyframes floatGhost {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }

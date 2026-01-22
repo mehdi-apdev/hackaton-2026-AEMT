@@ -1,5 +1,5 @@
 /* ===============================================
-   SIDEBAR - HALLOWEEN THEMED NAVIGATION
+   SIDEBAR - THE CURSED CRYPT EDITION
    Left sidebar with collapsible folder tree
    =============================================== */
 
@@ -12,207 +12,268 @@
   top: 0;
   left: 0;
   
-  /* Background: Deep black with subtle noise texture for vintage film effect */
-  background-color: #0a050a;
+  /* Background: Deep crypt black */
+  background-color: #050505;
   background-image: 
-    radial-gradient(circle at 0% 0%, rgba(76, 29, 149, 0.15), transparent 40%),    /* Purple glow top-left */
-    radial-gradient(circle at 100% 100%, rgba(255, 102, 0, 0.1), transparent 40%), /* Orange glow bottom-right */
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"); /* Grain texture */
+    radial-gradient(circle at 0% 0%, rgba(80, 0, 120, 0.1), transparent 50%),    /* Ghostly purple */
+    radial-gradient(circle at 100% 100%, rgba(200, 50, 0, 0.05), transparent 50%), /* Ember glow */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
   
+  overflow: visible; 
+
   backdrop-filter: blur(10px);
-  border-right: 1px solid rgba(155, 38, 182, 0.3);
+  border-right: 1px solid rgba(155, 38, 182, 0.2);
   
-  /* Mystical side glow effect with purple accent */
-  box-shadow: 10px 0 30px -10px rgba(0, 0, 0, 0.8), 1px 0 0 rgba(155, 38, 182, 0.2);
+  box-shadow: 10px 0 30px -10px rgba(0, 0, 0, 0.9);
   
-  /* Smooth slide animation for open/close */
   transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   display: flex;
   flex-direction: column;
 }
 
-/* Collapsed state - sidebar hidden off-screen */.sidenav-collapsed {
+/* Cobweb decoration - Top Right */
+.sidenav::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150px;
+  height: 150px;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100 0 Q 50 0 50 50 Q 50 100 0 100' stroke='rgba(255,255,255,0.08)' fill='none' stroke-width='1'/%3E%3Cpath d='M100 20 Q 60 20 60 60' stroke='rgba(255,255,255,0.08)' fill='none' stroke-width='1'/%3E%3Cpath d='M80 0 Q 80 40 40 80' stroke='rgba(255,255,255,0.08)' fill='none' stroke-width='1'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: top right;
+  pointer-events: none;
+}
+
+/* Spider hanging */
+.sidenav::before {
+  content: '🕷️';
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  font-size: 16px;
+  opacity: 0.4;
+  animation: spiderDrop 8s infinite ease-in-out;
+}
+
+@keyframes spiderDrop {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(20px); }
+}
+
+.sidenav-collapsed {
   transform: translateX(-100%);
 }
 
 /* ===============================================
    LOGO SECTION
    =============================================== */
-/* Container for app logo and close button */
 .logo-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 25px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  background: linear-gradient(to bottom, rgba(0,0,0,0.2), transparent);
+  padding: 30px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent);
+  position: relative;
 }
 
-/* Application logo with mystical font and orange glow */
+/* Majestic Rune Logo */
 .logo-text {
-  font-family: 'Underdog', cursive;
-  font-size: 1.8rem;
-  font-weight: bold;
+  font-family: 'Cinzel', serif; /* Majestic & Spooky */
+  font-weight: 900;
+  font-size: 1.6rem;
+  color: #e0e0e0;
   text-decoration: none;
-  color: var(--orange);
-  transition: all 0.3s ease;
-  text-shadow: 0 0 10px rgba(255, 85, 0, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  transition: all 0.5s;
+  
+  /* Initial subtle glow */
+  text-shadow: 0 0 10px rgba(157, 0, 255, 0.3);
 }
 
-/* Enhanced glow effect on logo hover */
+/* Hover: The Rune Activates */
 .logo-text:hover {
-  color: var(--orange-glow);
+  color: var(--orange);
   text-shadow: 
-    0 0 15px var(--orange-glow),
-    0 0 30px var(--orange-dim);
-  transform: scale(1.02);
+    0 0 10px var(--orange),
+    0 0 30px var(--orange-glow),
+    0 0 60px var(--orange-dim);
+  transform: scale(1.05);
 }
 
-/* Icon buttons with circular background (e.g., close button) */
-.icon-btn {
+/* --- SPECTRAL CLOSE BUTTON --- */
+.close-btn {
   background: transparent;
   border: none;
-  color: var(--text-muted);
-  font-size: 1.1rem;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  color: #555;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: all 0.4s;
+  position: relative;
+  font-size: 1.2rem;
 }
 
-/* Close button with red highlight and spinning animation on hover */
-.close-btn:hover {
-  color: var(--red);
-  background: var(--red-dim);
-  transform: rotate(180deg) scale(1.1);
-  box-shadow: 0 0 15px var(--red-dim);
+/* Icon becomes a spectral skull on hover */
+.close-btn::before {
+  content: '☠️';
+  position: absolute;
+  opacity: 0;
+  transform: scale(0.5) rotate(-180deg);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Original X fades out */
+.close-btn svg {
+  transition: all 0.4s;
+  opacity: 0.7;
+}
+
+.close-btn:hover svg {
+  opacity: 0;
+  transform: scale(0);
+}
+
+/* Skull appears and shakes */
+.close-btn:hover::before {
+  opacity: 1;
+  transform: scale(1.5) rotate(0deg);
+  filter: drop-shadow(0 0 10px var(--red));
+  animation: shake 0.4s infinite;
 }
 
 /* ===============================================
    NAVIGATION SECTION
    =============================================== */
-/* Main navigation container that fills remaining space */
 .sidenav-nav {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding-top: 10px;
+  padding-top: 20px;
 }
 
-/* Container for action buttons (create folder, etc.) */
 .sidebar-actions {
-  padding: 15px 20px;
+  padding: 0 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* ===============================================
-   "ADD ROOT FOLDER" BUTTON - POTION STYLE
-   =============================================== */
-/* Primary action button with green "slime" theme and pulsing animation */
+/* Potion/Slime Buttons */
 .btn-add-root {
   width: 100%;
   padding: 12px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--green);
+  background: rgba(10, 20, 10, 0.4);
+  border: 1px solid var(--green-dim);
   border-radius: 8px;
   color: var(--green);
-  font-family: 'Underdog', cursive;
-  font-size: 1.1rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  
-  /* Default pulsing glow animation to draw attention */
-  box-shadow: 0 0 5px var(--green-dim);
-  animation: pulse-green 3s infinite;
-}
-
-/* Pulsing animation keyframes - breathes green glow */@keyframes pulse-green {
-  0% { box-shadow: 0 0 5px var(--green-dim); border-color: var(--green); }
-  50% { box-shadow: 0 0 20px rgba(0, 255, 102, 0.4); border-color: var(--green-glow); }
-  100% { box-shadow: 0 0 5px var(--green-dim); border-color: var(--green); }
-}
-
-/* Scanning light effect pseudo-element - sweeps across button on hover */
-.btn-add-root::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -150%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 102, 0.4), transparent);
-  transform: skewX(-20deg);
-  transition: left 0.5s;
-}
-
-/* Hover state: Full green background with bright glow, stops pulsing */
-.btn-add-root:hover {
-  background: var(--green);
-  color: #000;
-  box-shadow: 0 0 30px var(--green-glow);
-  text-shadow: none;
+  font-family: 'Cinzel', serif;
   font-weight: bold;
-  animation: none; /* Stop pulsing to fix active state */
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.05);
+}
+
+.btn-add-root:hover {
+  background: rgba(0, 255, 0, 0.1);
+  border-color: var(--green);
+  box-shadow: 0 0 15px var(--green-dim);
+  text-shadow: 0 0 5px var(--green);
   transform: translateY(-2px);
 }
 
-/* Trigger light sweep animation when hovering */
-.btn-add-root:hover::before {
-  left: 150%;
-  transition: left 0.7s;
-}
-
-/* Pressed state: Slight push down effect */
-.btn-add-root:active {
-  transform: translateY(1px);
-  box-shadow: 0 0 10px var(--green);
+.folders-list {
+  flex: 1;
+  overflow-y: auto;
 }
 
 /* ===============================================
-   FOLDER LIST SCROLLBAR
+   TOMBSTONE FOOTER
    =============================================== */
-/* Minimal purple scrollbar for folder tree */
-.folders-list::-webkit-scrollbar {
-  width: 4px;
-}
-.folders-list::-webkit-scrollbar-thumb {
-  background: rgba(155, 38, 182, 0.3);
-  border-radius: 2px;
+.sidenav-footer {
+  padding: 20px;
+  text-align: center;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  position: relative;
 }
 
-/* ===============================================
-   LOADING & ERROR STATES
-   =============================================== */
-/* Loading message with pulsing animation */
+/* Epitaph Style Text */
+.footer-text {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  color: #444;
+  letter-spacing: 2px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 15px;
+  position: relative;
+}
+
+/* Mist rising from footer */
+.sidenav-footer::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.02' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+  opacity: 0.2;
+  animation: mistRise 10s infinite linear;
+  pointer-events: none;
+}
+
+@keyframes mistRise {
+  0% { background-position: 0 0; opacity: 0.1; }
+  50% { opacity: 0.3; }
+  100% { background-position: 100px -100px; opacity: 0.1; }
+}
+
+/* Footer "RIP" hover effect */
+.footer-text:hover {
+  color: #666;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.footer-text:hover::after {
+  content: 'R.I.P';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  animation: floatUp 2s ease-out;
+}
+
+@keyframes floatUp {
+  0% { opacity: 0; transform: translate(-50%, 5px); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -15px); }
+}
+
+/* Loading & Error */
 .loading-text {
   text-align: center;
   padding: 30px;
-  color: #666;
-  font-style: italic;
+  color: #555;
+  font-family: 'Cinzel', serif;
   animation: pulse 2s infinite;
 }
 
-/* Error message with red styling and dashed border */
 .error-text {
   text-align: center;
   padding: 15px;
-  color: #ff6b6b;
-  font-size: 0.9rem;
-  background: rgba(255, 0, 0, 0.1);
+  color: #ff4444;
+  font-family: 'Underdog', cursive;
+  border: 1px dashed #ff4444;
   margin: 10px;
-  border-radius: 6px;
-  border: 1px dashed #ff6b6b;
-}
-
-/* Simple opacity pulse animation for loading feedback */
-@keyframes pulse {
-  50% { opacity: 0.5; }
+  border-radius: 4px;
 }
