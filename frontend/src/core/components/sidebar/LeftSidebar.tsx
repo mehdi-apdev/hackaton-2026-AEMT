@@ -162,7 +162,7 @@ const LeftSidebar = ({
       <div className="logo-container">
         {!isLeftSidebarCollapsed && (
           <Fragment>
-            <Link to="/" className="logo-text">Spooky Notes</Link>
+            <Link to="/" className="logo-text">Spookeep</Link>
             <button className="icon-btn close-btn" onClick={closeSidenav} title="Fermer">
               <FontAwesomeIcon icon={faTimes} />
             </button>
@@ -209,7 +209,7 @@ const LeftSidebar = ({
         )}
       </div>
       <div className="sidenav-footer">
-        {!isLeftSidebarCollapsed && <div className="footer-text">© 2026 Spooky Notes</div>}
+        {!isLeftSidebarCollapsed && <div className="footer-text">© 2026 Spookeep</div>}
       </div>
     </div>
   );

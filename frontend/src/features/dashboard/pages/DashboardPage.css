@@ -1,4 +1,4 @@
-/* --- HomeComponent.css (The Haunted Altar) --- */
+/* --- DashboardPage.css (The Haunted Altar) --- */
 
 /* Main container: A portal to another dimension */
 .home-container {
@@ -106,7 +106,7 @@
 /* User Name - GLITCH EFFECT */
 .user-name {
   font-family: var(--font-heading);
-  font-size: 3.5rem;
+  font-size: 3rem;
   color: #e0e0e0;
   text-transform: uppercase;
   font-weight: 700;
