@@ -28,25 +28,28 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
    * Only active when modal is open
    */
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+    const escapeMenu = (event: KeyboardEvent) => {
+      if (event.key === "Escape")
+        onClose();
     };
-    if (isOpen) window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    if (isOpen)
+      window.addEventListener("keydown", escapeMenu);
+    return () => window.removeEventListener("keydown", escapeMenu);
   }, [isOpen, onClose]);
-  
+
   /**
    * Handler: Close modal when clicking on the dark overlay
    * Does not close if clicking inside the modal content
    */
-  const handleOverlayClick = (e: React.MouseEvent) => {
-    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+  const handleOverlayClick = (event: React.MouseEvent) => {
+    if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
       onClose();
     }
   };
 
   // Don't render anything if modal is closed
-  if (!isOpen) return null;
+  if (!isOpen)
+    return null;
 
   return (
     // Semi-transparent overlay that covers the entire screen

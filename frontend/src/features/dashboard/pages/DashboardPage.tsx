@@ -1,7 +1,7 @@
 import { faSignOutAlt, faBookSkull } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAuth } from "../../auth/context/AuthContext";
-import { useModal } from "../../../shared/context/ModalContext";
+// import { useModal } from "../../../shared/context/ModalContext";
 import { Link, useNavigate } from "react-router-dom";
 import "./DashboardPage.css";
 
@@ -11,22 +11,22 @@ import "./DashboardPage.css";
  */
 export default function DashboardPage() {
   const { user, logout} = useAuth();
-  const { openInputModal } = useModal();
+  // const { openInputModal } = useModal();
   const navigate = useNavigate();
   /**
    * Opens a modal to create a quick note with a title
    * Then navigates to the notes page
    */
-  const handleCreateQuickNote = () => {
-    openInputModal(
-      "Nouvelle Note Rapide",
-      "Titre de votre pensée...",
-      async (title) => {
-        if (!title.trim()) return;
-        navigate("/notes");
-      }
-    );
-  };
+  // const handleCreateQuickNote = () => {
+  //   openInputModal(
+  //     "Nouvelle Note Rapide",
+  //     "Titre de votre pensée...",
+  //     async (title) => {
+  //       if (!title.trim()) return;
+  //       navigate("/notes");
+  //     }
+  //   );
+  // };
 
   const redirectToLogin = () => {
     navigate("/login");
@@ -36,11 +36,11 @@ export default function DashboardPage() {
     <section className="home-container">
       <div className="home-card dashboard-card">
         
-        {/* Header: Welcome message and decorative ghost icon */}
+        {/* Welcome Section */}
         <header className="dashboard-header">
           <div className="user-info">
             <div className="welcome-title">
-              <span className="greeting">Bienvenue, Mortel</span>
+              <span className="greeting">Bienvenue,</span>
               <span className="user-name" data-text={user?.username || "Étranger"}>
                 {user?.username || "Étranger"}
               </span>
@@ -63,14 +63,21 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Footer: Logout button */}
+        {/* Footer: Auth actions
+        ------------------------
+        If user is logged in, show logout button
+        If no user, show login button
+         */}
         <footer className="dashboard-footer">
-          <button onClick={logout} className="btn-text-logout">
-            <FontAwesomeIcon icon={faSignOutAlt} /> Se déconnecter
-          </button>
-          <button onClick={redirectToLogin} className="btn-text-login">
-            <FontAwesomeIcon icon={faSignOutAlt} /> Se connecter
-          </button>
+          {user ? (
+            <button onClick={logout} className="btn-text-logout">
+              <FontAwesomeIcon icon={faSignOutAlt} /> Se déconnecter
+            </button>
+          ) : (
+            <button onClick={redirectToLogin} className="btn-text-login">
+              <FontAwesomeIcon icon={faSignOutAlt} /> Se connecter
+            </button>
+          )}
         </footer>
 
       </div>

@@ -9,6 +9,7 @@ import type { Folder } from "../../../features/notes/models/Folder";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useModal } from "../../../shared/context/ModalContext"; // Import du hook
+import { useAuth } from "../../../features/auth/context/AuthContext";
 
 type LeftSidebarProps = {
   isLeftSidebarCollapsed: boolean;
@@ -28,6 +29,7 @@ const LeftSidebar = ({
 
   // RÉCUPÉRATION DE LA MODALE
   const { openInputModal } = useModal();
+  const { isAuthenticated } = useAuth();
 
   const sidebarClasses = classNames({
     sidenav: true,
@@ -181,12 +183,15 @@ const LeftSidebar = ({
               <FontAwesomeIcon icon={faPlus} /> Nouvelle note
             </button>
 
-            <button onClick={handleBin} className="btn-bin-root">
-              <FontAwesomeIcon icon={faTrash} />
-            </button>
+            {isAuthenticated && (
+              <button onClick={handleBin} className="btn-bin-root">
+                <FontAwesomeIcon icon={faTrash} />
+              </button>
+            )}
           </div>
         )}
 
+        {/* Verifying if authenticated */}
         {isLoading ? (
           <div className="loading-text">Chargement des dossiers...</div>
         ) : errorMessage ? (
