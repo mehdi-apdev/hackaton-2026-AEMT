@@ -16,7 +16,7 @@ export default function NotesPage() {
           <MarkdownPage />
         ) : (
           <div className="notesPlaceholder">
-            Selectionne une note pour commencer a ecrire.
+            Sélectionne une note pour commencer à écrire.
           </div>
         )}
       </div>

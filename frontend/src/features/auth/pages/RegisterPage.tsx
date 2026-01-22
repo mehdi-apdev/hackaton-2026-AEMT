@@ -41,7 +41,7 @@ export default function RegisterPage() {
       navigate(redirectTo, { replace: true });
     } catch (error) {
       console.error("Erreur register:", error);
-      alert("Impossible de creer le compte.");
+      alert("Impossible de créer le compte.");
     }
   };
 
@@ -49,7 +49,7 @@ export default function RegisterPage() {
     <div className="auth-container">
       <div className="auth-card">
         <h1 className="auth-title">Bienvenue...</h1>
-        <span className="subtitle">Enregistrez votre identite</span>
+        <span className="subtitle">Enregistrez votre identité</span>
         <div className="divider" />
 
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -79,7 +79,7 @@ export default function RegisterPage() {
                 placeholder="******"
                 {...register("password", {
                   required: "Mot de passe requis",
-                  minLength: { value: 6, message: "6 caracteres minimum" },
+                  minLength: { value: 6, message: "6 caractères minimum" },
                 })}
               />
             </div>
@@ -110,7 +110,7 @@ export default function RegisterPage() {
 
           <div className="divider" />
           <p className="auth-link">
-            Deja parmi nous ? <Link to="/login">Connectez-vous</Link>
+            Déjà parmi nous ? <Link to="/login">Connectez-vous</Link>
           </p>
           <button className="btn-global" type="submit">
             Signer le pacte

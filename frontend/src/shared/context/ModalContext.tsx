@@ -13,7 +13,7 @@ interface ModalConfig {
 }
 
 interface ModalContextType {
-  openInputModal: (title: string, placeholder: string, onConfirm: (val: string) => void | Promise<void>) => void;
+  openInputModal: (title: string, placeholder: string, onConfirm: (val: string) => void | Promise<void>, defaultValue?: string) => void;
   openConfirmModal: (title: string, message: string, onConfirm: () => void | Promise<void>) => void;
 }
 
@@ -32,14 +32,16 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     setInputValue("");
   };
 
-  const openInputModal = (title: string, placeholder: string, onConfirm: (val: string) => void | Promise<void>) => {
-    setInputValue("");
+  const openInputModal = (title: string, placeholder: string, onConfirm: (val: string) => void | Promise<void>, defaultValue: string = "") => {
+    setInputValue(defaultValue);
     setConfig({
       type: "INPUT",
       title,
       placeholder,
       onConfirm: async (val) => {
-        await onConfirm(val!);
+        if (typeof val === 'string') {
+            await onConfirm(val);
+        }
         close();
       },
     });
@@ -61,7 +63,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     <ModalContext.Provider value={{ openInputModal, openConfirmModal }}>
       {children}
 
-      {/* --- LE COMPOSANT MODAL GLOBAL --- */}
+      {/* --- GLOBAL MODAL COMPONENT --- */}
       <Modal 
         isOpen={config.type !== "NONE"} 
         onClose={close} 
@@ -108,6 +110,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
 
 export const useModal = () => {
   const context = useContext(ModalContext);
-  if (!context) throw new Error("useModal must be used within ModalProvider");
+  if (!context) 
+    throw new Error("useModal must be used within ModalProvider");
   return context;
 };

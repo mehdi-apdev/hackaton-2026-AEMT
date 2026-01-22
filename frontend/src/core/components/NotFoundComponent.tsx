@@ -9,12 +9,12 @@ const NotFoundComponent = () => {
       <div className="notfound-card">
         <FontAwesomeIcon icon={faSkullCrossbones} className="notfound-icon" />
         
-        <h1 className="notfound-code">404</h1>
+        <h1 className="notfound-code">Oups!</h1>
         
         <h2 className="notfound-title">Égaré dans la brume ?</h2>
         
         <p className="notfound-text">
-          Cette tombe est vide... La page que vous cherchez a sans doute rejoint l'au-delà.
+          Je ne pense pas que vous devriez être ici...
         </p>
         
         <Link to="/" className="btn-back-home">

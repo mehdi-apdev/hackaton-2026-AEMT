@@ -6,12 +6,12 @@ const RequireAuth = () => {
   const location = useLocation();
 
   if (!isAuthenticated) {
-   // If not logged in, redirect to /login
-// "state={{ from: location }}" returns to the requested page after logging in
+    // If not logged in, redirect to /login
+    // "state={{ from: location }}" returns to the requested page after logging in
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-// If connected, we display the child routes (Outlet)
+  // If connected, we display the child routes (Outlet)
   return <Outlet />;
 };
 

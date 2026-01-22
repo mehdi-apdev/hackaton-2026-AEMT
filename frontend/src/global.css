@@ -1,42 +1,81 @@
+/* --- GLOBAL STYLES HALLOWEEN --- */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Merriweather:ital,wght@0,300;0,700;1,300&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  /* Curseur par défaut : Petit crâne */
-  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size:24px'><text y='20'>💀</text></svg>"), auto;
 }
 
-/* Curseur au survol des éléments cliquables : Petit fantôme */
-a, button, [role="button"], .folder-item, .note-item, .folder-header, .note-title, .btn-icon {
-  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size:24px'><text y='20'>👻</text></svg>"), pointer !important;
+/* 1. SELECTION ECTOPLASME */
+::selection {
+  background: var(--green) !important;
+  color: #000 !important;
+  text-shadow: none;
 }
 
-body {
-  font-family: var(--font-body);
-  background-color: var(--dark-purple);
-  color: var(--text);
-  /* background-image: url('./assets/images/bats.png'); */
-
-  background-repeat: repeat-x;
-  background-position: top center;
-  background-size: 500px;
-  background-attachment: fixed;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  color: var(--orange);
-  text-shadow: 2px 2px 4px #000;
-}
-
-/* Scrollbar personnalisée */
+/* 2. SCROLLBARS ENCHANTÉES */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
+
 ::-webkit-scrollbar-track {
-  background: var(--black);
+  background: #050505;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: var(--orange);
+  background: linear-gradient(180deg, var(--orange), var(--purple));
   border-radius: 4px;
+  border: 1px solid #000;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+}
+
+/* 3. BODY & AMBIANCE */
+body {
+  font-family: 'Merriweather', serif;
+  background-color: var(--dark-purple);
+  color: var(--text);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* 4. EFFET GRAIN (NOISE) - STYLE VIEUX FILM */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: overlay;
+}
+
+/* 5. TYPOGRAPHIE */
+h1, h2, h3, h4, h5, h6, .logo-text {
+  font-family: 'Cinzel', serif;
+  color: var(--orange); /* Correction ici : var(--gold) -> var(--orange) */
+  text-shadow: 2px 2px 0px #000;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
+
+a {
+  color: var(--orange);
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+a:hover {
+  color: var(--orange-glow);
+  text-shadow: 0 0 10px var(--orange-dim);
 }

@@ -1,22 +1,21 @@
 :root {
-  /* --- PALETTE PRINCIPALE --- */
-  --orange: #ff6600;
-  --orange-hover: #ff8800;
-  --orange-glow: #ff9100;
-  --orange-dim: rgba(255, 102, 0, 0.1); 
-  --orange-border: rgba(255, 102, 0, 0.3);
+  /* --- PALETTE HALLOWEEN NEON --- */
+  --orange: #ff5500; /* Plus rouge/vif */
+  --orange-hover: #ff7700;
+  --orange-glow: #ff9900;
+  --orange-dim: rgba(255, 85, 0, 0.15); 
+  --orange-border: rgba(255, 85, 0, 0.4);
 
-  --purple: #9b26b6;
-  --background-color: radial-gradient(circle at center, #1a051a 0%, #000000 100%);
-  --dark-purple: #1f0c26;
-  --purple-translucent : #150415e6;
-  --purple-dim: rgba(155, 38, 182, 0.1);
-  --purple-border: rgba(155, 38, 182, 0.3);
+  --purple: #aa00ff; /* Violet électrique */
+  --dark-purple: #1a0525;
+  --purple-translucent : #1a0525f0;
+  --purple-dim: rgba(170, 0, 255, 0.15);
+  --purple-border: rgba(170, 0, 255, 0.4);
 
-  --green: #00cc66;
-  --green-hover: #33dd88;
-  --green-glow: #3dee99;
-  --green-dim: rgba(0, 204, 102, 0.1);
+  --green: #00ff66; /* Vert matrix/slime */
+  --green-hover: #33ff88;
+  --green-glow: #66ff99;
+  --green-dim: rgba(0, 255, 102, 0.15);
 
   --red: #ff4444;
   --red-hover: #ff6666;

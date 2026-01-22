@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCircleNotch, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCircleNotch, faExclamationCircle, faEye, faPen } from "@fortawesome/free-solid-svg-icons";
 import {
   useCallback,
   useEffect,
@@ -301,8 +301,9 @@ const MarkdownPage = () => {
           type="button"
           className="toggleBtn"
           onClick={() => setIsEditing((value) => !value)}
+          title={isEditing ? "Passer en lecture" : "Passer en édition"}
         >
-          {isEditing ? "Mode lecture" : "Mode edition"}
+          <FontAwesomeIcon icon={isEditing ? faEye : faPen} />
         </button>
       </header>
 
