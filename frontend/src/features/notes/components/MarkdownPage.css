@@ -1,13 +1,15 @@
-/* --- MarkdownPage.css (Cleaned) --- */
-/* Main editor page for creating and editing markdown notes */
+/* --- MarkdownPage.css (Cursed Grimoire Edition) --- */
+/* Editor interface for writing dark incantations */
 
-/* Main container for the markdown editor */
+/* Main container: A dark surface with depth and atmosphere */
 .markdownPage {
-  background: var(--surface-darker);
+  background: linear-gradient(135deg, #281328 0%, #3d1d3d 100%);
   border: 1px solid var(--purple-border);
   border-radius: 16px;
-  padding: 20px 30px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+  padding: 30px;
+  box-shadow: 
+    0 20px 60px rgba(0,0,0,0.95), 
+    inset 0 0 80px rgba(20, 0, 30, 0.8);
   display: flex;
   flex-direction: column;
   min-height: 100%;
@@ -16,265 +18,320 @@
   z-index: 1;
 }
 
-/* Header section with toggle button and save indicator */
+/* Header section */
 .markdownHeader {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 15px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(157, 0, 255, 0.1);
 }
 
 .headerLeft {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
 .headerActions {
-  margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.markdownTitle {
-  font-size: 2.5rem;
-  border-bottom: 2px solid var(--orange);
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--purple-dim);
-}
-
-/* Button to toggle between edit and preview modes */
-.toggleBtn {
+/* --- TITLE INPUT --- */
+/* The main spell name */
+.titleInput {
+  width: 100%;
+  padding: 10px 0;
   background: transparent;
-  border: 1px solid var(--text-muted);
-  color: var(--text-muted);
-  padding: 8px 14px;
-  border-radius: 8px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  color: var(--orange);
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0px #000;
+  
+  transition: all 0.4s ease;
+}
+
+.titleInput:focus {
+  outline: none;
+  border-bottom-color: var(--orange);
+  text-shadow: 0 0 15px var(--orange-dim);
+  padding-left: 10px; /* Slight shift to right */
+}
+
+.titleInput::placeholder {
+  color: rgba(255, 255, 255, 0.15);
+  font-family: 'Merriweather', serif;
+  font-style: italic;
+  font-size: 2rem;
+}
+
+/* --- ACTION BUTTONS --- */
+/* Common button styles */
+.toggleBtn, .exportBtn {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   display: flex;
   align-items: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Orange highlight on toggle button hover */
-.toggleBtn:hover {
-  border-color: var(--orange);
-  color: var(--orange);
-  background: var(--surface-dark);
-  box-shadow: 0 0 10px var(--orange-dim);
-}
-
-.exportBtn {
-  padding: 8px 12px;
+/* Toggle (Preview/Edit) Button */
+.toggleBtn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 8px 16px;
   border-radius: 8px;
-  border: 1px solid rgba(0, 204, 102, 0.6);
-  background: rgba(0, 0, 0, 0.6);
+}
+
+.toggleBtn:hover {
+  background: var(--surface-dark);
+  color: var(--text);
+  border-color: var(--text-muted);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+/* Export Button */
+.exportBtn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgba(0, 255, 0, 0.05);
+  border: 1px solid rgba(0, 255, 0, 0.3);
   color: var(--green);
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .exportBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 10px rgba(0, 204, 102, 0.4);
+  background: rgba(0, 255, 0, 0.15);
+  box-shadow: 0 0 15px var(--green-dim);
+  transform: translateY(-2px);
+  text-shadow: 0 0 5px var(--green);
 }
 
 .exportBtn:disabled {
-  opacity: 0.5;
+  opacity: 0.3;
   cursor: not-allowed;
+  transform: none;
   box-shadow: none;
 }
 
+/* Secondary Export (PDF) */
 .exportBtnSecondary {
-  border-color: rgba(255, 102, 0, 0.6);
+  background: rgba(255, 102, 0, 0.05);
+  border-color: rgba(255, 102, 0, 0.3);
   color: var(--orange);
 }
 
 .exportBtnSecondary:hover {
-  box-shadow: 0 0 10px rgba(255, 102, 0, 0.4);
+  background: rgba(255, 102, 0, 0.15);
+  box-shadow: 0 0 15px var(--orange-dim);
+  text-shadow: 0 0 5px var(--orange);
 }
 
+/* --- SAVE INDICATOR --- */
 .saveIndicator {
-  font-size: 1.1rem;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--surface-dark);
-  border: 1px solid transparent;
-  transition: all 0.3s;
+  background: #08050a;
+  border: 1px solid #222;
+  font-size: 1rem;
+  transition: all 0.5s;
 }
 
-/* Green indicator when note is saved */
+/* Saved (Quiet) */
 .saveIndicator.status-saved {
   color: var(--green);
-  border-color: var(--green-dim);
-  box-shadow: 0 0 10px var(--green-dim);
+  border-color: rgba(0, 255, 0, 0.3);
+  box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1);
 }
 
-/* Orange pulsing indicator when note has unsaved changes */
+/* Unsaved (Restless) */
 .saveIndicator.status-dirty {
   color: var(--orange);
-  border-color: var(--orange-dim);
-  animation: pulse 2s infinite;
+  border-color: var(--orange);
+  box-shadow: 0 0 15px var(--orange-dim);
+  animation: heartbeat 2s infinite;
 }
 
-/* Yellow spinning indicator during save operation */
+/* Saving (Active) */
 .saveIndicator.status-saving {
   color: #ffd166;
-  animation: spin 1s linear infinite;
+  border-top-color: #ffd166;
+  border-right-color: transparent;
+  animation: spin 0.8s linear infinite;
 }
 
-/* Spinning animation for saving state */
+@keyframes heartbeat {
+  0% { transform: scale(1); opacity: 0.8; }
+  15% { transform: scale(1.15); opacity: 1; }
+  30% { transform: scale(1); opacity: 0.8; }
+  45% { transform: scale(1.15); opacity: 1; }
+  60% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
 @keyframes spin { 100% { transform: rotate(360deg); } }
-/* Pulsing animation for unsaved changes */
-@keyframes pulse { 50% { opacity: 0.5; } }
 
-/* Error message banner displayed when save fails */.errorMessage {
-  background: rgba(255, 0, 60, 0.1);
-  border-left: 3px solid var(--red);
-  color: #ff6b6b;
-  padding: 10px 15px;
-  margin-bottom: 15px;
-  border-radius: 4px;
-}
-
-/* Hidden label for accessibility */
-.editorLabel { display: none; }
-
-/* Large input field for note title */
-.titleInput {
-  width: 100%;
-  padding: 10px 0;
-  margin-bottom: 20px;
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  font-family: var(--font-heading);
-  font-size: 2.5rem;
-  color: var(--orange);
-  letter-spacing: 1px;
-  transition: border-color 0.3s;
-}
-
-/* Orange underline appears on focus */
-.titleInput:focus {
-  outline: none;
-  border-bottom-color: var(--orange-border);
-}
-
-/* Green selection color for title text */
-.titleInput::selection {
-  background: var(--green) !important;
-  color: #000 !important;
-}
-
-/* Subtle placeholder text */
-.titleInput::placeholder {
-  color: var(--text-muted);
-  opacity: 0.3;
-  font-style: italic;
-}
-
-/* Main editor container with organic rounded corners */
+/* --- EDITOR AREA --- */
 .mdEditorShell {
   flex: 1;
-  border-radius: 12px 40px 15px 35px / 30px 15px 40px 12px; /* Organic asymmetric corners */
-  background: #08080a; 
+  border-radius: 12px;
+  background: rgba(5, 5, 8, 0.7); /* Much darker, less gray */
   border: 1px solid var(--purple-border);
-  box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
-  padding: 30px;
+  box-shadow: 
+    inset 0 0 40px rgba(0, 0, 0, 0.9),
+    0 0 20px rgba(157, 0, 255, 0.05); /* Subtle outer glow */
   min-height: 400px;
-  overflow: visible !important;
   position: relative;
-  z-index: 1;
+  transition: all 0.3s ease;
+  
+  /* Paper texture overlay - refined opacity */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
 }
 
-/* Milkdown editor theme customization with Halloween colors */
+/* Add a subtle glow when typing/focusing the editor area */
+.mdEditorShell:focus-within {
+  border-color: var(--orange-border);
+  box-shadow: 
+    inset 0 0 40px rgba(0, 0, 0, 0.9),
+    0 0 25px rgba(255, 102, 0, 0.1);
+}
+
+/* Milkdown Overrides */
 .mdEditorShell .milkdown {
-  --crepe-color-background: transparent;
-  --crepe-color-surface: transparent;
-  --crepe-color-on-surface: #d0d0d0;
-  --crepe-color-on-surface-variant: #888;
+  --crepe-color-on-surface: #e0e0e0;
   --crepe-color-primary: var(--orange);
   --crepe-color-secondary: var(--purple);
-  --crepe-color-inline-code: #ffb86c;
-  --crepe-color-hover: var(--purple-dim);
-  --crepe-color-selected: rgba(170, 0, 255, 0.2);
-  --crepe-font-default: 'Consolas', 'Monaco', monospace;
-  --crepe-font-code: 'Consolas', monospace;
+  --crepe-color-inline-code: #ff79c6;
+  --crepe-color-background: transparent;
+  --crepe-color-surface: transparent;
   caret-color: var(--green);
 }
 
-/* Editor content area with full width and extra bottom padding */
 .mdEditorShell .milkdown .editor {
-  max-width: 100%;
-  margin: 0;
-  padding-bottom: 100px;
-  line-height: 1.6;
-  font-size: 1.05rem;
+  padding: 40px;
+  font-family: var(--font-code);
+  line-height: 1.8;
+  font-size: 1.1rem;
+  color: #d0d0d0;
 }
 
-/* Light text color for markdown content */
-.mdEditorShell .milkdown .ProseMirror {
-  color: #e0e0e0;
+/* Hide the default Milkdown border if it exists */
+.mdEditorShell .milkdown .crepe {
+  border: none !important;
+  background: transparent !important;
 }
 
-/* Footer panel showing note metadata (created/updated dates) */
+
+/* --- FOOTER METADATA --- */
 .metadataPanel {
   display: flex;
   justify-content: flex-end;
-  gap: 20px;
+  gap: 25px;
   margin-top: 15px;
-  padding: 10px 0;
-  border-top: 1px solid var(--purple-dim);
-  font-family: monospace;
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  padding-top: 15px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  color: #666;
 }
 
-/* Individual metadata item (label + value) */
 .metadataGroup {
   display: flex;
   gap: 8px;
   align-items: center;
+  background: rgba(0,0,0,0.3);
+  padding: 4px 8px;
+  border-radius: 4px;
 }
 
-/* Label for metadata (e.g., "CREATED", "UPDATED") */
 .metadataLabel {
   color: var(--purple);
-  text-transform: uppercase;
-  font-size: 0.7rem;
-  letter-spacing: 1px;
-}
-
-/* Value for metadata (date/time) */
-.metadataValue {
-  color: var(--text);
   font-weight: bold;
 }
 
-/* Dark themed dropdown menus for editor formatting tools */
-.milkdown-menu, 
-.milkdown-slash-menu, 
-.milkdown-tooltip, 
-[data-role="picker"] {
-  background-color: #151515 !important;
-  border: 1px solid var(--orange) !important;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.9) !important;
-  z-index: 10000 !important;
-  color: #fff !important;
-  border-radius: 6px !important;
+.metadataValue {
+  color: #aaa;
 }
 
-/* Purple highlight on menu item hover */
-.milkdown-menu-item:hover, 
-.milkdown-slash-menu-item:hover {
-  background-color: var(--purple) !important;
-  color: #fff !important;
+/* --- MILKDOWN FLOATING MENUS & TOOLTIPS --- */
+/* Target bubble menu, slash menu, and tooltips precisely */
+
+/* Use direct child and data-role selectors common in Milkdown/Crepe */
+.milkdown .crepe .bubble-menu,
+.milkdown .crepe .slash-menu,
+.milkdown [data-role="bubble-menu"],
+.milkdown [data-role="slash-menu"],
+.milkdown-menu,
+.milkdown-slash-menu,
+[data-role="picker"],
+/* Target Tippy.js boxes (used by Milkdown for popups) */
+.tippy-box,
+.tippy-content,
+[data-tippy-root] .tippy-box {
+  background-color: rgb(15, 10, 21) !important; /* Solid dark purple/black, NO alpha */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E") !important;
+  border: 1px solid var(--purple-border) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.95) !important;
+  color: #e0e0e0 !important;
+  z-index: 10000 !important;
+  opacity: 1 !important; /* Force opacity */
+}
+
+/* Ensure inner content of tippy doesn't have transparency */
+.tippy-content {
+  background: transparent !important;
+  padding: 8px !important;
+}
+
+/* Hide Tippy arrow if it interferes or looks bad */
+.tippy-arrow {
+  color: rgb(15, 10, 21) !important;
+}
+
+/* Specific buttons inside the bubble menu */
+.milkdown .crepe .bubble-menu button,
+.milkdown .crepe .slash-menu-item {
+  background: transparent !important;
+  color: #aaa !important;
+  border-radius: 4px !important;
+  transition: all 0.2s !important;
+}
+
+.milkdown .crepe .bubble-menu button:hover,
+.milkdown .crepe .slash-menu-item:hover,
+.milkdown .crepe .bubble-menu button.active {
+  background-color: var(--purple-dim) !important;
+  color: var(--orange) !important;
+  transform: scale(1.1);
+}
+
+.errorMessage {
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid var(--red);
+  color: var(--red);
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: shake 0.4s;
 }

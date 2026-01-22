@@ -1,131 +1,119 @@
-/* --- FolderTree.css - Grimoire Style --- */
+/* --- FolderTree.css - Cursed Grimoire Style --- */
 /* Hierarchical folder and note tree navigation */
 
-/* Main tree container with elegant typography */
 .folder-tree {
-  font-family: 'Merriweather', serif; /* Elegant base font */
+  font-family: 'Merriweather', serif;
   font-size: 0.95rem;
   color: #cccccc;
   user-select: none;
 }
 
 /* --- FOLDER LINE --- */
-/* Clickable folder header with tab-like hover effect */
 .folder-header {
   display: flex;
   align-items: center;
-  padding: 10px 15px; /* Extra spacing for comfort */
+  padding: 10px 15px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  border-left: 3px solid transparent; /* Ready for tab effect */
-  border-radius: 0 8px 8px 0; /* Rounded tab on the right */
+  border-left: 3px solid transparent;
+  border-radius: 0 8px 8px 0;
   margin-bottom: 2px;
   position: relative;
   overflow: hidden;
 }
 
-/* Shine effect that sweeps across on hover */
-.folder-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, rgba(155, 38, 182, 0.2), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.4s ease;
-  z-index: 0;
-}
-
-.folder-header:hover::before {
-  transform: translateX(0);
-}
-
-/* Hover state with purple border and indent */
+/* Hover: Creaky shift & eerie glow */
 .folder-header:hover {
   color: #fff;
-  border-left-color: var(--purple); /* Purple border */
-  padding-left: 20px; /* Satisfying shift */
+  border-left-color: var(--purple);
+  padding-left: 25px; /* Deeper indent */
+  background: linear-gradient(90deg, rgba(80, 0, 120, 0.2), transparent);
+  text-shadow: 0 0 10px rgba(157, 0, 255, 0.5);
 }
 
-/* Icon displayed before folder name */
+/* Icon: Rotates and glows on hover */
 .folder-icon {
   margin-right: 10px;
   font-size: 1.1rem;
   opacity: 0.8;
   z-index: 1;
   color: var(--orange);
-  transition: transform 0.3s;
+  transition: all 0.4s ease;
 }
 
-/* .folder-header.open .folder-icon { transform: rotate(90deg); } */
+.folder-header:hover .folder-icon {
+  transform: rotate(-10deg) scale(1.2);
+  color: var(--orange-glow);
+  filter: drop-shadow(0 0 5px var(--orange));
+}
 
-/* Folder name text with mystical font */
 .folder-name {
-  font-family: 'Underdog', cursive; /* Mystical font for folders */
-  font-weight: 500;
+  font-family: var(--font-heading); /* Majestic & Spooky */
+  font-weight: 700;
   flex: 1;
   z-index: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 }
 
 /* --- FOLDER CONTENT (CHILDREN) --- */
-/* Container for nested folders and notes */
 .folder-content {
   margin-left: 22px;
-  border-left: 1px dashed rgba(255, 255, 255, 0.15); /* Subtle guide line */
+  border-left: 1px dashed rgba(255, 255, 255, 0.1);
   padding-left: 5px;
-  animation: slideDown 0.3s ease-out;
+  animation: spiritReveal 0.4s ease-out;
 }
 
-/* Smooth reveal animation for expanding folders */
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes spiritReveal {
+  from { opacity: 0; transform: translateY(-10px) scale(0.95); filter: blur(5px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }
 
 /* --- NOTE LINE --- */
-/* Individual note item in the tree */
 .note-item {
   display: flex;
   align-items: center;
   padding: 8px 10px 8px 15px;
   cursor: pointer;
   color: #999;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   border-radius: 0 6px 6px 0;
   margin: 2px 0;
   position: relative;
 }
 
-/* Subtle highlight on hover */
+/* Hover: Ghostly wobble */
 .note-item:hover {
   background: rgba(255, 255, 255, 0.05);
   color: #e0e0e0;
+  transform: translateX(5px);
+  box-shadow: -5px 0 10px -5px rgba(255, 255, 255, 0.2);
 }
 
-/* Active/selected note styling with orange accent */
 .note-item.active {
   background: linear-gradient(90deg, rgba(255, 102, 0, 0.15), transparent);
   color: var(--orange);
   border-left: 3px solid var(--orange);
   font-weight: bold;
+  text-shadow: 0 0 10px rgba(255, 102, 0, 0.3);
 }
 
-/* Icon displayed before note title */
 .note-icon {
   margin-right: 8px;
   font-size: 0.9rem;
   opacity: 0.7;
+  transition: transform 0.3s;
 }
 
-/* Note title text with reading font */
+.note-item:hover .note-icon {
+  transform: rotate(20deg);
+  color: var(--green); /* Green ectoplasm hint */
+}
+
 .note-title {
-  font-family: 'Merriweather', serif; /* Reading font for notes */
+  font-family: 'Merriweather', serif;
   font-style: italic;
   flex: 1;
   white-space: nowrap;
@@ -133,8 +121,7 @@
   text-overflow: ellipsis;
 }
 
-/* --- OPTIONS BUTTON (...) --- */
-/* Three-dot menu button that appears on hover */
+/* --- OPTIONS BUTTON --- */
 .btn-options {
   background: transparent;
   border: none;
@@ -147,41 +134,85 @@
   z-index: 2;
 }
 
-/* Show options button when hovering over folder or note */
 .folder-header:hover .btn-options,
 .note-item:hover .btn-options {
   opacity: 1;
   transform: scale(1.1);
 }
 
-/* Green highlight on options button hover */
 .btn-options:hover {
-  color: var(--green);
-  background: rgba(0, 204, 102, 0.1);
+  color: var(--red); /* Dangerous action */
+  background: rgba(255, 0, 0, 0.1);
+  box-shadow: 0 0 10px var(--red-dim);
 }
 
-/* --- CONTEXT MENU --- */
-/* Individual item in dropdown menu */
-.menu-item {
-  padding: 8px 16px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Purple highlight on menu item hover */
-.menu-item:hover {
-  background: var(--purple);
-  color: white;
-}
-
-/* Message displayed when folder has no children */
 .empty-folder {
   padding: 8px 0 8px 25px;
   font-size: 0.8rem;
-  color: #555;
+  color: #444;
   font-style: italic;
+  font-family: var(--font-heading);
+}
+
+/* --- CONTEXT MENU (The Cursed Scroll) --- */
+.context-menu {
+  background-color: #0f0a15 !important;
+  border: 1px solid var(--purple-border) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.95) !important;
+  padding: 8px !important;
+  min-width: 180px !important;
+  z-index: 10000 !important;
+  
+  /* Texture */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Menu Items */
+.menu-item {
+  padding: 10px 15px;
+  color: #ccc;
+  font-family: 'Merriweather', serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Hover: Purple Glow */
+.menu-item:hover {
+  background: rgba(157, 0, 255, 0.15);
+  color: var(--orange);
+  padding-left: 20px; /* Slight slide */
+  text-shadow: 0 0 5px var(--orange-dim);
+}
+
+/* Delete Item: Red Danger */
+.menu-item.delete {
+  color: #ff6b6b;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: 5px;
+}
+
+.menu-item.delete:hover {
+  background: rgba(255, 0, 0, 0.1);
+  color: var(--red);
+  text-shadow: 0 0 8px var(--red);
+}
+
+/* Separator */
+.menu-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(157, 0, 255, 0.3), transparent);
+  margin: 5px 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }

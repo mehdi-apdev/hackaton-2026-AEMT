@@ -1,4 +1,5 @@
-/* --- Modal.css (Harmonisé) --- */
+/* --- Modal.css (The Cursed Pact) --- */
+/* A modal that feels like signing a deal with a demon */
 
 .modal-overlay {
   position: fixed;
@@ -6,97 +7,181 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.85); /* Fond très sombre */
-  backdrop-filter: blur(5px);
+  /* Deep void background with noise */
+  background: radial-gradient(circle at center, rgba(20, 0, 30, 0.9), #000);
+  backdrop-filter: blur(8px) grayscale(80%);
   z-index: 9999;
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: fadeIn 0.3s ease;
+  animation: voidOpen 0.5s ease-out;
 }
 
+@keyframes voidOpen {
+  from { opacity: 0; backdrop-filter: blur(0); }
+  to { opacity: 1; backdrop-filter: blur(8px); }
+}
+
+/* THE SCROLL / TABLET */
 .modal-content {
-  background: var(--surface-darker);
+  background: #0a050c;
   border: 1px solid var(--purple-border);
-  box-shadow: 0 20px 60px var(--shadow), 0 0 30px var(--purple-dim);
-  border-radius: 15px;
-  padding: 2rem;
+  /* Uneven, organic border radius like a broken stone tablet */
+  border-radius: 2px;
+  box-shadow: 
+    0 0 0 4px #000, /* Inner black border */
+    0 0 0 5px var(--purple-dim), /* Outer purple glow */
+    0 30px 80px rgba(0, 0, 0, 1);
+    
+  padding: 40px;
   width: 90%;
-  max-width: 400px;
-  color: var(--text);
+  max-width: 450px;
+  color: #e0e0e0;
   position: relative;
-  animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+  
+  /* Texture */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+  
+  animation: riseFromHell 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+@keyframes riseFromHell {
+  from { transform: translateY(100px) scale(0.8); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Floating dust particles inside modal */
+.modal-content::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, transparent 20%, #000 120%);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+/* --- HEADER --- */
 .modal-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 25px;
   text-align: center;
+  position: relative;
+  z-index: 2;
 }
 
 .modal-title {
   color: var(--orange);
   font-family: var(--font-heading);
-  font-size: 1.8rem;
-  text-shadow: 2px 2px 0 #000;
+  font-weight: 700;
+  font-size: 2rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px rgba(255, 102, 0, 0.4);
+  border-bottom: 1px solid rgba(255, 102, 0, 0.2);
+  padding-bottom: 15px;
+  display: inline-block;
 }
 
+/* --- BODY --- */
 .modal-body {
-  margin-bottom: 2rem;
-  font-family: var(--font-body);
+  margin-bottom: 30px;
+  font-family: 'Merriweather', serif;
+  font-size: 1.1rem;
+  color: #bbb;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  line-height: 1.6;
 }
 
+/* Input fields inside modal (if any) */
+.modal-body input {
+  width: 100%;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid #444;
+  color: #fff;
+  font-family: var(--font-heading);
+  margin-top: 15px;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.modal-body input:focus {
+  border-color: var(--orange);
+  box-shadow: 0 0 15px rgba(255, 102, 0, 0.2);
+  outline: none;
+}
+
+/* --- FOOTER (ACTIONS) --- */
 .modal-footer {
   display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--purple-dim);
+  justify-content: center; /* Centered actions */
+  gap: 20px;
+  margin-top: 10px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  z-index: 2;
 }
 
-/* Boutons */
+/* Cancel Button - "Flee" */
 .btn-modal-cancel {
   background: transparent;
-  border: 1px solid var(--text-muted);
-  color: var(--text-muted);
-  padding: 8px 16px;
-  border-radius: 6px;
+  border: 1px solid #555;
+  color: #888;
+  padding: 10px 20px;
+  border-radius: 4px;
   cursor: pointer;
   font-family: var(--font-heading);
-  transition: all 0.2s;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  transition: all 0.3s;
 }
 
 .btn-modal-cancel:hover {
-  border-color: var(--text);
-  color: var(--text);
-  background: var(--surface-dark);
+  border-color: #aaa;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
 }
 
+/* Confirm Button - "Seal the Pact" */
 .btn-modal-confirm {
-  background: var(--green);
-  color: #000;
-  border: none;
-  padding: 8px 24px;
-  border-radius: 6px;
+  background: #1a0505; /* Dark blood red base */
+  
+  color: #1a0505;
+  border: 1px solid var(--red-dim);
+  padding: 10px 30px;
+  border-radius: 4px;
   font-weight: bold;
   font-family: var(--font-heading);
+  text-transform: uppercase;
+  font-size: 1rem;
   cursor: pointer;
-  box-shadow: 0 4px 15px var(--green-dim);
-  transition: all 0.2s;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-modal-confirm::before {
+  content: '🩸';
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  opacity: 0.2;
+  font-size: 2rem;
+  transform: rotate(30deg);
 }
 
 .btn-modal-confirm:hover {
-  background: var(--green-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px var(--green-glow);
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes scaleIn {
-  from { transform: scale(0.9) translateY(20px); opacity: 0; }
-  to { transform: scale(1) translateY(0); opacity: 1; }
+  background: var(--red);
+  color: #000;
+  box-shadow: 0 0 30px var(--red);
+  transform: scale(1.05);
+  text-shadow: none;
 }

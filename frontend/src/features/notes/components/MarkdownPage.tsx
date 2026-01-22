@@ -199,6 +199,12 @@ const MarkdownPage = () => {
     }
   }, [noteId, title, content]);
 
+  /**
+   * Exports the current note as a PDF file.
+   * Handles markdown stripping and formatting.
+   * Sets error messages on failure.
+   * Manages exporting state.
+   */
   const handleExportPdf = useCallback(async () => {
     setIsExportingPdf(true);
     setErrorMessage(null);
@@ -220,6 +226,13 @@ const MarkdownPage = () => {
     const safeTitle = (title || "note").trim().replace(/[<>:"/\\|?*]+/g, "_");
     const plainText = stripMarkdown(content || "");
 
+    /**
+     * Generates a PDF from the note content.
+     * Handles pagination and text wrapping.
+     * Saves the PDF file with a safe filename.
+     * Catches and sets error messages on failure.
+     * Finally, resets the exporting state.
+     */
     try {
       const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
       doc.setFillColor(255, 255, 255);
@@ -264,6 +277,12 @@ const MarkdownPage = () => {
     }
   }, [title, content]);
 
+  /**
+   * Exports all notes as a ZIP archive.
+   * Initiates download of the ZIP file.
+   * Sets error messages on failure.
+   * Manages exporting state.
+   */
   const handleExportZip = useCallback(async () => {
     setIsExportingZip(true);
     setErrorMessage(null);
@@ -286,6 +305,15 @@ const MarkdownPage = () => {
     }
   }, []);
 
+  /**
+   * Auto-saves the note after a delay when there are unsaved changes (Delay is 800ms).
+   * Skips saving if loading or already saving.
+   * Also sets up a keyboard shortcut (Ctrl+S / Cmd+S) for manual saving.
+   * Prevents default browser behavior on shortcut.
+   * Skips saving if there are no unsaved changes.
+   * Cleans up timeouts and event listeners appropriately.
+   * Dependencies include noteId, isLoading, isSaving, hasUnsavedChanges, and handleSave.
+   */
   useEffect(() => {
     if (!noteId || isLoading || isSaving || !hasUnsavedChanges) return;
     const timeoutId = window.setTimeout(() => {
@@ -411,14 +439,13 @@ const MarkdownPage = () => {
           >
             {isEditing ? "Mode lecture" : "Mode edition"}
           </button>
+          
+          
         </div>
       </header>
 
       {errorMessage ? <p className="errorMessage">{errorMessage}</p> : null}
 
-      <label className="editorLabel" htmlFor={titleId}>
-        Titre
-      </label>
       <input
         id={titleId}
         className="titleInput"
@@ -427,8 +454,6 @@ const MarkdownPage = () => {
         placeholder="Titre de la note"
         disabled={isLoading || !isEditing}
       />
-
-      <div className="editorLabel">Contenu de la note</div>
 
       <div className="mdEditorShell" data-color-mode="dark">
         {isLoading ? (
