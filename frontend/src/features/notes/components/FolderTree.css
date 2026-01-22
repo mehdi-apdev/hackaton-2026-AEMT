@@ -1,153 +1,187 @@
-/* --- FolderTree.css - Version Halloween --- */
+/* --- FolderTree.css - Grimoire Style --- */
+/* Hierarchical folder and note tree navigation */
 
+/* Main tree container with elegant typography */
 .folder-tree {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Merriweather', serif; /* Elegant base font */
   font-size: 0.95rem;
   color: #cccccc;
   user-select: none;
 }
 
-/* --- Ligne Dossier --- */
+/* --- FOLDER LINE --- */
+/* Clickable folder header with tab-like hover effect */
 .folder-header {
   display: flex;
   align-items: center;
-  padding: 8px 15px;
+  padding: 10px 15px; /* Extra spacing for comfort */
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  border-left: 3px solid transparent;
-  gap: 6px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-left: 3px solid transparent; /* Ready for tab effect */
+  border-radius: 0 8px 8px 0; /* Rounded tab on the right */
+  margin-bottom: 2px;
+  position: relative;
+  overflow: hidden;
 }
 
+/* Shine effect that sweeps across on hover */
+.folder-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(155, 38, 182, 0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+  z-index: 0;
+}
+
+.folder-header:hover::before {
+  transform: translateX(0);
+}
+
+/* Hover state with purple border and indent */
 .folder-header:hover {
-  background-color: rgba(255, 102, 0, 0.1);
   color: #fff;
-  border-left-color: var(--orange);
+  border-left-color: var(--purple); /* Purple border */
+  padding-left: 20px; /* Satisfying shift */
 }
 
+/* Icon displayed before folder name */
 .folder-icon {
   margin-right: 10px;
   font-size: 1.1rem;
   opacity: 0.8;
+  z-index: 1;
+  color: var(--orange);
+  transition: transform 0.3s;
 }
 
+/* .folder-header.open .folder-icon { transform: rotate(90deg); } */
+
+/* Folder name text with mystical font */
 .folder-name {
+  font-family: 'Underdog', cursive; /* Mystical font for folders */
   font-weight: 500;
   flex: 1;
+  z-index: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.5px;
 }
 
-/* --- Contenu (Enfants) --- */
+/* --- FOLDER CONTENT (CHILDREN) --- */
+/* Container for nested folders and notes */
 .folder-content {
-  margin-left: 20px;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  margin-left: 22px;
+  border-left: 1px dashed rgba(255, 255, 255, 0.15); /* Subtle guide line */
+  padding-left: 5px;
+  animation: slideDown 0.3s ease-out;
 }
 
-/* --- Ligne Note --- */
+/* Smooth reveal animation for expanding folders */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- NOTE LINE --- */
+/* Individual note item in the tree */
 .note-item {
   display: flex;
   align-items: center;
-  padding: 6px 10px 6px 15px;
+  padding: 8px 10px 8px 15px;
   cursor: pointer;
   color: #999;
   transition: all 0.2s ease;
-  margin: 1px 0;
+  border-radius: 0 6px 6px 0;
+  margin: 2px 0;
   position: relative;
 }
 
+/* Subtle highlight on hover */
 .note-item:hover {
-  background: linear-gradient(90deg, rgba(155, 38, 182, 0.2), transparent);
+  background: rgba(255, 255, 255, 0.05);
   color: #e0e0e0;
-  padding-left: 18px; /* Petit décalage animé */
 }
 
-/* Note Active */
+/* Active/selected note styling with orange accent */
 .note-item.active {
-  background: linear-gradient(90deg, rgba(255, 102, 0, 0.25), transparent);
+  background: linear-gradient(90deg, rgba(255, 102, 0, 0.15), transparent);
   color: var(--orange);
   border-left: 3px solid var(--orange);
   font-weight: bold;
 }
 
+/* Icon displayed before note title */
 .note-icon {
   margin-right: 8px;
   font-size: 0.9rem;
+  opacity: 0.7;
 }
 
-.folder-actions {
-  opacity: 1;
-  display: flex;
-  gap: 5px;
-  margin-left: auto;
-  padding: 4px;
-  border-radius: 8px;
-  background: rgba(255, 102, 0, 0.08);
-  border: 1px solid rgba(255, 102, 0, 0.25);
-  transition: opacity 0.2s, background 0.2s, border-color 0.2s;
+/* Note title text with reading font */
+.note-title {
+  font-family: 'Merriweather', serif; /* Reading font for notes */
+  font-style: italic;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.folder-header:hover .folder-actions {
-  background: rgba(255, 102, 0, 0.15);
-  border-color: rgba(255, 102, 0, 0.45);
-}
-
-.btn-icon {
-  background: rgba(10, 10, 10, 0.7);
-  border: 1px solid rgba(255, 102, 0, 0.35);
+/* --- OPTIONS BUTTON (...) --- */
+/* Three-dot menu button that appears on hover */
+.btn-options {
+  background: transparent;
+  border: none;
+  color: #666;
+  padding: 4px 8px;
   cursor: pointer;
-  font-size: 0.85rem;
-  color: #ffb066;
-  opacity: 0.9;
-  padding: 4px 6px;
-  border-radius: 6px;
-  transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
+  opacity: 0; 
+  transition: all 0.2s;
+  border-radius: 4px;
+  z-index: 2;
 }
 
-.btn-icon:hover {
-  transform: scale(1.3);
+/* Show options button when hovering over folder or note */
+.folder-header:hover .btn-options,
+.note-item:hover .btn-options {
   opacity: 1;
-  box-shadow: 0 0 8px rgba(255, 102, 0, 0.4);
+  transform: scale(1.1);
 }
 
-.btn-delete:hover {
-  filter: hue-rotate(180deg);
+/* Green highlight on options button hover */
+.btn-options:hover {
+  color: var(--green);
+  background: rgba(0, 204, 102, 0.1);
 }
 
+/* --- CONTEXT MENU --- */
+/* Individual item in dropdown menu */
+.menu-item {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Purple highlight on menu item hover */
+.menu-item:hover {
+  background: var(--purple);
+  color: white;
+}
+
+/* Message displayed when folder has no children */
 .empty-folder {
-  padding: 5px 0 5px 20px;
+  padding: 8px 0 8px 25px;
   font-size: 0.8rem;
   color: #555;
   font-style: italic;
-}
-.note-delete {
-  opacity: 0.85;
-}
-
-.note-item:hover .note-delete {
-  opacity: 1;
-}
-
-.context-menu {
-  position: fixed;
-  z-index: 2000;
-  min-width: 160px;
-  padding: 6px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 102, 0, 0.35);
-  background: rgba(10, 10, 10, 0.95);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-}
-
-.context-menu-item {
-  width: 100%;
-  background: none;
-  border: none;
-  color: #ffb066;
-  padding: 8px 10px;
-  text-align: left;
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-.context-menu-item:hover {
-  background: rgba(255, 102, 0, 0.15);
-  color: #fff;
 }

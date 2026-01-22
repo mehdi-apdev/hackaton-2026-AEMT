@@ -1,12 +1,16 @@
+/**
+ * main.tsx - Application Entry Point
+ * Renders the root React component and sets up providers
+ */
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 
-// --- CSS Imports (Order matters!) ---
-import './assets/colors.css'       // 1. Variables de couleurs
-import './assets/fonts/fonts.css'  // 2. Polices
-import './global.css'              // 3. Reset et styles globaux
-import './mobile.css'              // 4. Correctifs Mobile
+import './assets/colors.css'       // 1. Color variables (CSS custom properties)
+import './assets/fonts/fonts.css'  // 2. Font definitions (@font-face)
+import './global.css'              // 3. Global reset and base styles
+import './mobile.css'              // 4. Mobile-specific fixes
 
 import App from './App.tsx'
 import { AuthProvider } from './features/auth/context/AuthContext.tsx' 
@@ -17,7 +21,9 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <AuthProvider>
         <ModalProvider>
-          <App />
+          <>
+            <App />
+          </>
         </ModalProvider>
       </AuthProvider>
     </BrowserRouter>
