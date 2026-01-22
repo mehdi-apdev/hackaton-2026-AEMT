@@ -2,6 +2,7 @@ package com.helha.backend.controllers;
 
 import com.helha.backend.application.dto.FolderCreationDto;
 import com.helha.backend.application.dto.FolderDto;
+import com.helha.backend.application.dto.FolderUpdateDto;
 import com.helha.backend.application.services.FolderService;
 import com.helha.backend.controllers.exceptions.GenericNotFoundException;
 import com.helha.backend.domain.repositories.IFolderRepository; // Import manquant
@@ -39,7 +40,20 @@ public class FolderController {
         }
         return folderService.createFolder(input);
     }
+// Add this method to FolderController.java
 
+    /**
+     * Updates an existing folder (name).
+     * URL: PUT /api/folders/{id}
+     */
+    @PutMapping("/{id}")
+    public FolderDto update(@PathVariable Long id, @RequestBody FolderUpdateDto input) {
+        // Check if the folder exists before attempting update
+        if (!folderRepository.existsById(id)) {
+            throw new GenericNotFoundException(id, "Folder");
+        }
+        return folderService.updateFolder(id, input);
+    }
     // DELETE /api/folders/{id}
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
