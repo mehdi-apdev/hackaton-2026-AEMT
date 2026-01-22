@@ -2,6 +2,7 @@ package com.helha.backend.application.services;
 
 import com.helha.backend.application.dto.FolderCreationDto;
 import com.helha.backend.application.dto.FolderDto;
+import com.helha.backend.application.dto.FolderUpdateDto;
 import com.helha.backend.application.dto.NoteDto;
 import com.helha.backend.controllers.exceptions.GenericNotFoundException;
 import com.helha.backend.domain.models.DbFolder;
@@ -137,5 +138,34 @@ public class FolderService {
         dto.setUpdatedAt(entity.getUpdatedAt());
         if (entity.getFolder() != null) dto.setFolderId(entity.getFolder().getId());
         return dto;
+    }
+
+    /**
+     * Updates the name of an existing folder.
+     * Works for both root folders and sub-folders.
+     * @param id The ID of the folder to update.
+     * @param input The DTO containing the new name.
+     * @return The updated folder as a DTO.
+     */
+    @Transactional
+    public FolderDto updateFolder(Long id, FolderUpdateDto input) {
+        DbUser user = getCurrentUser(); // Get currently logged-in user
+
+        // Find the folder or throw an exception if not found
+        DbFolder folder = folderRepository.findById(id)
+                .orElseThrow(() -> new GenericNotFoundException(id, "Folder"));
+
+        // Security: Check if the folder belongs to the current user
+        if (!folder.getUser().getId().equals(user.getId())) {
+            throw new GenericNotFoundException(id, "Folder");
+        }
+
+        // Update the name if provided and not blank
+        if (input.getName() != null && !input.getName().isBlank()) {
+            folder.setName(input.getName());
+        }
+
+        DbFolder updatedFolder = folderRepository.save(folder);
+        return convertToDto(updatedFolder); // Convert back to DTO for the front-end
     }
 }
