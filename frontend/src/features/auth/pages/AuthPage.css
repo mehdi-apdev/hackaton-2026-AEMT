@@ -11,9 +11,8 @@
     
     /* Atmospheric background: Deep black with a central purple glow */
     background: radial-gradient(circle at center, #2a0a33 0%, #000000 90%);
-    /* background-size: cover; */
     
-    font-family: var(--font-heading);
+    font-family: 'Cinzel', serif; /* Fallback if var not defined */
     position: relative;
     overflow: hidden;
 }
@@ -46,8 +45,21 @@
     flex-direction: column;
     z-index: 10;
     
-    /* Subtle floating animation */
+    /* Animation defaults */
+    transform: translateY(0);
+    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
     animation: floatCard 6s ease-in-out infinite;
+}
+
+/* STOP ANIMATION ON INTERACTION - BECOMES FIXED */
+.auth-card:focus-within {
+    animation: none;
+    transform: scale(1.02); /* Slight zoom to focus attention */
+    border-color: var(--orange-border);
+    background: rgba(10, 5, 10, 0.9); /* Darker, more solid background */
+    box-shadow: 
+        0 30px 60px rgba(0, 0, 0, 0.95), 
+        0 0 50px rgba(255, 102, 0, 0.2); /* Orange glow focus */
 }
 
 /* Visual separator with gradient effect */
@@ -79,7 +91,7 @@
     font-size: 1rem;
     color: #bbb;
     margin-bottom: 2rem;
-    font-family: var(--font-body);
+    font-family: 'Merriweather', serif;
 }
 
 /* Link to switch between login and register pages */
@@ -160,7 +172,7 @@
     
     color: #fff;
     font-size: 1rem;
-    font-family: var(--font-body);
+    font-family: 'Merriweather', serif;
     outline: none;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -170,11 +182,14 @@
     color: rgba(255, 255, 255, 0.3);
 }
 
-/* FOCUS STATE: The wow effect - orange glow when field is active */
+/* FOCUS STATE: One-time animation then fixed */
 .form-input:focus {
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.8); /* Solid black */
     border-color: var(--orange);
-    box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
+    box-shadow: 0 0 20px rgba(255, 102, 0, 0.4);
+    
+    /* ONE-TIME ENTRY ANIMATION */
+    animation: inputEntry 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Icon changes color when input is focused */
@@ -205,13 +220,6 @@
 .error-message::before {
     content: "⚠️"; /* Small warning icon for style */
     font-size: 0.8rem;
-}
-
-/* Shake animation for error feedback */
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
 }
 
 /* =========================================
@@ -281,5 +289,38 @@
         background: rgba(10, 5, 15, 0.9); /* Less transparent on mobile for better readability */
     }
     .auth-title { font-size: 1.8rem; }
-    .success-text { font-size: 2.5rem; }
+}
+
+/* =========================================
+   7. ANIMATIONS
+   ========================================= */
+
+@keyframes floatCard {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+/* Shake animation for error feedback */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Input Focus Animation */
+@keyframes inputEntry {
+    0% {
+        transform: scale(0.95) translateX(-5px);
+        opacity: 0.7;
+        border-color: var(--purple);
+    }
+    50% {
+        transform: scale(1.02) translateX(2px);
+        border-color: var(--green);
+    }
+    100% {
+        transform: scale(1) translateX(0);
+        opacity: 1;
+        border-color: var(--orange);
+    }
 }

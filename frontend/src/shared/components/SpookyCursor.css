@@ -1,0 +1,51 @@
+body {
+  cursor: none !important; /* Hide default cursor */
+}
+
+a, button, .clickable {
+  cursor: none !important; /* Ensure it stays hidden on interactive elements */
+}
+
+.spooky-cursor-main {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  font-size: 24px;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+}
+
+.spooky-cursor-trail {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, 20px); /* Hangs below */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hanging-rope {
+  width: 2px;
+  height: 30px;
+  background-color: rgba(200, 200, 200, 0.5);
+  margin-bottom: -5px;
+  transform-origin: top center;
+  animation: sway 2s infinite ease-in-out alternate;
+}
+
+.skeleton-icon {
+  font-size: 20px;
+  animation: sway-skeleton 2s infinite ease-in-out alternate;
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.8));
+}
+
+@keyframes sway {
+  from { transform: rotate(-10deg); }
+  to { transform: rotate(10deg); }
+}
+
+@keyframes sway-skeleton {
+  from { transform: rotate(-5deg); }
+  to { transform: rotate(5deg); }
+}

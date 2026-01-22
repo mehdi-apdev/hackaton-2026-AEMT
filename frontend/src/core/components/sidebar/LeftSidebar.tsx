@@ -7,7 +7,7 @@ import FolderService from "../../../features/notes/services/FolderService";
 import type { Folder } from "../../../features/notes/models/Folder";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useModal } from "../../../shared/context/ModalContext"; // Import du hook
 
 type LeftSidebarProps = {
@@ -121,6 +121,7 @@ const LeftSidebar = ({
     });
   }, []);
 
+  // ADD ROOT FOLDER
   const handleAddRootFolder = () => {
     openInputModal(
       "Nouveau dossier",
@@ -132,7 +133,30 @@ const LeftSidebar = ({
       }
     );
   };
+  // ADD ROOT NOTE
+  const handleAddRootNote = () => {
+    openInputModal(
+      "Nouvelle note",
+      "Titre de la note...",
+      async (name) => {
+        if (!name.trim()) return;
+        const newNoteEvent = new CustomEvent("notes:create", { detail: { title: name } });
+        window.dispatchEvent(newNoteEvent);
+        refreshTree();
+      }
+    );
+  };
 
+  // OPEN BIN
+  const handleBin = () => {
+    const openBinEvent = new CustomEvent("notes:openBin");
+    window.dispatchEvent(openBinEvent);
+  };
+
+  /**
+   * Renders the left sidebar with folder structure and actions.
+   * Here we have 2 buttons to add a root folder or a root note.
+   */
   return (
     <div className={sidebarClasses}>
       <div className="logo-container">
@@ -149,8 +173,16 @@ const LeftSidebar = ({
       <div className="sidenav-nav">
         {!isLeftSidebarCollapsed && (
           <div className="sidebar-actions">
+            {/* Add root folder and root note buttons */}
             <button onClick={handleAddRootFolder} className="btn-add-root">
               <FontAwesomeIcon icon={faPlus} /> Nouveau dossier
+            </button>
+            <button onClick={handleAddRootNote} className="btn-add-root">
+              <FontAwesomeIcon icon={faPlus} /> Nouvelle note
+            </button>
+
+            <button onClick={handleBin} className="btn-bin-root">
+              <FontAwesomeIcon icon={faTrash} /> Corbeille
             </button>
           </div>
         )}
@@ -175,6 +207,9 @@ const LeftSidebar = ({
             </div>
           )
         )}
+      </div>
+      <div className="sidenav-footer">
+        {!isLeftSidebarCollapsed && <div className="footer-text">© 2026 Spooky Notes</div>}
       </div>
     </div>
   );

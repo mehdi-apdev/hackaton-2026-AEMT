@@ -1,6 +1,7 @@
 /* --- GLOBAL STYLES HALLOWEEN --- */
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Merriweather:ital,wght@0,300;0,700;1,300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Creepster&family=Cinzel:wght@400;700;900&family=Merriweather:ital,wght@0,300;0,700;1,300&display=swap');
+@import './assets/spooky.css';
 
 * {
   margin: 0;
@@ -10,15 +11,15 @@
 
 /* 1. SELECTION ECTOPLASME */
 ::selection {
-  background: var(--green) !important;
-  color: #000 !important;
+  background: var(--green);
+  color: #000;
   text-shadow: none;
 }
 
 /* 2. SCROLLBARS ENCHANTÉES */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -26,26 +27,48 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--orange), var(--purple));
-  border-radius: 4px;
-  border: 1px solid #000;
+  background: linear-gradient(180deg, var(--dark-purple), var(--orange));
+  border-radius: 5px;
+  border: 2px solid #000;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--green);
-  box-shadow: 0 0 10px var(--green);
+  box-shadow: 0 0 15px var(--green);
 }
 
 /* 3. BODY & AMBIANCE */
 body {
   font-family: 'Merriweather', serif;
   background-color: var(--dark-purple);
+  background-image: var(--background-gradient);
   color: var(--text);
   overflow-x: hidden;
   min-height: 100vh;
 }
 
-/* 4. EFFET GRAIN (NOISE) - STYLE VIEUX FILM */
+/* 4. EFFET FOG (BROUILLARD SPECTRAL) */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background-image: url("https://raw.githubusercontent.com/yannickperret/css-fog/master/fog1.png");
+  background-size: cover;
+  opacity: 0.08;
+  z-index: -1;
+  pointer-events: none;
+  animation: drift 60s linear infinite;
+}
+
+@keyframes drift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* 5. EFFET GRAIN (NOISE) */
 body::before {
   content: "";
   position: fixed;
@@ -54,28 +77,33 @@ body::before {
   width: 100vw;
   height: 100vh;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.05;
+  opacity: 0.04;
   pointer-events: none;
   z-index: 9999;
   mix-blend-mode: overlay;
 }
 
-/* 5. TYPOGRAPHIE */
+/* 6. TYPOGRAPHIE */
 h1, h2, h3, h4, h5, h6, .logo-text {
   font-family: 'Cinzel', serif;
-  color: var(--orange); /* Correction ici : var(--gold) -> var(--orange) */
+  color: var(--orange);
   text-shadow: 2px 2px 0px #000;
   letter-spacing: 1px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+/* Spooky alternate font */
+.creep-font {
+  font-family: 'Creepster', cursive;
 }
 
 a {
   color: var(--orange);
   text-decoration: none;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 a:hover {
-  color: var(--orange-glow);
-  text-shadow: 0 0 10px var(--orange-dim);
+  color: var(--green);
+  text-shadow: 0 0 10px var(--green-dim);
 }
