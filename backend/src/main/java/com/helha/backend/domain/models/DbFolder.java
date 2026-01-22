@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,42 +13,34 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class DbFolder {
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private DbUser user;
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private DbUser user;
+
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private boolean deleted = false; // By default, the note is not deleted
-
-
-    @Column
+    private boolean deleted = false;
     private LocalDateTime deletedAt;
 
-
-    //to prevent an infinite loop
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    @JsonIgnore //prevent the child to send back the parent in json
+    @JsonIgnore
     private DbFolder parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DbFolder> children = new ArrayList<>();
 
-    //folder because it's the variable name in DbNote
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DbNote> dbNotes = new ArrayList<>();
 
-    public DbFolder(String name, DbFolder parent) {
+    public DbFolder(String name, DbFolder parent, DbUser user) {
         this.name = name;
         this.parent = parent;
+        this.user = user;
     }
 }
