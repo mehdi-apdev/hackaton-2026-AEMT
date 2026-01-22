@@ -43,7 +43,6 @@
 
 .folder-header:hover .folder-icon {
   transform: rotate(-10deg) scale(1.2);
-  color: var(--orange-glow);
   filter: drop-shadow(0 0 5px var(--orange));
 }
 
@@ -67,8 +66,8 @@
 }
 
 @keyframes spiritReveal {
-  from { opacity: 0; transform: translateY(-10px) scale(0.95); filter: blur(5px); }
-  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  from { opacity: 0; transform: translateY(-10px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* --- NOTE LINE --- */
@@ -81,7 +80,6 @@
   transition: all 0.3s ease;
   border-radius: 0 6px 6px 0;
   margin: 2px 0;
-  position: relative;
 }
 
 /* Hover: Ghostly wobble */
@@ -156,12 +154,12 @@
 
 /* --- CONTEXT MENU (The Cursed Scroll) --- */
 .context-menu {
-  background-color: #0f0a15 !important;
-  border: 1px solid var(--purple-border) !important;
-  border-radius: 4px !important;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.95) !important;
-  padding: 8px !important;
-  min-width: 180px !important;
+  background-color: #0f0a15;
+  border: 1px solid var(--purple-border);
+  border-radius: 4px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.95);
+  padding: 8px;
+  min-width: 180px;
   z-index: 10000 !important;
   
   /* Texture */

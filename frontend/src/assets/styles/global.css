@@ -9,14 +9,12 @@
   box-sizing: border-box;
 }
 
-/* 1. SELECTION ECTOPLASME */
 ::selection {
   background: var(--green);
   color: #000;
   text-shadow: none;
 }
 
-/* 2. SCROLLBARS ENCHANTÉES */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -47,7 +45,7 @@ body {
   min-height: 100vh;
 }
 
-/* 4. EFFET FOG (BROUILLARD SPECTRAL) */
+/* 4. SPECTRAL FOG EFFECT */
 body::after {
   content: "";
   position: fixed;
@@ -68,7 +66,7 @@ body::after {
   100% { transform: translateX(-50%); }
 }
 
-/* 5. EFFET GRAIN (NOISE) */
+/* 5. NOISE EFFECT */
 body::before {
   content: "";
   position: fixed;
@@ -83,7 +81,7 @@ body::before {
   mix-blend-mode: overlay;
 }
 
-/* 6. TYPOGRAPHIE */
+/* 6. TYPOGRAPHY */
 h1, h2, h3, h4, h5, h6, .logo-text {
   font-family: var(--font-heading);
   color: var(--orange);

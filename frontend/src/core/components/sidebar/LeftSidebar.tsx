@@ -16,10 +16,7 @@ type LeftSidebarProps = {
   changeIsLeftSidebarCollapsed: (isLeftSidebarCollapsed: boolean) => void;
 };
 
-const LeftSidebar = ({
-  isLeftSidebarCollapsed,
-  changeIsLeftSidebarCollapsed,
-}: LeftSidebarProps) => {
+const LeftSidebar = ({ isLeftSidebarCollapsed, changeIsLeftSidebarCollapsed,}: LeftSidebarProps) => {
   const { id: activeNoteId } = useParams();
   const navigate = useNavigate();
   const [folders, setFolders] = useState<Folder[]>([]);
@@ -27,14 +24,11 @@ const LeftSidebar = ({
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // RÉCUPÉRATION DE LA MODALE
+  // Modal related 
   const { openInputModal } = useModal();
   const { isAuthenticated } = useAuth();
 
-  const sidebarClasses = classNames({
-    sidenav: true,
-    "sidenav-collapsed": isLeftSidebarCollapsed,
-  });
+  const sidebarClasses = classNames({ sidenav: true, "sidenav-collapsed": isLeftSidebarCollapsed, });
 
   const closeSidenav = () => changeIsLeftSidebarCollapsed(true);
 
@@ -85,9 +79,7 @@ const LeftSidebar = ({
     };
 
     window.addEventListener("notes:refresh", handleRefresh);
-    return () => {
-      window.removeEventListener("notes:refresh", handleRefresh);
-    };
+    return () => { window.removeEventListener("notes:refresh", handleRefresh);};
   }, [refreshTree]);
 
   useEffect(() => {

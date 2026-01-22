@@ -76,19 +76,6 @@
 }
 
 /* --- ACTION BUTTONS --- */
-/* Common button styles */
-.exportBtn {
-  font-family: var(--font-heading);
-  font-size: 0.9rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  position: relative;
-  overflow: hidden;
-}
 
 /* 
 Toggle (Preview/Edit) Button - Reforged
@@ -118,8 +105,8 @@ Toggle (Preview/Edit) Button - Reforged
   background-color: rgba(76, 217, 100, 0.15);
   border-color: var(--green);
   box-shadow: 
-    inset 0 2px 4px rgba(0, 0, 0, 0.6),
-    0 0 15px var(--green-dim);
+  inset 0 2px 4px rgba(0, 0, 0, 0.6),
+  0 0 15px var(--green-dim);
 }
 
 /* The small circle (the handle) */
@@ -160,8 +147,19 @@ Toggle (Preview/Edit) Button - Reforged
   text-shadow: 0 0 8px var(--green-dim);
 }
 
-/* Export Button */
+/* Common button styles */
+/* Export Button - Primary (Markdown) */
 .exportBtn {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
   padding: 8px 16px;
   border-radius: 8px;
   background: rgba(0, 255, 0, 0.05);
