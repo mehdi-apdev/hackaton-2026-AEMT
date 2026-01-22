@@ -1,38 +1,39 @@
+
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "./layout/MainLayout";
 import { HomeComponent } from "./HomeComponent";
 import NotFoundComponent from "./core/components/NotFoundComponent";
 
-// --- Imports Auth ---
+// --- Auth Imports ---
 import RequireAuth from "./features/auth/components/RequireAuth";
 import LoginPage from "./features/auth/pages/LoginPage";
 import RegisterPage from "./features/auth/pages/RegisterPage"; 
 
-// --- Imports Features ---
+// --- Features Imports ---
 import NotesPage from "./features/notes/pages/NotesPage";
 import systemRoutes from "./features/system/system-routes";
 
 function App() {
   return (
     <Routes>
-      {/* --- 1. Routes Publiques --- */}
+      {/* --- 1. Public Routes --- */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
-      {/* --- 2. Routes Protégées (Gardien) --- */}
+      {/* --- 2. Protected Routes (Guard) --- */}
       <Route element={<RequireAuth />}>
         
-        {/* Le Layout Principal (Sidebar + Contenu) */}
+        {/* Main Layout (Sidebar + Content) */}
         <Route path="/" element={<MainLayout />}>
           
-          {/* Page d'accueil par défaut */}
+          {/* Default Home Page */}
           <Route index element={<HomeComponent />} />
 
-          {/* Feature Notes */}
+          {/* Notes Feature */}
           <Route path="notes" element={<NotesPage />} />
           <Route path="note/:id" element={<NotesPage />} />
 
-          {/* Feature System : On "mappe" le tableau pour créer des <Route> dynamiquement */}
+          {/* System Feature: Mapping the array to dynamically create <Route> */}
           {systemRoutes.map((route) => (
             <Route 
               key={route.path}

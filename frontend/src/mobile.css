@@ -1,0 +1,139 @@
+/* ========================================
+   MOBILE & TABLET OPTIMIZATIONS
+   ======================================== */
+
+@media (max-width: 768px) {
+  
+  /* ----------------------------------------
+     1. GLOBAL MOBILE ADJUSTMENTS
+     ---------------------------------------- */
+  
+  /* Disable custom cursors (unnecessary for touch devices) */
+  * {
+    cursor: auto !important;
+  }
+
+  /* ----------------------------------------
+     2. AUTHENTICATION PAGES (Login/Register)
+     ---------------------------------------- */
+  
+  .auth-card {
+    padding: 1.5rem !important;
+    max-width: 90% !important;
+    margin: 0 auto;
+  }
+
+  .auth-title {
+    font-size: 1.8rem !important;
+  }
+
+  /* Prevent automatic zoom on iOS when focusing inputs */
+  .form-input {
+    font-size: 16px !important;
+  }
+
+  /* ----------------------------------------
+     3. SIDEBAR NAVIGATION
+     ---------------------------------------- */
+  
+  /* Sidebar takes 85% of screen width when open */
+  .sidenav {
+    width: 85% !important;
+    box-shadow: 10px 0 50px rgba(0,0,0,0.8) !important;
+  }
+
+  /* When collapsed, sidebar is completely hidden off-screen */
+  .sidenav-collapsed {
+    transform: translateX(-100%) !important;
+    width: 0 !important;
+  }
+
+  /* Ensure hamburger menu button is always accessible */
+  .logo-container {
+    padding: 15px !important;
+  }
+
+  /* ----------------------------------------
+     4. HOME PAGE
+     ---------------------------------------- */
+  
+  .home-container {
+    padding: 1rem !important;
+  }
+
+  /* Add top margin to avoid being hidden by navbar */
+  .home-card {
+    padding: 2rem 1.5rem !important;
+    margin-top: 60px;
+  }
+
+  .welcome-title {
+    font-size: 2rem !important;
+  }
+
+  .giant-icon {
+    font-size: 3rem !important;
+  }
+
+  /* Stack action buttons vertically */
+  .home-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-ghost {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ----------------------------------------
+     5. NOTES PAGE & MARKDOWN EDITOR
+     ---------------------------------------- */
+  
+  /* Reduce lateral padding and remove border radius to maximize space */
+  .markdownPage {
+    padding: 10px 5px !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  /* Stack header elements vertically */
+  .markdownHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 0 5px !important;
+  }
+
+  /* Center save indicator on mobile */
+  .saveIndicator {
+    margin: 0 auto !important;
+  }
+
+  .titleInput {
+    font-size: 1.4rem !important;
+    padding: 8px 5px !important;
+  }
+
+  /* Minimal padding for text editor */
+  .mdEditorShell {
+    padding: 5px !important;
+    margin: 0 !important;
+    width: 100% !important;
+    min-height: 300px !important;
+  }
+
+  /* Force Milkdown editor to take full available width */
+  .mdEditorShell .milkdown .editor,
+  .mdEditorShell .milkdown .ProseMirror {
+    padding: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Simplify metadata panel layout for mobile */
+  .metadataPanel {
+    grid-template-columns: 1fr 1fr !important;
+    font-size: 0.7rem !important;
+  }
+}

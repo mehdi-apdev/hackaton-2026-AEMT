@@ -1,4 +1,4 @@
-package com.helha.backend.infrastructure.database.entities;
+package com.helha.backend.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class DbNote {
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id") // Pour le hackathon, on peut laisser nullable=true temporairement si tu as déjà des données, sinon nullable=false
     private DbUser user;
 
 
@@ -34,12 +34,11 @@ public class DbNote {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    // --- Métadonnées demandées (Palier Zombie) ---
-    //
-    private int wordCount;      // Nombre de mots
-    private int lineCount;      // Nombre de lignes
-    private int characterCount; // Nombre de caractères
-    private long sizeInBytes;   // Taille en octets
+    //Métadata
+    private int wordCount;      // Number of words
+    private int lineCount;      // Number of lines
+    private int characterCount; // Number of Characters
+    private long sizeInBytes;   // Size in byte
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -48,8 +47,15 @@ public class DbNote {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
+    private boolean deleted = false;
+
+    @Column
+    private LocalDateTime deletedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "folder_id", nullable = false)
+
+    @JoinColumn(name = "folder_id", nullable = true)
     @JsonIgnoreProperties("dbNotes")
     private DbFolder folder;
 

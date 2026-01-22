@@ -1,11 +1,22 @@
+/* --- MarkdownPage.css (Cleaned) --- */
+/* Main editor page for creating and editing markdown notes */
+
+/* Main container for the markdown editor */
 .markdownPage {
-  background: linear-gradient(180deg, rgba(10, 10, 10, 0.9), rgba(20, 10, 20, 0.85));
-  border: 1px solid rgba(255, 102, 0, 0.3);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  background: var(--surface-darker);
+  border: 1px solid var(--purple-border);
+  border-radius: 16px;
+  padding: 20px 30px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  overflow: visible !important;
+  position: relative;
+  z-index: 1;
 }
 
+/* Header section with toggle button and save indicator */
 .markdownHeader {
   display: flex;
   align-items: center;
@@ -20,149 +31,250 @@
   gap: 4px;
 }
 
+.headerActions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .markdownTitle {
   font-size: 2.5rem;
   border-bottom: 2px solid var(--orange);
   padding-bottom: 10px;
+  border-bottom: 1px solid var(--purple-dim);
 }
 
-.hintText {
-  font-size: 0.8rem;
-  color: #a9a9a9;
+/* Button to toggle between edit and preview modes */
+.toggleBtn {
+  background: transparent;
+  border: 1px solid var(--text-muted);
+  color: var(--text-muted);
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
 }
 
-.toggleBtn,
-.saveBtn {
+/* Orange highlight on toggle button hover */
+.toggleBtn:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: var(--surface-dark);
+  box-shadow: 0 0 10px var(--orange-dim);
+}
+
+.exportBtn {
   padding: 8px 12px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 102, 0, 0.5);
-  background: rgba(10, 10, 10, 0.7);
-  color: var(--orange);
+  border: 1px solid rgba(0, 204, 102, 0.6);
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--green);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.toggleBtn:hover,
-.saveBtn:hover {
+.exportBtn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 0 10px rgba(255, 102, 0, 0.4);
+  box-shadow: 0 0 10px rgba(0, 204, 102, 0.4);
 }
 
-.toggleBtn:disabled,
-.saveBtn:disabled {
+.exportBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   box-shadow: none;
 }
 
-.saveStatus {
-  margin-left: auto;
-  font-size: 0.9rem;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  background: rgba(10, 10, 10, 0.6);
-}
-
-.saveStatus.status-saved {
-  color: #7ddc9b;
-  border-color: rgba(125, 220, 155, 0.4);
-}
-
-.saveStatus.status-dirty {
+.exportBtnSecondary {
+  border-color: rgba(255, 102, 0, 0.6);
   color: var(--orange);
-  border-color: rgba(255, 102, 0, 0.4);
 }
 
-.saveStatus.status-saving {
+.exportBtnSecondary:hover {
+  box-shadow: 0 0 10px rgba(255, 102, 0, 0.4);
+}
+
+.saveIndicator {
+  font-size: 1.1rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--surface-dark);
+  border: 1px solid transparent;
+  transition: all 0.3s;
+}
+
+/* Green indicator when note is saved */
+.saveIndicator.status-saved {
+  color: var(--green);
+  border-color: var(--green-dim);
+  box-shadow: 0 0 10px var(--green-dim);
+}
+
+/* Orange pulsing indicator when note has unsaved changes */
+.saveIndicator.status-dirty {
+  color: var(--orange);
+  border-color: var(--orange-dim);
+  animation: pulse 2s infinite;
+}
+
+/* Yellow spinning indicator during save operation */
+.saveIndicator.status-saving {
   color: #ffd166;
-  border-color: rgba(255, 209, 102, 0.4);
+  animation: spin 1s linear infinite;
 }
 
-.errorMessage {
-  margin: 8px 0 12px;
+/* Spinning animation for saving state */
+@keyframes spin { 100% { transform: rotate(360deg); } }
+/* Pulsing animation for unsaved changes */
+@keyframes pulse { 50% { opacity: 0.5; } }
+
+/* Error message banner displayed when save fails */.errorMessage {
+  background: rgba(255, 0, 60, 0.1);
+  border-left: 3px solid var(--red);
   color: #ff6b6b;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  border-radius: 4px;
 }
 
-.editorLabel {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 600;
-  color: #e0e0e0;
-}
+/* Hidden label for accessibility */
+.editorLabel { display: none; }
 
+/* Large input field for note title */
 .titleInput {
   width: 100%;
-  padding: 8px 10px;
-  margin-bottom: 14px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 102, 0, 0.25);
-  background: rgba(0, 0, 0, 0.6);
-  color: #f5f5f5;
-}
-
-.mdEditorShell {
-  border-radius: 10px;
-  border: 1px solid rgba(255, 102, 0, 0.25);
-  background: rgba(0, 0, 0, 0.6);
-  padding: 12px;
-  min-height: 360px;
-}
-
-.mdEditorShell .milkdown {
-  --crepe-color-background: #14110d;
-  --crepe-color-surface: #0f0c09;
-  --crepe-color-surface-low: #1a1510;
-  --crepe-color-on-surface: #f1e3d3;
-  --crepe-color-on-surface-variant: #c8b8a8;
-  --crepe-color-outline: rgba(255, 102, 0, 0.35);
-  --crepe-color-primary: #ff8f2a;
-  --crepe-color-secondary: #3b2a1c;
-  --crepe-color-on-secondary: #f6d1a7;
-  --crepe-color-inline-code: #ffb86c;
-  --crepe-color-hover: rgba(255, 102, 0, 0.15);
-  --crepe-color-selected: rgba(255, 102, 0, 0.2);
-  --crepe-color-inline-area: rgba(255, 102, 0, 0.12);
-  --crepe-font-default: "Roboto", sans-serif;
-  --crepe-font-code: "Courier New", Courier, monospace;
+  padding: 10px 0;
+  margin-bottom: 20px;
   background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  color: var(--orange);
+  letter-spacing: 1px;
+  transition: border-color 0.3s;
 }
 
-.mdEditorShell [data-milkdown-root] {
-  min-height: 320px;
+/* Orange underline appears on focus */
+.titleInput:focus {
+  outline: none;
+  border-bottom-color: var(--orange-border);
 }
 
-.mdEditorShell .milkdown .editor {
-  background: transparent;
+/* Green selection color for title text */
+.titleInput::selection {
+  background: var(--green) !important;
+  color: #000 !important;
 }
 
-.mdEditorShell .milkdown .ProseMirror {
-  color: #f2f2f2;
-}
-
-.loadingText {
-  color: #b0b0b0;
+/* Subtle placeholder text */
+.titleInput::placeholder {
+  color: var(--text-muted);
+  opacity: 0.3;
   font-style: italic;
 }
 
-/* Zone de prゼvisualisation */
-.previewBox {
-  padding: 20px;
-  background-color: rgba(255, 255, 255, 0.05); /* LゼgЁrement clair */
-  border-radius: 8px;
-  border: 1px dashed #555;
-  color: var(--text);
+/* Main editor container with organic rounded corners */
+.mdEditorShell {
+  flex: 1;
+  border-radius: 12px 40px 15px 35px / 30px 15px 40px 12px; /* Organic asymmetric corners */
+  background: #08080a; 
+  border: 1px solid var(--purple-border);
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+  padding: 30px;
+  min-height: 400px;
+  overflow: visible !important;
+  position: relative;
+  z-index: 1;
+}
+
+/* Milkdown editor theme customization with Halloween colors */
+.mdEditorShell .milkdown {
+  --crepe-color-background: transparent;
+  --crepe-color-surface: transparent;
+  --crepe-color-on-surface: #d0d0d0;
+  --crepe-color-on-surface-variant: #888;
+  --crepe-color-primary: var(--orange);
+  --crepe-color-secondary: var(--purple);
+  --crepe-color-inline-code: #ffb86c;
+  --crepe-color-hover: var(--purple-dim);
+  --crepe-color-selected: rgba(170, 0, 255, 0.2);
+  --crepe-font-default: 'Consolas', 'Monaco', monospace;
+  --crepe-font-code: 'Consolas', monospace;
+  caret-color: var(--green);
+}
+
+/* Editor content area with full width and extra bottom padding */
+.mdEditorShell .milkdown .editor {
+  max-width: 100%;
+  margin: 0;
+  padding-bottom: 100px;
   line-height: 1.6;
+  font-size: 1.05rem;
 }
 
-/* Markdown Styles internes */
-.previewBox blockquote {
-  border-left: 4px solid var(--orange);
-  background: rgba(255, 102, 0, 0.1);
-  padding: 10px;
-  margin: 10px 0;
+/* Light text color for markdown content */
+.mdEditorShell .milkdown .ProseMirror {
+  color: #e0e0e0;
 }
 
-.previewBox a {
-  color: var(--orange);
+/* Footer panel showing note metadata (created/updated dates) */
+.metadataPanel {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+  margin-top: 15px;
+  padding: 10px 0;
+  border-top: 1px solid var(--purple-dim);
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Individual metadata item (label + value) */
+.metadataGroup {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Label for metadata (e.g., "CREATED", "UPDATED") */
+.metadataLabel {
+  color: var(--purple);
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+}
+
+/* Value for metadata (date/time) */
+.metadataValue {
+  color: var(--text);
+  font-weight: bold;
+}
+
+/* Dark themed dropdown menus for editor formatting tools */
+.milkdown-menu, 
+.milkdown-slash-menu, 
+.milkdown-tooltip, 
+[data-role="picker"] {
+  background-color: #151515 !important;
+  border: 1px solid var(--orange) !important;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.9) !important;
+  z-index: 10000 !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+}
+
+/* Purple highlight on menu item hover */
+.milkdown-menu-item:hover, 
+.milkdown-slash-menu-item:hover {
+  background-color: var(--purple) !important;
+  color: #fff !important;
 }

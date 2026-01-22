@@ -1,4 +1,4 @@
-package com.helha.backend.infrastructure.database.entities;
+package com.helha.backend.domain.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -17,7 +17,7 @@ public class DbUser {
     private String username;
 
     @Column(nullable = false)
-    private String password; // Hashé
+    private String password; // Hashed
 
     private String role = "USER";
 }

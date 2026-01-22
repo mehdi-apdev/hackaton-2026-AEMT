@@ -28,7 +28,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String token = null;
 
-        // 1. Extraction du token depuis les cookies
+
+        //extraction of the token by the cookies
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("token".equals(cookie.getName())) {
@@ -38,7 +39,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
-        // 2. Validation et Authentification
+        // validation and Authentification
         if (token != null && jwtUtils.validateToken(token)) {
             String username = jwtUtils.extractUsername(token);
 
@@ -55,7 +56,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
-        // 3. On continue la chaîne de filtres
+        // we continue the filter chain
         filterChain.doFilter(request, response);
     }
 }

@@ -1,0 +1,163 @@
+/* --- HomeComponent.css --- */
+/* Dashboard home page with welcome message and quick actions */
+
+/* Main container with centered content and radial gradient background */
+.home-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: radial-gradient(circle at center, #1a051a 0%, #000000 100%);
+}
+
+/* Card containing all dashboard content */
+.home-card {
+  background: var(--surface-dark);
+  border: 1px solid var(--purple-border);
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 700px; 
+  box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* --- HEADER SECTION --- */
+/* Top section with welcome message and decorative icon */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--purple-dim);
+  padding-bottom: 20px;
+}
+
+/* Container for greeting text and user name */
+.welcome-title {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+/* Small uppercase greeting text (e.g., "WELCOME BACK") */
+.greeting {
+  font-size: 1rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Large orange display of user's name */
+.user-name {
+  font-size: 2.5rem;
+  color: var(--orange);
+  font-family: var(--font-heading);
+}
+
+/* Decorative purple icon in header (e.g., ghost emoji) */
+.header-icon {
+  font-size: 3rem;
+  color: var(--purple);
+  opacity: 0.8;
+  filter: drop-shadow(0 0 15px var(--purple-dim));
+}
+
+/* --- CONTENT SECTION --- */
+/* Subtitle text describing available actions */
+.dashboard-subtitle {
+  font-size: 1.1rem;
+  color: var(--text);
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+/* Container for action cards */
+.action-grid {
+  display: flex;
+  justify-content: center;
+}
+
+/* Clickable card for quick actions (e.g., "Go to Notes") */
+.action-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--purple-border);
+  border-radius: 12px;
+  padding: 30px;
+  text-decoration: none;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 15px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  max-width: 320px;
+  width: 100%;
+}
+
+/* Lift up and highlight card on hover */
+.action-card:hover {
+  background: var(--purple-dim);
+  border-color: var(--purple);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* Icon displayed at top of action card */
+.action-icon {
+  font-size: 2.5rem;
+  color: var(--text-muted);
+  transition: color 0.3s;
+}
+
+/* Icon turns orange when card is hovered */
+.action-card:hover .action-icon {
+  color: var(--orange);
+}
+
+/* Title text of action card */
+.action-card h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--text-main);
+  font-family: var(--font-heading);
+}
+
+/* Description text of action card */
+.action-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* --- FOOTER SECTION --- */
+/* Bottom section with logout button */
+.dashboard-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/* Subtle red logout button */
+.btn-text-logout {
+  background: transparent;
+  border: none;
+  color: var(--red);
+  font-size: 0.9rem;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Full opacity and underline on hover */
+.btn-text-logout:hover {
+  opacity: 1;
+  text-decoration: underline;
+}

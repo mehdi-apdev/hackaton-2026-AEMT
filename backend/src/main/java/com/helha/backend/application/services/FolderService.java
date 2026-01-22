@@ -4,15 +4,16 @@ import com.helha.backend.application.dto.FolderCreationDto;
 import com.helha.backend.application.dto.FolderDto;
 import com.helha.backend.application.dto.NoteDto;
 import com.helha.backend.controllers.exceptions.GenericNotFoundException;
-import com.helha.backend.infrastructure.database.entities.DbFolder;
-import com.helha.backend.infrastructure.database.entities.DbNote;
-import com.helha.backend.infrastructure.database.entities.DbUser;
-import com.helha.backend.infrastructure.database.repository.IFolderRepository;
-import com.helha.backend.infrastructure.database.repository.IUserRepository;
+import com.helha.backend.domain.models.DbFolder;
+import com.helha.backend.domain.models.DbNote;
+import com.helha.backend.domain.models.DbUser;
+import com.helha.backend.domain.repositories.IFolderRepository;
+import com.helha.backend.domain.repositories.IUserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,13 +21,12 @@ import java.util.stream.Collectors;
 public class FolderService {
 
     private final IFolderRepository folderRepository;
-    private final IUserRepository userRepository; // Ajouté pour le filtrage
+    private final IUserRepository userRepository;
 
     public FolderService(IFolderRepository folderRepository, IUserRepository userRepository) {
         this.folderRepository = folderRepository;
         this.userRepository = userRepository;
     }
-
 
     private DbUser getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -34,70 +34,94 @@ public class FolderService {
                 .orElseThrow(() -> new GenericNotFoundException(0L, "User " + username));
     }
 
+    // --- Active Tree ---
     @Transactional(readOnly = true)
     public List<FolderDto> getFolderTree() {
         DbUser user = getCurrentUser();
-
-        // On ne filtre plus seulement par parentIsNull, mais aussi par USER_ID !
-        List<DbFolder> roots = folderRepository.findByUserIdAndParentIsNull(user.getId());
-
-        return roots.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        // Fetch only active roots
+        List<DbFolder> roots = folderRepository.findByUserIdAndParentIsNullAndDeletedFalse(user.getId());
+        return roots.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
     @Transactional
     public FolderDto createFolder(FolderCreationDto input) {
         DbUser user = getCurrentUser();
-
         DbFolder folder = new DbFolder();
         folder.setName(input.getName());
-        folder.setUser(user); // CRUCIAL : On lie le dossier à l'utilisateur
+        folder.setUser(user);
 
         if (input.getParentId() != null) {
             DbFolder parent = folderRepository.findById(input.getParentId())
                     .orElseThrow(() -> new GenericNotFoundException(input.getParentId(), "Folder"));
-
-            // Sécurité : Vérifier que le parent appartient bien à l'utilisateur
-            if (!parent.getUser().getId().equals(user.getId())) {
-                throw new GenericNotFoundException(input.getParentId(), "Folder (Access Denied)");
-            }
+            if (!parent.getUser().getId().equals(user.getId())) throw new GenericNotFoundException(input.getParentId(), "Folder");
             folder.setParent(parent);
         }
-
-        DbFolder savedFolder = folderRepository.save(folder);
-        return convertToDto(savedFolder);
+        return convertToDto(folderRepository.save(folder));
     }
 
+    // --- RECYCLE BIN LOGIC ---
+
+    // 1. Soft Delete
     @Transactional
     public void deleteFolder(Long id) {
         DbUser user = getCurrentUser();
         DbFolder folder = folderRepository.findById(id)
                 .orElseThrow(() -> new GenericNotFoundException(id, "Folder"));
+        if (!folder.getUser().getId().equals(user.getId())) throw new GenericNotFoundException(id, "Folder");
 
-        // Sécurité : On ne peut supprimer que ses propres dossiers
-        if (!folder.getUser().getId().equals(user.getId())) {
-            throw new GenericNotFoundException(id, "Folder (Access Denied)");
-        }
+        folder.setDeleted(true);
+        folder.setDeletedAt(LocalDateTime.now()); // Set timestamp
+        folderRepository.save(folder);
+    }
+
+    // 2. Get Deleted Folders
+    @Transactional(readOnly = true)
+    public List<FolderDto> getDeletedFolders() {
+        return folderRepository.findByUserIdAndDeletedTrue(getCurrentUser().getId()).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    // 3. Restore Folder
+    @Transactional
+    public void restoreFolder(Long id) {
+        DbUser user = getCurrentUser();
+        DbFolder folder = folderRepository.findById(id)
+                .orElseThrow(() -> new GenericNotFoundException(id, "Folder"));
+        if (!folder.getUser().getId().equals(user.getId())) throw new GenericNotFoundException(id, "Folder");
+
+        folder.setDeleted(false);
+        folder.setDeletedAt(null); // Clear timestamp
+        folderRepository.save(folder);
+    }
+
+    // 4. Hard Delete
+    @Transactional
+    public void hardDeleteFolder(Long id) {
+        DbUser user = getCurrentUser();
+        DbFolder folder = folderRepository.findById(id)
+                .orElseThrow(() -> new GenericNotFoundException(id, "Folder"));
+        if (!folder.getUser().getId().equals(user.getId())) throw new GenericNotFoundException(id, "Folder");
 
         folderRepository.delete(folder);
     }
 
-    // --- Helpers de Mapping ---
+    // --- Helpers ---
     private FolderDto convertToDto(DbFolder entity) {
         FolderDto dto = new FolderDto();
         dto.setId(entity.getId());
         dto.setName(entity.getName());
 
-
         if (entity.getChildren() != null) {
             dto.setChildren(entity.getChildren().stream()
+                    .filter(child -> !child.isDeleted()) // Filter out deleted children
                     .map(this::convertToDto)
                     .collect(Collectors.toList()));
         }
 
         if (entity.getDbNotes() != null) {
             dto.setNotes(entity.getDbNotes().stream()
+                    .filter(note -> !note.isDeleted()) // Filter out deleted notes
                     .map(this::convertNoteToDto)
                     .collect(Collectors.toList()));
         }
@@ -109,9 +133,9 @@ public class FolderService {
         dto.setId(entity.getId());
         dto.setTitle(entity.getTitle());
         dto.setContent(entity.getContent());
-        if (entity.getFolder() != null) {
-            dto.setFolderId(entity.getFolder().getId());
-        }
+        dto.setCreatedAt(entity.getCreatedAt());
+        dto.setUpdatedAt(entity.getUpdatedAt());
+        if (entity.getFolder() != null) dto.setFolderId(entity.getFolder().getId());
         return dto;
     }
 }
