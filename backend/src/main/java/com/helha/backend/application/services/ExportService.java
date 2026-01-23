@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * Service for exporting user notes and folders as a ZIP file.
+ */
 @Service
 public class ExportService {
     private final IFolderRepository folderRepository;

@@ -5,13 +5,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
+/**
+ * DEPRECATED
+ * 
+ * Simple controller to respond to ping requests, useful for health checks.
+ */
 @RestController
 @RequestMapping("/api")
 public class PingController {
 
     @GetMapping("/ping")
     public Map<String, String> ping() {
-        // Renvoie un JSON simple : {"message": "Pong ! Le backend répond."}
+        // Returns a simple JSON: {"message": "Pong! The backend is responding."}
         return Map.of("message", "Pong ! Le backend répond.");
     }
 }

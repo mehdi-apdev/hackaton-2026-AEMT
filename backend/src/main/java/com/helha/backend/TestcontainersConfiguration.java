@@ -12,7 +12,7 @@ public class TestcontainersConfiguration {
     @Bean
     @ServiceConnection
     public MySQLContainer<?> mysqlContainer() {
-        // Lance une base MySQL isolée juste pour le temps du test
+        // Define and configure the MySQL test container 
         return new MySQLContainer<>(DockerImageName.parse("mysql:8.0"))
                 .withDatabaseName("hackathon_test_db");
     }

@@ -10,12 +10,13 @@ public class GenericNotFoundException extends ErrorResponseException {
         super(HttpStatus.NOT_FOUND, asProblemDetail(id, resourceName), null);
     }
 
+    // Creates a ProblemDetail for a not found resource
     private static ProblemDetail asProblemDetail(Long id, String resourceName) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.NOT_FOUND,
-                String.format("%s with id %d is not found", resourceName, id)
+                String.format("%s avec l'id %d est introuvable", resourceName, id)
         );
-        problemDetail.setTitle("Resource Not Found");
+        problemDetail.setTitle("Ressource non trouvée");
         return problemDetail;
     }
 }

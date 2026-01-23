@@ -20,6 +20,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service for managing notes, including creation, retrieval, updating, deletion, and restoration.
+ * Supports both active notes and recycle bin functionality.
+ */
 @Service
 public class NoteService {
 

@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller for managing folders, including creation, retrieval, deletion, and updating.
+ * Supports folder tree structure.
+ */
 @RestController
 @RequestMapping("/api/folders")
 public class FolderController {

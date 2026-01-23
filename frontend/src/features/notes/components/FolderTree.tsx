@@ -69,7 +69,7 @@ export const FolderTree = ({ folder, openFolderIds, onToggle, onOpen, onRefresh 
       "Titre de la note...",
       async (title) => {
         if (!title.trim()) return;
-        const newNote = await NoteService.createNote(title, contextMenu.id);
+        const newNote = await NoteService.createNote(title, "", contextMenu.id);
         onRefresh();
         if (onOpen) onOpen(contextMenu.id);
         else setLocalIsOpen(true);

@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
+/**
+ * Controller for managing notes, including creation, retrieval, updating, deletion, and exporting.
+ * Supports exporting notes to a ZIP archive.
+ */
 @RestController
 @RequestMapping("/api/notes")
 public class NoteController {

@@ -9,7 +9,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException; // Import i
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.net.URI;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -20,7 +19,7 @@ public class GlobalErrors {
         return ex.getBody();
     }
 
-    // Gère le cas du mauvais mot de passe (Test AuthControllerIT)
+    // Handles authentication errors (incorrect username or password)
     @ExceptionHandler(BadCredentialsException.class)
     public ProblemDetail handleBadCredentials(BadCredentialsException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
@@ -31,7 +30,7 @@ public class GlobalErrors {
         return problemDetail;
     }
 
-    // Gère les erreurs de validation @NotBlank, @NotNull (Test ValidationDonneesIT)
+    // Handles validation errors @NotBlank, @NotNull (Test ValidationDonneesIT)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidationErrors(MethodArgumentNotValidException ex) {
         String detail = ex.getBindingResult()
@@ -48,6 +47,7 @@ public class GlobalErrors {
         return problemDetail;
     }
 
+    // Handles database integrity violations (e.g., foreign key constraints)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ProblemDetail handleIntegrityViolation(DataIntegrityViolationException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
@@ -58,6 +58,7 @@ public class GlobalErrors {
         return problemDetail;
     }
 
+    // Handles all other uncaught exceptions
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGeneralError(Exception ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(

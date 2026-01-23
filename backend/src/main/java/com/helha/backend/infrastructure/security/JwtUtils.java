@@ -11,12 +11,13 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 
+// Utility class for generating and validating JWT tokens.
 @Component
 public class JwtUtils {
     private static final String SECRET = "UnePhraseSecreteTresLonguePourLeHackathonHelha2024BackendKey";
 
 
-    // 86400000 = 24 heures (24 * 60 * 60 * 1000).
+    // 86400000 = 24 hours (24 * 60 * 60 * 1000).
     private static final long EXPIRATION_TIME = 86400000;
 
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());

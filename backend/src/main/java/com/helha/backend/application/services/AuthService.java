@@ -25,6 +25,8 @@ public class AuthService {
 
     /**
      * Registers a new user and pre-creates a root folder.
+     * @param request The authentication request containing username and password.
+     * @throws RuntimeException if the username is already taken.
      */
     @Transactional
     public void register(AuthRequestDto request) {
@@ -46,6 +48,12 @@ public class AuthService {
         folderRepository.save(rootFolder);
     }
 
+    /**
+     * Authenticates a user and generates a JWT token upon successful login.
+     * @param request The authentication request containing username and password.
+     * @return A JWT token if authentication is successful.
+     * @throws RuntimeException if authentication fails.
+     */
     public String login(AuthRequestDto request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())

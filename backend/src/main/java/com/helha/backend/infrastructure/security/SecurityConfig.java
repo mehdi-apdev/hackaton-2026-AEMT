@@ -11,6 +11,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Security configuration class that sets up HTTP security for the application.
+ * It defines which endpoints are publicly accessible and which require authentication.
+ * It also configures session management to be stateless and integrates the JWT authentication filter.
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -23,9 +28,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> {}) // Utilise la configuration définie dans votre classe CorsConfig
+                .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
-                        // AJOUT DES SLASHES INITIAUX ICI
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/ping",

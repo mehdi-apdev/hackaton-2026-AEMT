@@ -11,8 +11,11 @@ import java.util.List;
 public interface IFolderRepository extends JpaRepository<DbFolder, Long> {
 
 
+    // Find active root folders for a specific user
     List<DbFolder> findByUserIdAndParentIsNullAndDeletedFalse(Long userId);
+    // Find deleted folders for a specific user
     List<DbFolder> findByUserIdAndDeletedTrue(Long userId);
+    // Find active folders for a specific user
     List<DbFolder> findByUserIdAndDeletedFalse(Long userId);
     // Find deleted folders where the deletion date is before a specific date
     List<DbFolder> findByDeletedTrueAndDeletedAtBefore(LocalDateTime thresholdDate);

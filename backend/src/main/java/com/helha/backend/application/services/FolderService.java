@@ -18,6 +18,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/** 
+ * Service for managing folders, including creation, retrieval, deletion, and restoration. 
+ * Supports both active folders and recycle bin functionality.
+*/
 @Service
 public class FolderService {
 

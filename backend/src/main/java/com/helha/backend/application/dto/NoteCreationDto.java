@@ -2,7 +2,6 @@ package com.helha.backend.application.dto;
 
 import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 //dto to create a note
 @Data
 public class NoteCreationDto {

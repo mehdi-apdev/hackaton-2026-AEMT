@@ -11,8 +11,11 @@ import java.util.List;
 public interface INoteRepository extends JpaRepository<DbNote, Long> {
 
 
+    // Find active notes for a specific folder
     List<DbNote> findByFolderIdAndDeletedFalse(Long folderId);
+    // Find active notes for a specific user
     List<DbNote> findByUserIdAndDeletedFalse(Long userId);
+    // Find active notes not in any folder for a specific user
     List<DbNote> findByUserIdAndFolderIsNullAndDeletedFalse(Long userId);
     // Find deleted notes only (to display in the bin)
     List<DbNote> findByUserIdAndDeletedTrue(Long userId);

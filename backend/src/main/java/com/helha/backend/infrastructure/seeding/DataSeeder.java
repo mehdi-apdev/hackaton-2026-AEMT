@@ -9,6 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+/**
+ * Data seeder that initializes the database with sample data for testing purposes.
+ * It creates a root folder, a subfolder, and two notes within the subfolder if the database is empty.
+ */
 @Component
 public class DataSeeder implements CommandLineRunner {
 

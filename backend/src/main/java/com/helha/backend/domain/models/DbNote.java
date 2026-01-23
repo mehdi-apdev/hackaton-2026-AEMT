@@ -7,10 +7,13 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.time.LocalDateTime;
-// ... autres imports
 
+/**
+ * Entity representing a Note in the database.
+ * Includes metadata for content analysis and auditing.
+ * Supports soft deletion.
+ */
 @Entity
 @Table(name = "NOTES")
 @Data
@@ -18,7 +21,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class DbNote {
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id") // Pour le hackathon, on peut laisser nullable=true temporairement si tu as déjà des données, sinon nullable=false
+    @JoinColumn(name = "user_id")
     private DbUser user;
 
 

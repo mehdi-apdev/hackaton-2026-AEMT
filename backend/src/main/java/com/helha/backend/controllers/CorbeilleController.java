@@ -9,12 +9,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller for managing the recycle bin (corbeille) functionality.
+ * Allows users to view, restore, and permanently delete notes and folders from the recycle bin.
+ */
 @RestController
 @RequestMapping("/api/corbeille")
 public class CorbeilleController {
 
     private final NoteService noteService;
-    private final FolderService folderService; // Injection ajoutée
+    private final FolderService folderService;
 
     public CorbeilleController(NoteService noteService, FolderService folderService) {
         this.noteService = noteService;
@@ -23,7 +27,7 @@ public class CorbeilleController {
 
     // --- NOTES ---
 
-    // GET /api/corbeille (ou /api/corbeille/notes si vous préférez séparer)
+    // GET /api/corbeille (or /api/corbeille/notes if you prefer to separate)
     @GetMapping
     public List<NoteDto> getBinNotes() {
         return noteService.getDeletedNotes();
@@ -41,16 +45,16 @@ public class CorbeilleController {
         noteService.hardDeleteNote(id);
     }
 
-    // --- DOSSIERS (NOUVEAU) ---
+    // --- FOLDERS ---
 
-    // 1. Voir les dossiers supprimés
+    // 1. See deleted folders
     // GET /api/corbeille/folders
     @GetMapping("/folders")
     public List<FolderDto> getBinFolders() {
         return folderService.getDeletedFolders();
     }
 
-    // 2. Restaurer un dossier
+    // 2. Restore a folder
     // POST /api/corbeille/folders/{id}/restore
     @PostMapping("/folders/{id}/restore")
     @ResponseStatus(HttpStatus.OK)
@@ -58,7 +62,7 @@ public class CorbeilleController {
         folderService.restoreFolder(id);
     }
 
-    // 3. Supprimer définitivement un dossier
+    // 3. Permanently delete a folder
     // DELETE /api/corbeille/folders/{id}
     @DeleteMapping("/folders/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

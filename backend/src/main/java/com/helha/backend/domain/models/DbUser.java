@@ -4,6 +4,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entity representing a user in the database.
+ * Includes fields for username, password (hashed), and role.
+ * Used for authentication and authorization.
+ */
 @Entity
 @Table(name = "USERS")
 @Data
