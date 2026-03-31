@@ -1,21 +1,22 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { Modal } from "../components/Modal";
 
-// Actions types for modals. Every type we can use 
-type ModalType = "NONE" | "INPUT" | "CONFIRM";
+// 1. Mise à jour des types
+type ModalType = "NONE" | "INPUT" | "CONFIRM" | "INFO"; // Ajout de INFO
 
 interface ModalConfig {
   type: ModalType;
   title: string;
-  message?: string;       // For deletion
-  placeholder?: string;   // For creation
+  message?: string;
+  placeholder?: string;
   onConfirm: (inputValue?: string) => void | Promise<void>;
+  onCloseCustom?: () => void; // Pour gérer une action après fermeture d'une info
 }
 
-// first step : here, we configure the functions to open different modals
 interface ModalContextType {
   openInputModal: (title: string, placeholder: string, onConfirm: (val: string) => void | Promise<void>, defaultValue?: string) => void;
   openConfirmModal: (title: string, message: string, onConfirm: () => void | Promise<void>) => void;
+  openInfoModal: (title: string, message: string, onClose?: () => void) => void; // AJOUT
 }
 
 const ModalContext = createContext<ModalContextType | null>(null);
@@ -29,12 +30,13 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [inputValue, setInputValue] = useState("");
 
   const close = () => {
+    if (config.type === "INFO" && config.onCloseCustom) {
+      config.onCloseCustom();
+    }
     setConfig((prev) => ({ ...prev, type: "NONE" }));
     setInputValue("");
   };
 
-  // Then we define the functions to open specific modals
-  // Here is the function to open an input modal
   const openInputModal = (title: string, placeholder: string, onConfirm: (val: string) => void | Promise<void>, defaultValue: string = "") => {
     setInputValue(defaultValue);
     setConfig({
@@ -42,14 +44,12 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       title,
       placeholder,
       onConfirm: async (val) => {
-        if (typeof val === 'string') {
-            await onConfirm(val);
-        }
+        if (typeof val === 'string') await onConfirm(val);
         close();
       },
     });
   };
-  // Same here, we define the function to open a confirmation modal
+
   const openConfirmModal = (title: string, message: string, onConfirm: () => void | Promise<void>) => {
     setConfig({
       type: "CONFIRM",
@@ -62,22 +62,29 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  // Finally, we render the provider with the modal and its content
+  // 2. Implémentation de openInfoModal
+  const openInfoModal = (title: string, message: string, onClose?: () => void) => {
+    setConfig({
+      type: "INFO",
+      title,
+      message,
+      onCloseCustom: onClose,
+      onConfirm: () => close(), // Sur une info, confirmer ne fait que fermer
+    });
+  };
+
   return (
-    <ModalContext.Provider value={{ openInputModal, openConfirmModal }}>
+    // 3. Ne pas oublier d'ajouter la fonction dans la value du Provider
+    <ModalContext.Provider value={{ openInputModal, openConfirmModal, openInfoModal }}>
       {children}
 
-      {/* Modal component */}
       <Modal isOpen={config.type !== "NONE"} onClose={close} title={config.title}>
-        {/* Modal content based on type */}
-        {/* It's either an input modal or a confirmation modal
-        Depend of what we choose when calling it in other classes 
-        Is it a input modal or a confirmation modal?
-        For example if it's an input modal, we render an input field. */}
+        
         {config.type === "INPUT" && (
           <form onSubmit={(e) => { e.preventDefault(); config.onConfirm(inputValue); }}>
             <input 
               autoFocus
+              className="modal-input"
               type="text" 
               value={inputValue} 
               onChange={(e) => setInputValue(e.target.value)}
@@ -90,13 +97,25 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
           </form>
         )}
 
-        {/* If the type is CONFIRM, then we render a confirmation message and buttons */}
         {config.type === "CONFIRM" && (
           <div className="confirm-modal-content">
             <p className="confirm-message">{config.message}</p>
             <div className="modal-footer">
               <button onClick={close} className="btn-modal-cancel">Annuler</button>
               <button onClick={() => config.onConfirm()} className="btn-modal-confirm">Confirmer</button>
+            </div>
+          </div>
+        )}
+
+        {/* 4. Rendu pour le type INFO */}
+        {config.type === "INFO" && (
+          <div className="info-modal-content">
+            {/* whiteSpace: 'pre-wrap' est crucial pour tes raccourcis clavier \n */}
+            <p className="info-message" style={{ whiteSpace: 'pre-wrap' }}>
+                {config.message}
+            </p>
+            <div className="modal-footer">
+              <button onClick={close} className="btn-modal-confirm">Ok</button>
             </div>
           </div>
         )}
@@ -107,32 +126,6 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
 
 export const useModal = () => {
   const context = useContext(ModalContext);
-  if (!context) 
-    throw new Error("useModal doit être utilisé à l'intérieur d'un ModalProvider");
+  if (!context) throw new Error("useModal doit être utilisé à l'intérieur d'un ModalProvider");
   return context;
 };
-
-
-/**
- * I want to explain this briefly and clearly.
- * 
- * Basically, this code is the orchestra conductor for modals in our website.
- * We create a special context (like a backstage pass) that allows any component
- * in our React app to open different types of modals (pop-up windows) without
- * needing to know the details of how those modals are implemented.
- * 
- * Here's how it works:
- * In the ModalProvider component, we define two main functions:
- * 1. openInputModal: This function opens a modal with an input field.
- *   You can specify the title, placeholder text, and what to do when the user submits the input.
- * 2. openConfirmModal: This function opens a confirmation modal.
- *  You provide a title, a message, and an action to perform if the user confirms.
- * 
- * Ok but where do we use it?
- * Any component that needs to show a modal. For example in LeftSidebar.tsx,
- * we import the useModal hook and call openInputModal when the user wants to
- * create a new folder or note. This keeps our code clean.
- * ----------------------------------------------------------------
- * Modal.tsx is the actual modal component that displays the content. It's an empty shell
- * that gets filled based on what the ModalProvider tells it to show.
- */

@@ -452,27 +452,29 @@ const MarkdownPage = () => {
         // 8. Ctrl + H : Modale d'aide personnalisée
         case "KeyH":
           event.preventDefault();
-          openConfirmModal(
+          openInfoModal(
             "Raccourcis Clavier", 
-            "📁 FICHIER :\n" +
-            "• Ctrl + S : Enregistrer (Manuel)\n" +
-            "• Ctrl + Alt + P : Exporter en PDF\n" +
-            "• Ctrl + Alt + Z : Exporter en ZIP\n" +
-            "• Ctrl + Shift + C : Copier le Markdown\n\n" +
-            "🖥️ INTERFACE :\n" +
-            "• Ctrl + E : Mode Édition/Lecture\n" +
-            "• Ctrl + Shift + F : Focus sur le Titre\n" +
-            "• Esc : Quitter le focus\n" +
-            "• Ctrl + H : Afficher cette aide\n\n" +
-            "📝 ÉDITION (Natifs) :\n" +
-            "• Ctrl + B : Gras\n" +
-            "• Ctrl + I : Italique\n" +
-            "• Ctrl + Z : Annuler\n" +
-            "• Ctrl + Shift + Z : Rétablir\n" +
-            "• Ctrl + Alt + 1 : Titre 1\n" +
-            "• Ctrl + Alt + 2 : Titre 2\n" +
-            "• Ctrl + Shift + 7 : Liste numérotée",
-            () => {} // Pas d'action spécifique nécessaire après la fermeture
+            `📁 FICHIER :
+        • Ctrl + S : Enregistrer (Manuel)
+        • Ctrl + Alt + P : Exporter en PDF
+        • Ctrl + Alt + Z : Exporter en ZIP
+        • Ctrl + Shift + C : Copier le Markdown
+        
+        🖥️ INTERFACE :
+        • Ctrl + E : Mode Édition/Lecture
+        • Ctrl + Shift + F : Focus sur le Titre
+        • Esc : Quitter le focus
+        • Ctrl + H : Afficher cette aide
+        
+        📝 ÉDITION (Natifs) :
+        • Ctrl + B : Gras
+        • Ctrl + I : Italique
+        • Ctrl + Z : Annuler
+        • Ctrl + Shift + Z : Rétablir
+        • Ctrl + Alt + 1 : Titre 1
+        • Ctrl + Alt + 2 : Titre 2
+        • Ctrl + Shift + 7 : Liste numérotée`,
+            () => { console.log("Aide fermée"); } 
           );
           break;
       }
@@ -843,3 +845,7 @@ const MarkdownPage = () => {
 };
 
 export default MarkdownPage;
+function openInfoModal(arg0: string, arg1: string, arg2: () => void) {
+  throw new Error("Function not implemented.");
+}
+
