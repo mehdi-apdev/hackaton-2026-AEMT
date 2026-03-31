@@ -7,10 +7,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 
-import './assets/colors.css'       // 1. Color variables (CSS custom properties)
-import './assets/fonts/fonts.css'  // 2. Font definitions (@font-face)
-import './global.css'              // 3. Global reset and base styles
-import './mobile.css'              // 4. Mobile-specific fixes
+import './assets/styles/colors.css'       // 1. Color variables (CSS custom properties)
+import './assets/fonts/fonts.css'         // 2. Font definitions (@font-face)
+import './assets/styles/global.css'       // 3. Global reset and base styles
+import './assets/styles/mobile.css'       // 4. Mobile-specific fixes
 
 import App from './App.tsx'
 import { AuthProvider } from './features/auth/context/AuthContext.tsx' 

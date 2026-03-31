@@ -9,16 +9,14 @@ import type { Folder } from "../../../features/notes/models/Folder";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useModal } from "../../../shared/context/ModalContext"; // Import du hook
+import { useAuth } from "../../../features/auth/context/AuthContext";
 
 type LeftSidebarProps = {
   isLeftSidebarCollapsed: boolean;
   changeIsLeftSidebarCollapsed: (isLeftSidebarCollapsed: boolean) => void;
 };
 
-const LeftSidebar = ({
-  isLeftSidebarCollapsed,
-  changeIsLeftSidebarCollapsed,
-}: LeftSidebarProps) => {
+const LeftSidebar = ({ isLeftSidebarCollapsed, changeIsLeftSidebarCollapsed,}: LeftSidebarProps) => {
   const { id: activeNoteId } = useParams();
   const navigate = useNavigate();
   const [folders, setFolders] = useState<Folder[]>([]);
@@ -26,13 +24,11 @@ const LeftSidebar = ({
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // RÉCUPÉRATION DE LA MODALE
+  // Modal related 
   const { openInputModal } = useModal();
+  const { isAuthenticated } = useAuth();
 
-  const sidebarClasses = classNames({
-    sidenav: true,
-    "sidenav-collapsed": isLeftSidebarCollapsed,
-  });
+  const sidebarClasses = classNames({ sidenav: true, "sidenav-collapsed": isLeftSidebarCollapsed, });
 
   const closeSidenav = () => changeIsLeftSidebarCollapsed(true);
 
@@ -83,9 +79,7 @@ const LeftSidebar = ({
     };
 
     window.addEventListener("notes:refresh", handleRefresh);
-    return () => {
-      window.removeEventListener("notes:refresh", handleRefresh);
-    };
+    return () => { window.removeEventListener("notes:refresh", handleRefresh);};
   }, [refreshTree]);
 
   useEffect(() => {
@@ -134,20 +128,34 @@ const LeftSidebar = ({
       }
     );
   };
-  // ADD ROOT NOTE
-  const handleAddRootNote = () => {
-    openInputModal(
-      "Nouvelle note",
-      "Titre de la note...",
-      async (name) => {
-        if (!name.trim()) return;
-        const newNoteEvent = new CustomEvent("notes:create", { detail: { title: name } });
-        window.dispatchEvent(newNoteEvent);
-        refreshTree();
-      }
-    );
-  };
 
+/**
+   * Action to create a new note at the root level.
+   * We explicitly set folderId to null so the Backend 
+   * assigns it to the default "Ma bibliothèque" folder.
+   */
+const handleAddRootNote = () => {
+  openInputModal(
+    "Nouvelle note",
+    "Titre de la note...",
+    async (name) => {
+      if (!name.trim()) return;
+
+      // Create the event and force folderId to null
+      const newNoteEvent = new CustomEvent("notes:create", { 
+        detail: { 
+          title: name,
+          folderId: null // THIS IS THE KEY: it triggers root folder assignment in Java
+        } 
+      });
+      
+      window.dispatchEvent(newNoteEvent);
+      
+      // Refresh the tree to see the new note appearing in "Ma bibliothèque"
+      refreshTree();
+    }
+  );
+};
   // OPEN BIN
   const handleBin = () => {
     navigate("/bin");
@@ -162,7 +170,7 @@ const LeftSidebar = ({
       <div className="logo-container">
         {!isLeftSidebarCollapsed && (
           <Fragment>
-            <Link to="/" className="logo-text">Spooky Notes</Link>
+            <Link to="/" className="logo-text">Spookeep</Link>
             <button className="icon-btn close-btn" onClick={closeSidenav} title="Fermer">
               <FontAwesomeIcon icon={faTimes} />
             </button>
@@ -181,12 +189,15 @@ const LeftSidebar = ({
               <FontAwesomeIcon icon={faPlus} /> Nouvelle note
             </button>
 
-            <button onClick={handleBin} className="btn-bin-root">
-              <FontAwesomeIcon icon={faTrash} />
-            </button>
+            {isAuthenticated && (
+              <button onClick={handleBin} className="btn-bin-root">
+                <FontAwesomeIcon icon={faTrash} />
+              </button>
+            )}
           </div>
         )}
 
+        {/* Verifying if authenticated */}
         {isLoading ? (
           <div className="loading-text">Chargement des dossiers...</div>
         ) : errorMessage ? (
@@ -209,7 +220,7 @@ const LeftSidebar = ({
         )}
       </div>
       <div className="sidenav-footer">
-        {!isLeftSidebarCollapsed && <div className="footer-text">© 2026 Spooky Notes</div>}
+        {!isLeftSidebarCollapsed && <div className="footer-text">© 2026 Spookeep</div>}
       </div>
     </div>
   );

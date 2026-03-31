@@ -5,52 +5,136 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: radial-gradient(circle at center, #1a051a 0%, #000000 100%);
+  background: 
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)),
+    url("../../../assets/images/cauldron.png") center/cover no-repeat;
+  background-color: #000;
   color: var(--text);
   padding: 2rem;
   overflow: hidden;
+  position: relative;
+}
+
+/* Brume sinistre */
+.notfound-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: 
+    linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(50, 50, 50, 0.3) 25%, 
+      transparent 50%,
+      rgba(50, 50, 50, 0.3) 75%, 
+      transparent 100%);
+  animation: fogMove 20s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Particules de poussière */
+.notfound-container::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 200%;
+  background-image: 
+    radial-gradient(circle, rgba(150, 150, 150, 0.2) 1px, transparent 2px),
+    radial-gradient(circle, rgba(150, 150, 150, 0.15) 2px, transparent 3px);
+  background-size: 400px 400px, 600px 600px;
+  background-position: 0 0, 100px 100px;
+  animation: particlesFall 30s linear infinite;
+  pointer-events: none;
+  opacity: 0.3;
+  z-index: 1;
+}
+
+@keyframes fogMove {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes particlesFall {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
 }
 
 .notfound-card {
-  background: rgba(10, 5, 15, 0.7);
-  backdrop-filter: blur(12px);
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(20px);
   padding: 4rem;
   border-radius: 20px;
-  border: 1px solid rgba(155, 38, 182, 0.3);
-  box-shadow: 0 0 40px rgba(155, 38, 182, 0.2);
+  border: 1px solid rgba(100, 100, 100, 0.3);
+  box-shadow: 
+    0 0 60px rgba(0, 0, 0, 0.8),
+    inset 0 0 40px rgba(0, 0, 0, 0.9);
   animation: floatCard 5s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
 }
 
 .notfound-code {
   font-size: 8rem;
   font-family: var(--font-heading);
-  color: var(--orange);
+  color: #777;
   margin: 0;
   line-height: 1;
   text-shadow: 
     5px 5px 0px #000,
-    0 0 20px rgba(255, 102, 0, 0.5);
+    0 0 30px rgba(100, 100, 100, 0.5);
   animation: flicker 2s infinite;
+  position: relative;
 }
 
 .notfound-icon {
   font-size: 5rem;
-  color: var(--purple);
+  color: #666;
   margin-bottom: 2rem;
-  filter: drop-shadow(0 0 15px rgba(155, 38, 182, 0.6));
+  filter: drop-shadow(0 0 20px rgba(100, 100, 100, 0.5));
+  animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% { 
+    filter: drop-shadow(0 0 20px rgba(100, 100, 100, 0.5));
+    transform: scale(1);
+  }
+  50% { 
+    filter: drop-shadow(0 0 30px rgba(150, 150, 150, 0.7));
+    transform: scale(1.05);
+  }
 }
 
 .notfound-title {
   font-size: 2.5rem;
-  color: var(--green);
+  color: #888;
   margin-bottom: 1rem;
+  text-shadow: 2px 2px 0 #000;
+  animation: titleBreathe 4s ease-in-out infinite;
+}
+
+@keyframes titleBreathe {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; letter-spacing: 2px; }
 }
 
 .notfound-text {
   font-size: 1.2rem;
   margin-bottom: 2.5rem;
-  opacity: 0.8;
+  opacity: 0.7;
   max-width: 400px;
+  color: #999;
+  animation: textFade 3s ease-in-out infinite;
+}
+
+@keyframes textFade {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 0.9; }
 }
 
 .btn-back-home {
@@ -58,29 +142,60 @@
   align-items: center;
   gap: 10px;
   padding: 12px 30px;
-  background: var(--purple);
+  background: rgba(50, 50, 50, 0.6);
   color: white;
   text-decoration: none;
   border-radius: 10px;
+  border: 1px solid rgba(100, 100, 100, 0.4);
   font-family: var(--font-heading);
   font-size: 1.2rem;
   transition: all 0.3s ease;
-  box-shadow: 0 0 15px rgba(155, 38, 182, 0.4);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-back-home::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(100, 100, 100, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-back-home:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .btn-back-home:hover {
-  background: var(--orange);
-  transform: scale(1.1);
-  box-shadow: 0 0 25px rgba(255, 102, 0, 0.6);
-  color: black;
+  background: rgba(70, 70, 70, 0.8);
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(100, 100, 100, 0.4);
+  color: white;
+  border-color: rgba(150, 150, 150, 0.6);
 }
 
 @keyframes flicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
-  20%, 22%, 24%, 55% { opacity: 0.5; }
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { 
+    opacity: 1; 
+  }
+  20%, 24%, 55% { 
+    opacity: 0.3; 
+  }
+  22% {
+    opacity: 0.6;
+  }
 }
 
 @keyframes floatCard {
   0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(1deg); }
+  25% { transform: translateY(-15px) rotate(-0.5deg); }
+  50% { transform: translateY(-20px) rotate(0.5deg); }
+  75% { transform: translateY(-10px) rotate(-0.3deg); }
 }

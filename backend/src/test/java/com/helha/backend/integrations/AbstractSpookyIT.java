@@ -1,7 +1,8 @@
 package com.helha.backend.integrations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.helha.backend.TestcontainersConfiguration;
+import com.helha.backend.application.dto.AuthRequestDto;
+import com.helha.backend.application.services.AuthService;
 import com.helha.backend.domain.models.DbUser;
 import com.helha.backend.domain.repositories.IFolderRepository;
 import com.helha.backend.domain.repositories.INoteRepository;
@@ -12,50 +13,45 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
-@Import(TestcontainersConfiguration.class) // Force l'utilisation de Docker
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = {
-                "spring.jpa.hibernate.ddl-auto=create-drop",
-                "spring.jpa.show-sql=false"
-        }
-)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public abstract class AbstractSpookyIT {
-
     @Autowired protected MockMvc mockMvc;
     @Autowired protected ObjectMapper objectMapper;
-
     @Autowired protected IUserRepository userRepository;
-    @Autowired protected INoteRepository noteRepository;
     @Autowired protected IFolderRepository folderRepository;
-
+    @Autowired protected INoteRepository noteRepository;
+    @Autowired protected AuthService authService;
     @Autowired protected JwtUtils jwtUtils;
     @Autowired protected PasswordEncoder passwordEncoder;
 
     @BeforeEach
-    void cleanDb() {
-        // Nettoyage complet de la base Docker avant chaque test
+    void setup() {
         noteRepository.deleteAll();
         folderRepository.deleteAll();
         userRepository.deleteAll();
     }
 
-    // Helper utilisé par tous les tests pour créer un utilisateur rapidement
-    protected DbUser persistUser(String username, String password) {
+    protected void persistUser(String username, String password) {
         DbUser user = new DbUser();
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
-        user.setRole("USER");
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
-    protected Cookie jwtCookieFor(DbUser savedUser) {
-        String token = jwtUtils.generateToken(savedUser.getUsername());
+    protected DbUser getTestUser(String username) {
+        return userRepository.findByUsername(username).orElseThrow();
+    }
+
+    protected Cookie getAuthCookie(String username) {
+        AuthRequestDto dto = new AuthRequestDto();
+        dto.setUsername(username);
+        dto.setPassword("password123");
+        authService.register(dto);
+        String token = jwtUtils.generateToken(username);
         return new Cookie("token", token);
     }
 }

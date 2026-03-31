@@ -79,7 +79,7 @@ export const FolderTree = ({ folder, openFolderIds, onToggle, onOpen, onRefresh 
     setContextMenu(null);
   };
 
-  // --- ACTIONS (SUPPRESSION) ---
+  // --- ACTIONS (DELETION) ---
   const handleDelete = () => {
     if (!contextMenu) return;
     const isFolder = contextMenu.type === "folder";
@@ -136,7 +136,7 @@ export const FolderTree = ({ folder, openFolderIds, onToggle, onOpen, onRefresh 
     if (!contextMenu) return;
     const closeMenu = () => setContextMenu(null);
     window.addEventListener("click", closeMenu);
-    window.addEventListener("contextmenu", closeMenu); // Ferme si on reclique ailleurs
+    window.addEventListener("contextmenu", closeMenu); // also close on right-click elsewhere
     return () => {
       window.removeEventListener("click", closeMenu);
       window.removeEventListener("contextmenu", closeMenu);
@@ -155,7 +155,7 @@ export const FolderTree = ({ folder, openFolderIds, onToggle, onOpen, onRefresh 
         </span>
         <span className="folder-name">{folder.name}</span>
 
-        {/* Bouton Menu (...) pour ceux qui n'ont pas de clic droit ou sur mobile */}
+        {/* Button Menu for those who don't have right click or on mobile :3 */}
         <button
           className="btn-options"
           onClick={(e) => openMenu(e, "folder", folder.id, folder.name)}
@@ -204,7 +204,7 @@ export const FolderTree = ({ folder, openFolderIds, onToggle, onOpen, onRefresh 
         </div>
       )}
 
-      {/* Menu Contextuel */}
+      {/* Context Menu */}
       {contextMenu && (
         <div
           className="context-menu"

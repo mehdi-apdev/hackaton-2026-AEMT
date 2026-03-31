@@ -1,20 +1,22 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { Modal } from "../components/Modal";
 
-// Types d'actions possibles
-type ModalType = "NONE" | "INPUT" | "CONFIRM";
+// 1. Mise à jour des types
+type ModalType = "NONE" | "INPUT" | "CONFIRM" | "INFO"; // Ajout de INFO
 
 interface ModalConfig {
   type: ModalType;
   title: string;
-  message?: string;       // Pour la suppression
-  placeholder?: string;   // Pour la création
+  message?: string;
+  placeholder?: string;
   onConfirm: (inputValue?: string) => void | Promise<void>;
+  onCloseCustom?: () => void; // Pour gérer une action après fermeture d'une info
 }
 
 interface ModalContextType {
   openInputModal: (title: string, placeholder: string, onConfirm: (val: string) => void | Promise<void>, defaultValue?: string) => void;
   openConfirmModal: (title: string, message: string, onConfirm: () => void | Promise<void>) => void;
+  openInfoModal: (title: string, message: string, onClose?: () => void) => void; // AJOUT
 }
 
 const ModalContext = createContext<ModalContextType | null>(null);
@@ -28,6 +30,9 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [inputValue, setInputValue] = useState("");
 
   const close = () => {
+    if (config.type === "INFO" && config.onCloseCustom) {
+      config.onCloseCustom();
+    }
     setConfig((prev) => ({ ...prev, type: "NONE" }));
     setInputValue("");
   };
@@ -39,9 +44,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       title,
       placeholder,
       onConfirm: async (val) => {
-        if (typeof val === 'string') {
-            await onConfirm(val);
-        }
+        if (typeof val === 'string') await onConfirm(val);
         close();
       },
     });
@@ -59,29 +62,33 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  // 2. Implémentation de openInfoModal
+  const openInfoModal = (title: string, message: string, onClose?: () => void) => {
+    setConfig({
+      type: "INFO",
+      title,
+      message,
+      onCloseCustom: onClose,
+      onConfirm: () => close(), // Sur une info, confirmer ne fait que fermer
+    });
+  };
+
   return (
-    <ModalContext.Provider value={{ openInputModal, openConfirmModal }}>
+    // 3. Ne pas oublier d'ajouter la fonction dans la value du Provider
+    <ModalContext.Provider value={{ openInputModal, openConfirmModal, openInfoModal }}>
       {children}
 
-      {/* --- GLOBAL MODAL COMPONENT --- */}
-      <Modal 
-        isOpen={config.type !== "NONE"} 
-        onClose={close} 
-        title={config.title}
-      >
+      <Modal isOpen={config.type !== "NONE"} onClose={close} title={config.title}>
+        
         {config.type === "INPUT" && (
           <form onSubmit={(e) => { e.preventDefault(); config.onConfirm(inputValue); }}>
             <input 
               autoFocus
+              className="modal-input"
               type="text" 
               value={inputValue} 
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={config.placeholder}
-              style={{
-                width: '100%', padding: '10px', 
-                background: 'rgba(0,0,0,0.5)', border: '1px solid #ff6600', 
-                borderRadius: '8px', color: 'white', outline: 'none',
-              }}
             />
             <div className="modal-footer">
               <button type="button" onClick={close} className="btn-modal-cancel">Annuler</button>
@@ -91,15 +98,24 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
         )}
 
         {config.type === "CONFIRM" && (
-          <div>
-            <div style={{color: '#ccc', marginBottom: '1.5rem', textAlign: 'center'}}>
-              {config.message}
-            </div>
+          <div className="confirm-modal-content">
+            <p className="confirm-message">{config.message}</p>
             <div className="modal-footer">
               <button onClick={close} className="btn-modal-cancel">Annuler</button>
-              <button onClick={() => config.onConfirm()} className="btn-modal-confirm" style={{background: '#ff4444'}}>
-                Confirmer
-              </button>
+              <button onClick={() => config.onConfirm()} className="btn-modal-confirm">Confirmer</button>
+            </div>
+          </div>
+        )}
+
+        {/* 4. Rendu pour le type INFO */}
+        {config.type === "INFO" && (
+          <div className="info-modal-content">
+            {/* whiteSpace: 'pre-wrap' est crucial pour tes raccourcis clavier \n */}
+            <p className="info-message" style={{ whiteSpace: 'pre-wrap' }}>
+                {config.message}
+            </p>
+            <div className="modal-footer">
+              <button onClick={close} className="btn-modal-confirm">Ok</button>
             </div>
           </div>
         )}
@@ -110,7 +126,6 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
 
 export const useModal = () => {
   const context = useContext(ModalContext);
-  if (!context) 
-    throw new Error("useModal must be used within ModalProvider");
+  if (!context) throw new Error("useModal doit être utilisé à l'intérieur d'un ModalProvider");
   return context;
 };

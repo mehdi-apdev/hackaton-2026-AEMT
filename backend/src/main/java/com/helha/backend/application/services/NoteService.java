@@ -36,23 +36,65 @@ public class NoteService {
         this.modelMapper = modelMapper;
     }
 
-
-    //Private helper to retrieve the user making the request
+    /**
+     * Private helper to retrieve the user making the request from Security Context.
+     */
     private DbUser getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new GenericNotFoundException(0L, "User " + username));
     }
 
+    /**
+     * Creates a new note.
+     * If folderId is null, it finds OR creates a default root folder for the user.
+     */
+    /**
+     * Creates a note. If folderId is null, it finds OR creates a root folder.
+     * This ensures the application keeps working even if the user deleted their root folder.
+     */
+    @Transactional
+    public NoteDto createNote(NoteCreationDto input) {
+        DbUser user = getCurrentUser();
+        DbNote note = new DbNote();
+        note.setTitle(input.getTitle());
+        note.setContent(input.getContent() != null ? input.getContent() : "");
+        note.setUser(user);
 
-    // retrieve a a note by it's ID with ownership verification
+        if (input.getFolderId() != null) {
+            DbFolder folder = folderRepository.findById(input.getFolderId())
+                    .orElseThrow(() -> new GenericNotFoundException(input.getFolderId(), "Folder"));
+            note.setFolder(folder);
+        } else {
+            // Find an existing active root folder OR create a new one if missing
+            DbFolder root = folderRepository.findByUserIdAndParentIsNullAndDeletedFalse(user.getId())
+                    .stream()
+                    .findFirst()
+                    .orElseGet(() -> {
+                        // Logic to recreate the root folder on the fly
+                        DbFolder newRoot = new DbFolder();
+                        newRoot.setName("Ma bibliothèque");
+                        newRoot.setUser(user);
+                        newRoot.setParent(null);
+                        newRoot.setDeleted(false);
+                        return folderRepository.save(newRoot);
+                    });
+            note.setFolder(root);
+        }
+
+        updateMetadata(note, note.getContent());
+        return convertToDto(noteRepository.save(note));
+    }
+
+    /**
+     * Retrieves a note by its ID with ownership verification.
+     */
     @Transactional(readOnly = true)
     public NoteDto getNoteById(Long id) {
         DbUser user = getCurrentUser();
         DbNote note = noteRepository.findById(id)
                 .orElseThrow(() -> new GenericNotFoundException(id, "Note"));
 
-        // Security if it's not my note I'm not able to see it
         if (!note.getUser().getId().equals(user.getId())) {
             throw new GenericNotFoundException(id, "Note");
         }
@@ -60,47 +102,15 @@ public class NoteService {
         return convertToDto(note);
     }
 
-
-    //Create a note bind to the user and it's folder
-    @Transactional
-    public NoteDto createNote(NoteCreationDto input) {
-        DbUser user = getCurrentUser();
-        DbNote note = new DbNote();
-        note.setTitle(input.getTitle());
-        note.setContent("");
-        note.setUser(user);
-
-        if (input.getFolderId() != null) {
-            DbFolder folder = folderRepository.findById(input.getFolderId())
-                    .orElseThrow(() -> new GenericNotFoundException(input.getFolderId(), "Folder"));
-
-            // Vérification de sécurité : le dossier appartient bien à l'utilisateur
-            if (!folder.getUser().getId().equals(user.getId())) {
-                throw new GenericNotFoundException(input.getFolderId(), "Folder");
-            }
-            note.setFolder(folder);
-        }
-
-        //if folderId is null note.setFolder stays null (the note is in the root file)
-
-        // Initialisation des stats techniques
-        note.setWordCount(0);
-        note.setLineCount(0);
-        note.setCharacterCount(0);
-        note.setSizeInBytes(0L);
-
-        DbNote savedNote = noteRepository.save(note);
-        return convertToDto(savedNote);
-    }
-
-    // update a note
+    /**
+     * Updates an existing note and refreshes its metadata.
+     */
     @Transactional
     public NoteDto updateNote(Long id, NoteUpdateDto input) {
         DbUser user = getCurrentUser();
         DbNote note = noteRepository.findById(id)
                 .orElseThrow(() -> new GenericNotFoundException(id, "Note"));
 
-        // Security to check ownership
         if (!note.getUser().getId().equals(user.getId())) {
             throw new GenericNotFoundException(id, "Note");
         }
@@ -111,66 +121,15 @@ public class NoteService {
 
         if (input.getContent() != null) {
             note.setContent(input.getContent());
-
-            //Métadata
-            String content = input.getContent();
-            int words = MetadataUtils.countWords(content);
-            note.setWordCount(words);
-            note.setLineCount(MetadataUtils.countLines(content));
-            note.setCharacterCount(MetadataUtils.countCharacters(content));
-            note.setSizeInBytes(MetadataUtils.calculateSizeInBytes(content));
+            updateMetadata(note, input.getContent());
         }
 
-        DbNote updatedNote = noteRepository.save(note);
-        return convertToDto(updatedNote);
+        return convertToDto(noteRepository.save(note));
     }
 
-//    // Delete a note with ownership verification
-//    @Transactional
-//    public void deleteNote(Long id) {
-//        DbUser user = getCurrentUser();
-//        DbNote note = noteRepository.findById(id)
-//                .orElseThrow(() -> new GenericNotFoundException(id, "Note"));
-//
-//        if (!note.getUser().getId().equals(user.getId())) {
-//            throw new GenericNotFoundException(id, "Note");
-//        }
-//
-//        noteRepository.delete(note);
-//    }
-//
-//    // Method to get notes that are at the root (not in any folder)
-//    @Transactional(readOnly = true)
-//    public List<NoteDto> getRootNotes() {
-//        DbUser user = getCurrentUser();
-//        return noteRepository.findByUserIdAndFolderIsNull(user.getId()).stream()
-//                .map(this::convertToDto)
-//                .collect(Collectors.toList());
-//    }
-
-    // --- Mapping Helpers ---
-    private NoteDto convertToDto(DbNote entity) {
-        NoteDto dto = new NoteDto();
-        dto.setId(entity.getId());
-        dto.setTitle(entity.getTitle());
-        dto.setContent(entity.getContent());
-
-        // Audit dates for the front-end
-        dto.setCreatedAt(entity.getCreatedAt());
-        dto.setUpdatedAt(entity.getUpdatedAt());
-
-        // Zombie Palier Stats
-        dto.setWordCount(entity.getWordCount());
-        dto.setLineCount(entity.getLineCount());
-        dto.setCharacterCount(entity.getCharacterCount());
-        dto.setSizeInBytes(entity.getSizeInBytes());
-
-        if (entity.getFolder() != null) {
-            dto.setFolderId(entity.getFolder().getId());
-        }
-        return dto;
-    }
-    // 1. Soft delete: Mark as deleted and set the timestamp
+    /**
+     * Soft delete: Marks a note as deleted and sets the deletion timestamp.
+     */
     @Transactional
     public void deleteNote(Long id) {
         DbUser user = getCurrentUser();
@@ -182,51 +141,94 @@ public class NoteService {
         }
 
         note.setDeleted(true);
-        note.setDeletedAt(LocalDateTime.now()); // <--- Set timestamp
+        note.setDeletedAt(LocalDateTime.now());
         noteRepository.save(note);
     }
 
-    // 2. Restore: Unmark as deleted and clear the timestamp
+    /**
+     * Restore: Unmarks a note as deleted and clears the timestamp.
+     */
     @Transactional
     public void restoreNote(Long id) {
         DbUser user = getCurrentUser();
         DbNote note = noteRepository.findById(id)
                 .orElseThrow(() -> new GenericNotFoundException(id, "Note"));
 
-        if (!note.getUser().getId().equals(user.getId())) throw new GenericNotFoundException(id, "Note");
+        if (!note.getUser().getId().equals(user.getId())) {
+            throw new GenericNotFoundException(id, "Note");
+        }
 
         note.setDeleted(false);
-        note.setDeletedAt(null); // <--- Clear timestamp
+        note.setDeletedAt(null);
         noteRepository.save(note);
     }
 
-    // 3. NEW: Permanent Delete
+    /**
+     * Permanent Delete from the database.
+     */
     @Transactional
     public void hardDeleteNote(Long id) {
         DbUser user = getCurrentUser();
         DbNote note = noteRepository.findById(id)
                 .orElseThrow(() -> new GenericNotFoundException(id, "Note"));
 
-        if (!note.getUser().getId().equals(user.getId())) throw new GenericNotFoundException(id, "Note");
+        if (!note.getUser().getId().equals(user.getId())) {
+            throw new GenericNotFoundException(id, "Note");
+        }
 
-        noteRepository.delete(note); // Actual DB deletion
+        noteRepository.delete(note);
     }
 
-    // 4. Update getRootNotes
+    /**
+     * Retrieves all active notes at the root (not in any sub-folder).
+     */
     @Transactional(readOnly = true)
     public List<NoteDto> getRootNotes() {
         DbUser user = getCurrentUser();
-        // Use the new repository method
         return noteRepository.findByUserIdAndFolderIsNullAndDeletedFalse(user.getId()).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
-    // 5. NEW: Get all notes in the bin
+    /**
+     * Retrieves all notes currently in the recycle bin for the authenticated user.
+     */
     @Transactional(readOnly = true)
     public List<NoteDto> getDeletedNotes() {
         return noteRepository.findByUserIdAndDeletedTrue(getCurrentUser().getId()).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Internal helper to update note statistics using MetadataUtils.
+     */
+    private void updateMetadata(DbNote note, String content) {
+        if (content == null) content = "";
+        note.setWordCount(MetadataUtils.countWords(content));
+        note.setLineCount(MetadataUtils.countLines(content));
+        note.setCharacterCount(MetadataUtils.countCharacters(content));
+        note.setSizeInBytes(MetadataUtils.calculateSizeInBytes(content));
+    }
+
+    /**
+     * Converts a database entity to a DTO for the front-end.
+     */
+    private NoteDto convertToDto(DbNote entity) {
+        NoteDto dto = new NoteDto();
+        dto.setId(entity.getId());
+        dto.setTitle(entity.getTitle());
+        dto.setContent(entity.getContent());
+        dto.setCreatedAt(entity.getCreatedAt());
+        dto.setUpdatedAt(entity.getUpdatedAt());
+        dto.setWordCount(entity.getWordCount());
+        dto.setLineCount(entity.getLineCount());
+        dto.setCharacterCount(entity.getCharacterCount());
+        dto.setSizeInBytes(entity.getSizeInBytes());
+
+        if (entity.getFolder() != null) {
+            dto.setFolderId(entity.getFolder().getId());
+        }
+        return dto;
     }
 }

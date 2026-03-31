@@ -113,7 +113,7 @@ export default function RegisterPage() {
             Déjà parmi nous ? <Link to="/login">Connectez-vous</Link>
           </p>
           <button className="btn-global shake-on-hover" type="submit">
-            Signer le pacte
+            Passer de l'autre côté
           </button>
         </form>
       </div>
